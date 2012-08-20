@@ -1,16 +1,28 @@
-# built application files
+# Mac OS files #
+.DS_Store
+
+# Eclipse Configuration Files #
+.settings/
+.classpath
+.project
+
+# Intellij IDEA Files #
+.idea
+appglu-server.iml
+
+# Compiled Files #
+target/
+bin/
+gen/
+*.class
+
+# Package Files #
+*.jar
 *.apk
 *.ap_
 
 # files for the dex VM
 *.dex
-
-# Java class files
-*.class
-
-# generated files
-bin/
-gen/
 
 # Local configuration file (sdk path, etc)
 local.properties
