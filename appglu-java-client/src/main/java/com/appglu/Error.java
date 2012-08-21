@@ -2,7 +2,7 @@ package com.appglu;
 
 public class Error {
 	
-	private String code;
+	private ErrorCode code;
 	
 	private String message;
 	
@@ -10,12 +10,12 @@ public class Error {
 		super();
 	}
 	
-	public Error(String code, String message) {
+	public Error(ErrorCode code, String message) {
 		this.code = code;
 		this.message = message;
 	}
 
-	public String getCode() {
+	public ErrorCode getCode() {
 		return code;
 	}
 
