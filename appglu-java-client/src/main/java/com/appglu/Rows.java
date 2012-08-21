@@ -23,16 +23,8 @@ public class Rows {
 		return rows;
 	}
 
-	public void setRows(List<Map<String, Object>> rows) {
-		this.rows = rows;
-	}
-
 	public Integer getTotalRows() {
 		return totalRows;
-	}
-
-	public void setTotalRows(int totalRows) {
-		this.totalRows = totalRows;
 	}
 
 	@Override

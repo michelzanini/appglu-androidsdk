@@ -16,8 +16,4 @@ public class ErrorResponse {
 		return error;
 	}
 
-	public void setError(Error error) {
-		this.error = error;
-	}
-	
 }
