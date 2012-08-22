@@ -2,11 +2,6 @@ package com.appglu.impl;
 
 import java.util.ArrayList;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 
 import com.appglu.AppgluNotFoundException;
@@ -17,9 +12,9 @@ import com.appglu.Rows;
 
 public class CrudTemplate implements CrudOperations {
 	
-	static final String CRUD_API_TABLE_URL = AppgluTemplate.APPGLU_API_URL + "/v1/tables/{table}";
+	static final String CRUD_API_TABLE_URL = "/v1/tables/{table}";
 	
-	static final String CRUD_API_ENTITY_URL = AppgluTemplate.APPGLU_API_URL + "/v1/tables/{table}/{id}";
+	static final String CRUD_API_ENTITY_URL = "/v1/tables/{table}/{id}";
 	
 	private final RestOperations restOperations;
 	
@@ -28,14 +23,7 @@ public class CrudTemplate implements CrudOperations {
 	}
 	
 	public Object create(String tableName, Row row) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		
-		HttpEntity<Row> httpEntity = new HttpEntity<Row>(row, headers);
-		
-		ResponseEntity<Row> response = this.restOperations.exchange(CRUD_API_TABLE_URL, HttpMethod.POST, httpEntity, Row.class, tableName);
-		
-		Row primaryKey = response.getBody();
+		Row primaryKey = this.restOperations.postForObject(CRUD_API_TABLE_URL, row, Row.class, tableName);
 		return this.extractPrimaryKeyValue(primaryKey);
 	}
 
@@ -104,13 +92,8 @@ public class CrudTemplate implements CrudOperations {
 	}
 
 	public boolean update(String tableName, Object id, Row row) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		HttpEntity<Row> httpEntity = new HttpEntity<Row>(row, headers);
-		
 		try {
-			this.restOperations.exchange(CRUD_API_ENTITY_URL, HttpMethod.PUT, httpEntity, String.class, tableName, id);
+			this.restOperations.put(CRUD_API_ENTITY_URL, row, tableName, id);
 			return true;
 		} catch (AppgluNotFoundException e) {
 			return false;

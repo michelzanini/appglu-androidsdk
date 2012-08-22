@@ -26,7 +26,7 @@ public abstract class AbstractAppgluApiTest {
 	}
 
 	protected AppgluTemplate createAppgluTemplate() {
-		return new AppgluTemplate("applicationKey", "applicationSecret");
+		return new AppgluTemplate("http://localhost/appglu", "applicationKey", "applicationSecret");
 	}
 
 	protected Resource jsonResource(String filename) {

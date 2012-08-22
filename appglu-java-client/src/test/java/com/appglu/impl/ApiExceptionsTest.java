@@ -29,7 +29,7 @@ public class ApiExceptionsTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void badRequest() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user/2"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/2"))
 			.andExpect(method(HttpMethod.DELETE))
 			.andRespond(withResponse(compactedJson("data/error_bad_request"), responseHeaders, HttpStatus.BAD_REQUEST, ""));
 		
@@ -45,7 +45,7 @@ public class ApiExceptionsTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void serverError() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user/2"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/2"))
 			.andExpect(method(HttpMethod.DELETE))
 			.andRespond(withResponse(compactedJson("data/error_server_error"), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR, ""));
 		

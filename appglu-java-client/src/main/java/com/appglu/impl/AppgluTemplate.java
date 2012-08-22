@@ -8,6 +8,8 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -23,7 +25,9 @@ import com.appglu.impl.json.AppgluModule;
 
 public class AppgluTemplate implements Appglu {
 	
-	static final String APPGLU_API_URL = "http://localhost:8080/appglu";
+	private String baseUrl;
+	
+	private HttpHeaders defaultHeaders;
 	
 	private RestTemplate restTemplate;
 	
@@ -33,14 +37,23 @@ public class AppgluTemplate implements Appglu {
 	
 	private HttpMessageConverter<Object> jsonMessageConverter;
 	
-	public AppgluTemplate(String applicationKey, String applicationSecret) {
+	public AppgluTemplate(String baseUrl, String applicationKey, String applicationSecret) {
+		this(baseUrl, new HttpHeaders(), applicationKey, applicationSecret);
+	}
+	
+	public AppgluTemplate(String baseUrl, HttpHeaders defaultHeaders, String applicationKey, String applicationSecret) {
+		this.baseUrl = baseUrl;
+		this.defaultHeaders = defaultHeaders;
+
 		this.restTemplate = this.createRestTemplate(applicationKey, applicationSecret);
 		this.jsonMessageConverter = this.createJsonMessageConverter();
 		this.restTemplate.setMessageConverters(getMessageConverters());
 		this.restTemplate.setErrorHandler(getResponseErrorHandler());
+		this.restTemplate.setInterceptors(this.createInterceptors());
+		
 		this.initSubApis();
 	}
-
+	
 	public CrudOperations crudOperations() {
 		return crudOperations;
 	}
@@ -65,7 +78,14 @@ public class AppgluTemplate implements Appglu {
 		return converter;
 	}
 	
-	protected RestTemplate createRestTemplate(String key, String secret) {
+	protected List<HttpMessageConverter<?>> getMessageConverters() {
+		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
+		messageConverters.add(new StringHttpMessageConverter());
+		messageConverters.add(this.jsonMessageConverter);
+		return messageConverters;
+	}
+	
+	private RestTemplate createRestTemplate(String key, String secret) {
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		
 		DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -76,16 +96,15 @@ public class AppgluTemplate implements Appglu {
 		
 		return new RestTemplate(requestFactory);
 	}
-	
-	protected List<HttpMessageConverter<?>> getMessageConverters() {
-		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
-		messageConverters.add(new StringHttpMessageConverter());
-		messageConverters.add(this.jsonMessageConverter);
-		return messageConverters;
-	}
 
-	protected ResponseErrorHandler getResponseErrorHandler() {
+	private ResponseErrorHandler getResponseErrorHandler() {
 		return new AppgluResponseErrorHandler(this.jsonMessageConverter);
+	}
+	
+	private List<ClientHttpRequestInterceptor> createInterceptors() {
+		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
+		interceptors.add(new AppgluClientHttpRequestInterceptor(this.baseUrl, this.defaultHeaders));
+		return interceptors;
 	}
 
 	private void initSubApis() {

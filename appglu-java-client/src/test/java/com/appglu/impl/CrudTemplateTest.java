@@ -81,7 +81,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void create() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
 			.andExpect(body(compactedJson("data/crud_row_relationships")))
@@ -97,7 +97,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 
 	@Test
 	public void update() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user/1"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/1"))
 			.andExpect(method(HttpMethod.PUT))
 			.andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
 			.andExpect(body(compactedJson("data/crud_row_relationships")))
@@ -113,7 +113,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void updateNotFound() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user/2"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/2"))
 			.andExpect(method(HttpMethod.PUT))
 			.andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
 			.andExpect(body(compactedJson("data/crud_row_relationships")))
@@ -129,7 +129,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 
 	@Test
 	public void read() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user/1?expand_relationships=false"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/1?expand_relationships=false"))
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/crud_row"), responseHeaders));
 		
@@ -141,7 +141,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 
 	@Test
 	public void readExpandRelationships() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user/1?expand_relationships=true"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/1?expand_relationships=true"))
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/crud_row_relationships"), responseHeaders));
 		
@@ -153,7 +153,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void readNotFound() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user/2?expand_relationships=false"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/2?expand_relationships=false"))
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/error_not_found"), responseHeaders, HttpStatus.NOT_FOUND, ""));
 		
@@ -165,7 +165,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void readAll() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user?expand_relationships=false"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?expand_relationships=false"))
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/crud_rows"), responseHeaders));
 		
@@ -185,7 +185,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void readAllEmpty() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user?expand_relationships=false"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?expand_relationships=false"))
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/crud_rows_empty"), responseHeaders));
 		
@@ -201,7 +201,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void readAllExpandRelationships() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user?expand_relationships=true"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?expand_relationships=true"))
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/crud_rows_relationships"), responseHeaders));
 		
@@ -221,7 +221,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void readAllLimitOffset() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user?expand_relationships=false&limit=10&offset=100"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?expand_relationships=false&limit=10&offset=100"))
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/crud_rows"), responseHeaders));
 		
@@ -233,7 +233,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void readAllFiterArguments() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user?expand_relationships=false&filter_column=name&filter_query=John%20Due"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?expand_relationships=false&filter_column=name&filter_query=John%20Due"))
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/crud_rows"), responseHeaders));
 		
@@ -245,7 +245,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void delete() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user/1"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/1"))
 			.andExpect(method(HttpMethod.DELETE))
 			.andRespond(withResponse("", responseHeaders));
 		
@@ -257,7 +257,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void deleteNotFound() {
-		mockServer.expect(requestTo("http://localhost:8080/appglu/v1/tables/user/2"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/2"))
 			.andExpect(method(HttpMethod.DELETE))
 			.andRespond(withResponse(compactedJson("data/error_not_found"), responseHeaders, HttpStatus.NOT_FOUND, ""));
 		
