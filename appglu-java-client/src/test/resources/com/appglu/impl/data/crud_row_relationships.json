@@ -1,0 +1,20 @@
+{
+	"row":{
+      	"enabled":true,
+      	"many_to_many":[
+      		{
+      			"id":2
+      		},
+      		{
+      			"id":1
+      		}
+      	],
+		"age":26,
+		"name":"John Due",
+		"login":"john",
+		"many_to_one":{
+			"id":1
+      	},
+		"password":"due"
+   }
+}

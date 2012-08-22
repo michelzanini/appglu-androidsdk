@@ -28,7 +28,34 @@
 			<version>1.9.8</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test-mvc</artifactId>
+			<version>1.0.0.BUILD-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8</version>
+			<scope>test</scope>
+		</dependency>
+		
 	</dependencies>
-
+	
+	<repositories>
+        <repository>
+            <id>org.springframework.maven.snapshot</id>
+            <name>Spring Maven Snapshot Repository</name>
+            <url>http://maven.springframework.org/snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
 </project>

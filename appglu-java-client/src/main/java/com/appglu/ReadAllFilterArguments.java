@@ -4,13 +4,13 @@ import org.springframework.util.StringUtils;
 
 public class ReadAllFilterArguments {
 	
-	private int limit = 0;
+	private int limit;
 	
-	private int offset = 0;
+	private int offset;
 	
-	private String filterColumn = "";
+	private String filterColumn;
 	
-	private String filterQuery = "";
+	private String filterQuery;
 	
 	public ReadAllFilterArguments() { 
 		
@@ -29,11 +29,11 @@ public class ReadAllFilterArguments {
 	}
 	
 	public boolean hasLimit() {
-		return limit != 0;
+		return limit > 0;
 	}
 	
 	public boolean hasOffset() {
-		return offset != 0;
+		return offset > 0;
 	}
 	
 	public boolean hasFilterColumn() {

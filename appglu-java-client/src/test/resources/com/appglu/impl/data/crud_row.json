@@ -1,0 +1,9 @@
+{
+	"row":{
+      	"enabled":true,
+		"age":26,
+		"name":"John Due",
+		"login":"john",
+		"password":"due"
+   }
+}

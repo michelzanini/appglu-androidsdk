@@ -81,15 +81,24 @@ public class CrudTemplate implements CrudOperations {
 		url.append(CRUD_API_TABLE_URL);
 		
 		url.append("?");
-		url.append("limit=" + arguments.getLimit());
-		url.append("&");
-		url.append("offset=" + arguments.getOffset());
-		url.append("&");
-		url.append("filter_column=" + arguments.getFilterColumn());
-		url.append("&");
-		url.append("filter_query=" + arguments.getFilterQuery());
-		url.append("&");
 		url.append("expand_relationships=" + expandRelationships);
+		url.append("&");
+		if (arguments.hasLimit()) {
+			url.append("limit=" + arguments.getLimit());
+			url.append("&");
+		}
+		if (arguments.hasOffset()) {
+			url.append("offset=" + arguments.getOffset());
+			url.append("&");
+		}
+		if (arguments.hasFilterColumn()) {
+			url.append("filter_column=" + arguments.getFilterColumn());
+			url.append("&");
+		}
+		if (arguments.hasFilterQuery()) {
+			url.append("filter_query=" + arguments.getFilterQuery());
+			url.append("&");
+		}
 		
 		return url.toString();
 	}
