@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import com.appglu.CrudOperations;
 import com.appglu.ReadAllFilterArguments;
 import com.appglu.Row;
+import com.appglu.Tuple;
 import com.appglu.Rows;
 
 @SuppressWarnings("deprecation")
@@ -156,7 +157,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/error_not_found"), responseHeaders, HttpStatus.NOT_FOUND, ""));
 		
-		Row row = crudOperations.read("user", 2);
+		Tuple row = crudOperations.read("user", 2);
 		Assert.assertNull(row);
 		
 		mockServer.verify();

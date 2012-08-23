@@ -12,9 +12,9 @@ import com.appglu.Rows;
 
 public class CrudTemplate implements CrudOperations {
 	
-	static final String CRUD_API_TABLE_URL = "/v1/tables/{table}";
+	static final String CRUD_TABLE_URL = "/v1/tables/{table}";
 	
-	static final String CRUD_API_ENTITY_URL = "/v1/tables/{table}/{id}";
+	static final String CRUD_ENTITY_URL = "/v1/tables/{table}/{id}";
 	
 	private final RestOperations restOperations;
 	
@@ -23,8 +23,8 @@ public class CrudTemplate implements CrudOperations {
 	}
 	
 	public Object create(String tableName, Row row) {
-		Row primaryKey = this.restOperations.postForObject(CRUD_API_TABLE_URL, row, Row.class, tableName);
-		return this.extractPrimaryKeyValue(primaryKey);
+		RowBody primaryKey = this.restOperations.postForObject(CRUD_TABLE_URL, new RowBody(row), RowBody.class, tableName);
+		return this.extractPrimaryKeyValue(primaryKey.getRow());
 	}
 
 	private Object extractPrimaryKeyValue(Row primaryKey) {
@@ -43,8 +43,9 @@ public class CrudTemplate implements CrudOperations {
 	
 	public Row read(String tableName, Object id, boolean expandRelationships) {
 		try {
-			String url = CRUD_API_ENTITY_URL + ("?expand_relationships=" + expandRelationships);
-			return this.restOperations.getForObject(url, Row.class, tableName, id);
+			String url = CRUD_ENTITY_URL + ("?expand_relationships=" + expandRelationships);
+			RowBody rowBody = this.restOperations.getForObject(url, RowBody.class, tableName, id);
+			return rowBody.getRow();
 		} catch (AppgluNotFoundException e) {
 			return null;
 		}
@@ -66,7 +67,7 @@ public class CrudTemplate implements CrudOperations {
 	private String buildReadAllUrl(boolean expandRelationships, ReadAllFilterArguments arguments) {
 		StringBuilder url = new StringBuilder();
 		
-		url.append(CRUD_API_TABLE_URL);
+		url.append(CRUD_TABLE_URL);
 		
 		url.append("?");
 		url.append("expand_relationships=" + expandRelationships);
@@ -93,7 +94,7 @@ public class CrudTemplate implements CrudOperations {
 
 	public boolean update(String tableName, Object id, Row row) {
 		try {
-			this.restOperations.put(CRUD_API_ENTITY_URL, row, tableName, id);
+			this.restOperations.put(CRUD_ENTITY_URL, new RowBody(row), tableName, id);
 			return true;
 		} catch (AppgluNotFoundException e) {
 			return false;
@@ -102,7 +103,7 @@ public class CrudTemplate implements CrudOperations {
 
 	public boolean delete(String tableName, Object id) {
 		try {
-			this.restOperations.delete(CRUD_API_ENTITY_URL, tableName, id);
+			this.restOperations.delete(CRUD_ENTITY_URL, tableName, id);
 			return true;
 		} catch (AppgluNotFoundException e) {
 			return false;

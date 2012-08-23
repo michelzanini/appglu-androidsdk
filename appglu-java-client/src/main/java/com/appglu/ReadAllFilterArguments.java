@@ -75,5 +75,12 @@ public class ReadAllFilterArguments {
 	public void setFilterQuery(String filterQuery) {
 		this.filterQuery = filterQuery;
 	}
+
+	@Override
+	public String toString() {
+		return "ReadAllFilterArguments [limit=" + limit + ", offset=" + offset
+			+ ", filterColumn=" + filterColumn + ", filterQuery="
+			+ filterQuery + "]";
+	}
 	
 }

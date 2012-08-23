@@ -1,14 +1,15 @@
 package com.appglu.impl.json;
 
 import java.util.List;
-import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+
+import com.appglu.Row;
 
 public abstract class RowsMixin {
 	
 	@JsonProperty("rows")
-	List<Map<String, Object>> rows;
+	List<Row> rows;
 
 	@JsonProperty("totalRows")
 	Integer totalRows;

@@ -1,82 +1,89 @@
 package com.appglu;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-public class Row {
+@SuppressWarnings("serial")
+public class Row extends HashMap<String, Object> implements Tuple {
 	
-	private Map<String, Object> rowColumns;
-	
-	public Row() {
-		this.rowColumns = new HashMap<String, Object>();
-	}
-	
-	public Row(Map<String, Object> rowColumns) {
-		this.rowColumns = rowColumns;
-	}
-	
-	public Map<String, Object> getRowColumns() {
-		return rowColumns;
-	}
-	
-	public boolean isEmpty() {
-		return rowColumns.isEmpty();
-	}
-	
-	public boolean containsKey(Object key) {
-		return rowColumns.containsKey(key);
+	public Boolean getBoolean(String columnName) {
+		return null;
 	}
 
-	public boolean containsValue(Object value) {
-		return rowColumns.containsValue(value);
-	}
-
-	public Set<String> keySet() {
-		return rowColumns.keySet();
-	}
-
-	public Collection<Object> values() {
-		return rowColumns.values();
-	}
-
-	public Object get(Object key) {
-		return rowColumns.get(key);
-	}
-
-	public Object put(String key, Object value) {
-		return rowColumns.put(key, value);
-	}
-
-	public void putAll(Map<? extends String, ? extends Object> m) {
-		rowColumns.putAll(m);
+	public Short getShort(String columnName) {
+		return null;
 	}
 	
-	public void addManyToOneRelationship(String relationshipName, Row row) {
-		rowColumns.put(relationshipName, row.getRowColumns());
+	public Byte getByte(String columnName) {
+		return null;
+	}
+	
+	public byte[] getByteArray(String columnName) {
+		return null;
+	}
+
+	public Date getDate(String columnName) {
+		return null;
+	}
+	
+	public Float getFloat(String columnName) {
+		return null;
+	}
+	
+	public Double getDouble(String columnName) {
+		return null;
+	}
+
+	public Integer getInt(String columnName) {
+		return null;
+	}
+
+	public Long getLong(String columnName) {
+		return null;
+	}
+
+	public Number getNumber(String columnName) {
+		return null;
+	}
+
+	public String getString(String columnName) {
+		return null;
+	}
+
+	public BigDecimal getBigDecimal(String columnName) {
+		return null;
+	}
+	
+	public void addManyToOneRelationship(String relationshipName, Tuple row) {
+		this.put(relationshipName, row);
 	}
 	
 	public void addManyToManyRelationship(String relationshipName, List<Row> rows) {
 		List<Map<String, Object>> entries = new ArrayList<Map<String,Object>>();
 		for (Row row : rows) {
-			entries.add(row.getRowColumns());	
+			entries.add(row);	
 		}
-		rowColumns.put(relationshipName, entries);
+		this.put(relationshipName, entries);
 	}
 	
 	public Row getManyToOneRelationship(String relationshipName) {
-		Object relationship = rowColumns.get(relationshipName);
+		Object relationship = this.get(relationshipName);
 		if (relationship == null) {
 			return null;
 		}
-		return new Row(this.extractRowColumns(relationship));
+		
+		Row row = new Row();
+		row.putAll(this.extractRowColumns(relationship));
+		return row;
 	}
 	
 	public List<Row> getManyToManyRelationship(String relationshipName) {
-		Object relationship = rowColumns.get(relationshipName);
+		Object relationship = this.get(relationshipName);
 		if (relationship == null) {
 			return null;
 		}
@@ -90,8 +97,9 @@ public class Row {
 		
 		for (Object item : relationshipColumns) {
 			if (item != null) {
-				Map<String, Object> rowColumns = this.extractRowColumns(item);
-				rows.add(new Row(rowColumns));
+				Row row = new Row();
+				row.putAll(this.extractRowColumns(item));
+				rows.add(row);
 			}
 		}
 		
@@ -104,11 +112,6 @@ public class Row {
 			throw new InvalidRelationshipException();
 		}
 		return (Map<String, Object>) relationship;
-	}
-
-	@Override
-	public String toString() {
-		return "Row [columns=" + rowColumns + "]";
 	}
 
 }
