@@ -14,25 +14,33 @@ public class Rows {
 		this.rows = new ArrayList<Map<String,Object>>();
 	}
 
-	public Rows(List<Map<String, Object>> rows, Integer totalRows) {
-		this.rows = rows;
+	public Rows(List<Row> rows, Integer totalRows) {
+		this.rows = this.convertRowColumns(rows);
 		this.totalRows = totalRows;
 	}
 
-	public List<Map<String, Object>> getRows() {
-		return rows;
-	}
-
-	public void setRows(List<Map<String, Object>> rows) {
-		this.rows = rows;
+	public List<Row> getRows() {
+		List<Row> rowsList = new ArrayList<Row>();
+		for (Map<String, Object> rowColumns : rows) {
+			Row row = new Row(rowColumns);
+			rowsList.add(row);
+		}
+		return rowsList;
 	}
 
 	public Integer getTotalRows() {
 		return totalRows;
 	}
-
-	public void setTotalRows(int totalRows) {
-		this.totalRows = totalRows;
+	
+	private List<Map<String, Object>> convertRowColumns(List<Row> rows) {
+		if (rows == null) {
+			return new ArrayList<Map<String,Object>>();
+		}
+		List<Map<String, Object>> rowsList = new ArrayList<Map<String,Object>>();
+		for (Row row : rows) {
+			rowsList.add(row.getRowColumns());
+		}
+		return rowsList;
 	}
 
 	@Override

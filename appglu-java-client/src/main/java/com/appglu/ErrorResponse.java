@@ -8,16 +8,12 @@ public class ErrorResponse {
 		super();
 	}
 	
-	public ErrorResponse(String code, String message) {
-		this.error = new Error(code, message);
+	public ErrorResponse(Error error) {
+		this.error = error;
 	}
-
+	
 	public Error getError() {
 		return error;
 	}
 
-	public void setError(Error error) {
-		this.error = error;
-	}
-	
 }
