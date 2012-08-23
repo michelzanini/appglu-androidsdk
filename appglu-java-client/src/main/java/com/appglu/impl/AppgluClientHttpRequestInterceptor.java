@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
-import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
@@ -21,6 +20,9 @@ public class AppgluClientHttpRequestInterceptor implements ClientHttpRequestInte
 	public AppgluClientHttpRequestInterceptor(String baseUrl, HttpHeaders defaultHeaders) {
 		this.baseUrl = baseUrl;
 		this.defaultHeaders = defaultHeaders;
+		if (this.defaultHeaders == null) {
+			this.defaultHeaders = new HttpHeaders();
+		}
 	}
 
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
@@ -30,18 +32,18 @@ public class AppgluClientHttpRequestInterceptor implements ClientHttpRequestInte
 			@Override
 			public URI getURI() {
 				URI uri = super.getURI();
-				String url = uri.toString();
+				String fragment = uri.toString();
+				String url = baseUrl + fragment;
 				try {
-					return new URI(baseUrl + url);
-				} catch (URISyntaxException e) {
-					return uri;
+					return new URI(url);
+				} catch (URISyntaxException ex) {
+					throw new IllegalArgumentException("Could not create HTTP URL from [" + url + "]: " + ex, ex);
 				}
 			}
 
 			@Override
 			public HttpHeaders getHeaders() {
 				HttpHeaders headers = super.getHeaders();
-				headers.setContentType(MediaType.APPLICATION_JSON);
 				headers.putAll(defaultHeaders);
 				return headers;
 			}

@@ -14,6 +14,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
@@ -42,13 +43,16 @@ public class AppgluTemplate implements Appglu {
 	}
 	
 	public AppgluTemplate(String baseUrl, HttpHeaders defaultHeaders, String applicationKey, String applicationSecret) {
+		if (!StringUtils.hasText(baseUrl)) {
+			throw new IllegalArgumentException("Base URL cannot be empty");
+		}
 		this.baseUrl = baseUrl;
 		this.defaultHeaders = defaultHeaders;
 
 		this.restTemplate = this.createRestTemplate(applicationKey, applicationSecret);
 		this.jsonMessageConverter = this.createJsonMessageConverter();
-		this.restTemplate.setMessageConverters(getMessageConverters());
-		this.restTemplate.setErrorHandler(getResponseErrorHandler());
+		this.restTemplate.setMessageConverters(this.getMessageConverters());
+		this.restTemplate.setErrorHandler(this.getResponseErrorHandler());
 		this.restTemplate.setInterceptors(this.createInterceptors());
 		
 		this.initSubApis();
@@ -104,7 +108,12 @@ public class AppgluTemplate implements Appglu {
 	private List<ClientHttpRequestInterceptor> createInterceptors() {
 		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
 		interceptors.add(new AppgluClientHttpRequestInterceptor(this.baseUrl, this.defaultHeaders));
+		this.addHttpRequestInterceptors(interceptors);
 		return interceptors;
+	}
+
+	protected void addHttpRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
+		
 	}
 
 	private void initSubApis() {

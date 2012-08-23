@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import com.appglu.CrudOperations;
 import com.appglu.ReadAllFilterArguments;
@@ -83,7 +82,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	public void create() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user"))
 			.andExpect(method(HttpMethod.POST))
-			.andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/crud_row_relationships")))
 			.andRespond(withResponse(compactedJson("data/crud_create_response"), responseHeaders, HttpStatus.CREATED, ""));
 		
@@ -99,7 +98,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	public void update() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/1"))
 			.andExpect(method(HttpMethod.PUT))
-			.andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/crud_row_relationships")))
 			.andRespond(withResponse("", responseHeaders));
 		
@@ -115,7 +114,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	public void updateNotFound() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/2"))
 			.andExpect(method(HttpMethod.PUT))
-			.andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/crud_row_relationships")))
 			.andRespond(withResponse(compactedJson("data/error_not_found"), responseHeaders, HttpStatus.NOT_FOUND, ""));
 		

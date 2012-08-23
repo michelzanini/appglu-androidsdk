@@ -3,6 +3,7 @@ package com.appglu.impl;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 import org.junit.Before;
 import org.springframework.core.io.ClassPathResource;
@@ -17,12 +18,14 @@ public abstract class AbstractAppgluApiTest {
 	protected MockRestServiceServer mockServer;
 	protected HttpHeaders responseHeaders;
 
+	protected MediaType jsonMediaType = new MediaType("application", "json", Charset.forName("UTF-8"));
+	
 	@Before
 	public void setup() {
 		appgluTemplate = createAppgluTemplate();
 		mockServer = MockRestServiceServer.createServer(appgluTemplate.getRestTemplate());
 		responseHeaders = new HttpHeaders();
-		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+		responseHeaders.setContentType(jsonMediaType);
 	}
 
 	protected AppgluTemplate createAppgluTemplate() {
