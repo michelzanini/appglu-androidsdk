@@ -10,7 +10,6 @@ import com.appglu.QueryResult;
 import com.appglu.Row;
 import com.appglu.Rows;
 import com.appglu.Tuple;
-import com.appglu.impl.RowBody;
 
 public class AppgluModule extends SimpleModule {
 
@@ -22,6 +21,7 @@ public class AppgluModule extends SimpleModule {
 	public void setupModule(SetupContext context) {
 		context.setMixInAnnotations(RowBody.class, RowBodyMixin.class);
 		context.setMixInAnnotations(Rows.class, RowsMixin.class);
+		context.setMixInAnnotations(QueryParamsBody.class, QueryParamsBodyMixin.class);
 		context.setMixInAnnotations(QueryResult.class, QueryResultMixin.class);
 		context.setMixInAnnotations(Error.class, ErrorMixin.class);
 		context.setMixInAnnotations(ErrorResponse.class, ErrorResponseMixin.class);

@@ -9,6 +9,7 @@ import com.appglu.CrudOperations;
 import com.appglu.ReadAllFilterArguments;
 import com.appglu.Row;
 import com.appglu.Rows;
+import com.appglu.impl.json.RowBody;
 
 public class CrudTemplate implements CrudOperations {
 	
@@ -70,8 +71,6 @@ public class CrudTemplate implements CrudOperations {
 		url.append(CRUD_TABLE_URL);
 		
 		url.append("?");
-		url.append("expand_relationships=" + expandRelationships);
-		url.append("&");
 		if (arguments.hasLimit()) {
 			url.append("limit=" + arguments.getLimit());
 			url.append("&");
@@ -88,6 +87,7 @@ public class CrudTemplate implements CrudOperations {
 			url.append("filter_query=" + arguments.getFilterQuery());
 			url.append("&");
 		}
+		url.append("expand_relationships=" + expandRelationships);
 		
 		return url.toString();
 	}

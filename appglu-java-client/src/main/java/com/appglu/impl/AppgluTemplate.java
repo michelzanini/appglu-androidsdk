@@ -1,5 +1,7 @@
 package com.appglu.impl;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,11 +79,17 @@ public class AppgluTemplate implements Appglu {
 	protected HttpMessageConverter<Object> createJsonMessageConverter() {
 		MappingJacksonHttpMessageConverter converter = new MappingJacksonHttpMessageConverter();
 		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.registerModule(new AppgluModule());
+		this.configureObjectMapper(objectMapper);
 		converter.setObjectMapper(objectMapper);
 		return converter;
 	}
 	
+	protected void configureObjectMapper(ObjectMapper objectMapper) {
+		objectMapper.registerModule(new AppgluModule());
+		DateFormat dateFormat = new SimpleDateFormat(Appglu.DATE_TIME_FORMAT);
+		objectMapper.setDateFormat(dateFormat);
+	}
+
 	protected List<HttpMessageConverter<?>> getMessageConverters() {
 		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
 		messageConverters.add(new StringHttpMessageConverter());
@@ -90,13 +98,12 @@ public class AppgluTemplate implements Appglu {
 	}
 	
 	private RestTemplate createRestTemplate(String key, String secret) {
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		
 		DefaultHttpClient httpClient = new DefaultHttpClient();
 		BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
 		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(key, secret));
 		httpClient.setCredentialsProvider(credentialsProvider);
-		requestFactory.setHttpClient(httpClient);
+		
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		
 		return new RestTemplate(requestFactory);
 	}
@@ -113,7 +120,7 @@ public class AppgluTemplate implements Appglu {
 	}
 
 	protected void addHttpRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
-		
+		//extension point
 	}
 
 	private void initSubApis() {

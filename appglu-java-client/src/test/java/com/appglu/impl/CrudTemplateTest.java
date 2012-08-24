@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import com.appglu.CrudOperations;
 import com.appglu.ReadAllFilterArguments;
 import com.appglu.Row;
-import com.appglu.Tuple;
 import com.appglu.Rows;
 
 @SuppressWarnings("deprecation")
@@ -157,7 +156,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/error_not_found"), responseHeaders, HttpStatus.NOT_FOUND, ""));
 		
-		Tuple row = crudOperations.read("user", 2);
+		Row row = crudOperations.read("user", 2);
 		Assert.assertNull(row);
 		
 		mockServer.verify();
@@ -221,7 +220,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void readAllLimitOffset() {
-		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?expand_relationships=false&limit=10&offset=100"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?limit=10&offset=100&expand_relationships=false"))
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/crud_rows"), responseHeaders));
 		
@@ -233,7 +232,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void readAllFiterArguments() {
-		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?expand_relationships=false&filter_column=name&filter_query=John%20Due"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?filter_column=name&filter_query=John%20Due&expand_relationships=false"))
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/crud_rows"), responseHeaders));
 		

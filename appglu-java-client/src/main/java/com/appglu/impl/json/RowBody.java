@@ -1,4 +1,4 @@
-package com.appglu.impl;
+package com.appglu.impl.json;
 
 import com.appglu.Row;
 

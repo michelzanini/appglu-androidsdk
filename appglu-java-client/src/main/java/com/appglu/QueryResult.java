@@ -1,11 +1,10 @@
 package com.appglu;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class QueryResult {
 	
-	private List<Tuple> tuples = new ArrayList<Tuple>();
+	private List<Tuple> tuples;
 	
 	private Integer rowsAffected;
 

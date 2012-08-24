@@ -1,4 +1,4 @@
-package com.appglu.impl;
+package com.appglu;
 
 import com.appglu.CrudOperations;
 import com.appglu.QueryParams;
@@ -6,6 +6,7 @@ import com.appglu.QueryResult;
 import com.appglu.Row;
 import com.appglu.Rows;
 import com.appglu.SavedQueriesOperations;
+import com.appglu.impl.AppgluTemplate;
 
 public class AppgluTestRestClient {
 	

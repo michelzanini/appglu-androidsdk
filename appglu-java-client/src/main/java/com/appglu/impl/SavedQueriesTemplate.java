@@ -5,6 +5,7 @@ import org.springframework.web.client.RestOperations;
 import com.appglu.QueryParams;
 import com.appglu.QueryResult;
 import com.appglu.SavedQueriesOperations;
+import com.appglu.impl.json.QueryParamsBody;
 
 public class SavedQueriesTemplate implements SavedQueriesOperations {
 	
@@ -17,7 +18,7 @@ public class SavedQueriesTemplate implements SavedQueriesOperations {
 	}
 	
 	public QueryResult executeQuery(String queryName, QueryParams params) {
-		return this.restOperations.postForObject(QUERY_RUN_URL, params, QueryResult.class, queryName);
+		return this.restOperations.postForObject(QUERY_RUN_URL, new QueryParamsBody(params), QueryResult.class, queryName);
 	}
 	
 }

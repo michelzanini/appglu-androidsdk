@@ -10,8 +10,6 @@ public interface Tuple extends Map<String, Object> {
 
 	String getString(String columnName);
 
-	Number getNumber(String columnName);
-
 	Long getLong(String columnName);
 
 	Integer getInt(String columnName);
