@@ -1,11 +1,14 @@
 package com.appglu;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.Map;
 
 public interface Tuple extends Map<String, Object> {
 
+	BigInteger getBigInteger(String columnName);
+	
 	BigDecimal getBigDecimal(String columnName);
 
 	String getString(String columnName);

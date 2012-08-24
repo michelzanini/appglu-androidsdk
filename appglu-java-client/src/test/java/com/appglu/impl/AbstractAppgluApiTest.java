@@ -4,13 +4,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
+
+import com.appglu.Appglu;
 
 public abstract class AbstractAppgluApiTest {
 	
@@ -26,10 +32,23 @@ public abstract class AbstractAppgluApiTest {
 		mockServer = MockRestServiceServer.createServer(appgluTemplate.getRestTemplate());
 		responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(jsonMediaType);
+		
+		/* Setting time zone to GMT+0 avoiding time zone issues in tests */
+		TimeZone gmt = TimeZone.getTimeZone("GMT");
+		TimeZone.setDefault(gmt);
 	}
 
 	protected AppgluTemplate createAppgluTemplate() {
-		return new AppgluTemplate("http://localhost/appglu", "applicationKey", "applicationSecret");
+		return new AppgluTemplate("http://localhost/appglu", "applicationKey", "applicationSecret") {
+			@Override
+			protected void configureObjectMapper(ObjectMapper objectMapper) {
+				super.configureObjectMapper(objectMapper);
+				/* Configure JSON parsing to use GMT+0 time zone avoiding time zone issues in tests */
+				DateFormat dateFormat = new SimpleDateFormat(Appglu.DATE_TIME_FORMAT);
+				dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+				objectMapper.setDateFormat(dateFormat);
+			}
+		};
 	}
 
 	protected Resource jsonResource(String filename) {
