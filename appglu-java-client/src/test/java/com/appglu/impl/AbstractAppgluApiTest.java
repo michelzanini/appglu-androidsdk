@@ -16,7 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 
-import com.appglu.Appglu;
+import com.appglu.impl.util.DateUtils;
 
 public abstract class AbstractAppgluApiTest {
 	
@@ -44,7 +44,7 @@ public abstract class AbstractAppgluApiTest {
 			protected void configureObjectMapper(ObjectMapper objectMapper) {
 				super.configureObjectMapper(objectMapper);
 				/* Configure JSON parsing to use GMT+0 time zone avoiding time zone issues in tests */
-				DateFormat dateFormat = new SimpleDateFormat(Appglu.DATE_TIME_FORMAT);
+				DateFormat dateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT);
 				dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 				objectMapper.setDateFormat(dateFormat);
 			}

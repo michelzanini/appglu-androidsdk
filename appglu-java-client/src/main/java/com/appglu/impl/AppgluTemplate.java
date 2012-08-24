@@ -25,6 +25,7 @@ import com.appglu.Appglu;
 import com.appglu.CrudOperations;
 import com.appglu.SavedQueriesOperations;
 import com.appglu.impl.json.AppgluModule;
+import com.appglu.impl.util.DateUtils;
 
 public class AppgluTemplate implements Appglu {
 	
@@ -86,7 +87,7 @@ public class AppgluTemplate implements Appglu {
 	
 	protected void configureObjectMapper(ObjectMapper objectMapper) {
 		objectMapper.registerModule(new AppgluModule());
-		DateFormat dateFormat = new SimpleDateFormat(Appglu.DATE_TIME_FORMAT);
+		DateFormat dateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT);
 		objectMapper.setDateFormat(dateFormat);
 	}
 
