@@ -11,13 +11,13 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.support.HttpRequestWrapper;
 
-public class AppgluClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
+public class DefaultHeadersHttpRequestInterceptor implements ClientHttpRequestInterceptor {
 	
 	private String baseUrl;
 	
 	private HttpHeaders defaultHeaders;
 	
-	public AppgluClientHttpRequestInterceptor(String baseUrl, HttpHeaders defaultHeaders) {
+	public DefaultHeadersHttpRequestInterceptor(String baseUrl, HttpHeaders defaultHeaders) {
 		this.baseUrl = baseUrl;
 		this.defaultHeaders = defaultHeaders;
 		if (this.defaultHeaders == null) {

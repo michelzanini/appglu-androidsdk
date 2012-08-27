@@ -5,14 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
@@ -33,6 +28,10 @@ public class AppgluTemplate implements Appglu {
 	
 	private HttpHeaders defaultHeaders;
 	
+	private String applicationKey;
+	
+	private String applicationSecret;
+	
 	private RestTemplate restTemplate;
 	
 	private CrudOperations crudOperations;
@@ -51,8 +50,10 @@ public class AppgluTemplate implements Appglu {
 		}
 		this.baseUrl = baseUrl;
 		this.defaultHeaders = defaultHeaders;
+		this.applicationKey = applicationKey;
+		this.applicationSecret = applicationSecret;
 
-		this.restTemplate = this.createRestTemplate(applicationKey, applicationSecret);
+		this.restTemplate = this.createRestTemplate();
 		this.jsonMessageConverter = this.createJsonMessageConverter();
 		this.restTemplate.setMessageConverters(this.getMessageConverters());
 		this.restTemplate.setErrorHandler(this.getResponseErrorHandler());
@@ -98,15 +99,8 @@ public class AppgluTemplate implements Appglu {
 		return messageConverters;
 	}
 	
-	private RestTemplate createRestTemplate(String key, String secret) {
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-		BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(key, secret));
-		httpClient.setCredentialsProvider(credentialsProvider);
-		
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		
-		return new RestTemplate(requestFactory);
+	protected RestTemplate createRestTemplate() {
+		return new RestTemplate();
 	}
 
 	private ResponseErrorHandler getResponseErrorHandler() {
@@ -115,13 +109,13 @@ public class AppgluTemplate implements Appglu {
 	
 	private List<ClientHttpRequestInterceptor> createInterceptors() {
 		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
-		interceptors.add(new AppgluClientHttpRequestInterceptor(this.baseUrl, this.defaultHeaders));
-		this.addHttpRequestInterceptors(interceptors);
+		this.configureHttpRequestInterceptors(interceptors);
 		return interceptors;
 	}
 
-	protected void addHttpRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
-		//extension point
+	protected void configureHttpRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
+		interceptors.add(new DefaultHeadersHttpRequestInterceptor(this.baseUrl, this.defaultHeaders));
+		interceptors.add(new BasicAuthHttpRequestInterceptor(this.applicationKey, this.applicationSecret));
 	}
 
 	private void initSubApis() {
