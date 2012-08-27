@@ -5,12 +5,14 @@ import java.io.IOException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.appglu.ErrorCode;
 
+@JsonPropertyOrder({"error", "message"})
 public abstract class ErrorMixin {
 	
 	@JsonProperty("code")

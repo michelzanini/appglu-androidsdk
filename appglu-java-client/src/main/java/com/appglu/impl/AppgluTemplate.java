@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.appglu.Appglu;
 import com.appglu.CrudOperations;
+import com.appglu.PushOperations;
 import com.appglu.SavedQueriesOperations;
 import com.appglu.impl.json.AppgluModule;
 import com.appglu.impl.util.DateUtils;
@@ -37,6 +38,8 @@ public class AppgluTemplate implements Appglu {
 	private CrudOperations crudOperations;
 	
 	private SavedQueriesOperations savedQueriesOperations;
+	
+	private PushOperations pushOperations;
 	
 	private HttpMessageConverter<Object> jsonMessageConverter;
 	
@@ -70,6 +73,10 @@ public class AppgluTemplate implements Appglu {
 		return savedQueriesOperations;
 	}
 	
+	public PushOperations getPushOperations() {
+		return pushOperations;
+	}
+
 	public RestOperations restOperations() {
 		return getRestTemplate();
 	}
@@ -121,6 +128,7 @@ public class AppgluTemplate implements Appglu {
 	private void initSubApis() {
 		this.crudOperations = new CrudTemplate(this.restOperations());
 		this.savedQueriesOperations = new SavedQueriesTemplate(this.restOperations());
+		this.pushOperations = new PushTemplate(this.restOperations());
 	}
 
 }

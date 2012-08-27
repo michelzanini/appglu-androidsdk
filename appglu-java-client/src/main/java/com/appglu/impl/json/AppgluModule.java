@@ -4,6 +4,7 @@ import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.module.SimpleAbstractTypeResolver;
 import org.codehaus.jackson.map.module.SimpleModule;
 
+import com.appglu.Device;
 import com.appglu.Error;
 import com.appglu.ErrorResponse;
 import com.appglu.QueryResult;
@@ -23,6 +24,8 @@ public class AppgluModule extends SimpleModule {
 		context.setMixInAnnotations(Rows.class, RowsMixin.class);
 		context.setMixInAnnotations(QueryParamsBody.class, QueryParamsBodyMixin.class);
 		context.setMixInAnnotations(QueryResult.class, QueryResultMixin.class);
+		context.setMixInAnnotations(Device.class, DeviceMixin.class);
+		context.setMixInAnnotations(DeviceBody.class, DeviceBodyMixin.class);
 		context.setMixInAnnotations(Error.class, ErrorMixin.class);
 		context.setMixInAnnotations(ErrorResponse.class, ErrorResponseMixin.class);
 		
