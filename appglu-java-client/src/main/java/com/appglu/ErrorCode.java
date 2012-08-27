@@ -44,7 +44,18 @@ public enum ErrorCode {
 	PUSH_NOTIFICATION_INVALID_NO_TARGETS	                ("53"),
 	PUSH_NOTIFICATION_INVALID_ALERT_MESSAGE	                ("54"),
 	PUSH_NOT_ENABLED	                                    ("55"),
-	INVALID_API_URL					                        ("56"),
+	STORAGE_ENTRY_ALREADY_EXISTS							("56"),
+    STORAGE_ENTRY_DOES_NOT_EXISTS							("57"),
+    STORAGE_ENTRY_NEW_PATH_INCONSISTENT						("58"),
+    STORAGE_CANNOT_DELETE_ROOT_DIRECTORY					("59"),
+    STORAGE_CANNOT_MOVE_ROOT_DIRECTORY						("60"),
+    STORAGE_DESTINATION_DOES_NOT_EXIST						("61"),
+    STORAGE_CANNOT_MOVE_DIRECTORY_INTO_ITSELF_OR_CHILDREN	("62"),
+    STORAGE_NAME_CANNOT_CONTAIN_SLASH_CHARS					("63"),
+    STORAGE_NAME_CANNOT_CONTAIN_WHITESPACE					("64"),
+    STORAGE_NAME_CANNOT_BE_EMPTY							("65"),
+    BAD_URL_ENCODE											("66"),
+	INVALID_API_URL					                        ("67"),
 	;
 	
 	private String code;

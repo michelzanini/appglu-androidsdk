@@ -2,11 +2,11 @@ package com.appglu.impl.json;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import com.appglu.Tuple;
+import com.appglu.Row;
 
 public abstract class RowBodyMixin {
 	
-	public RowBodyMixin(@JsonProperty("row") Tuple row) {
+	public RowBodyMixin(@JsonProperty("row") Row row) {
 		
 	}
 	
