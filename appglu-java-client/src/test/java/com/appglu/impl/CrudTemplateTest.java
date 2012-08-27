@@ -6,7 +6,10 @@ import static org.springframework.test.web.client.RequestMatchers.method;
 import static org.springframework.test.web.client.RequestMatchers.requestTo;
 import static org.springframework.test.web.client.ResponseCreators.withResponse;
 
+import java.math.BigInteger;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -15,12 +18,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import com.appglu.CrudOperations;
 import com.appglu.ReadAllFilterArguments;
 import com.appglu.Row;
 import com.appglu.Rows;
+import com.appglu.impl.util.DateUtils;
 
 @SuppressWarnings("deprecation")
 public class CrudTemplateTest extends AbstractAppgluApiTest {
@@ -83,7 +86,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	public void create() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user"))
 			.andExpect(method(HttpMethod.POST))
-			.andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/crud_row_relationships")))
 			.andRespond(withResponse(compactedJson("data/crud_create_response"), responseHeaders, HttpStatus.CREATED, ""));
 		
@@ -99,7 +102,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	public void update() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/1"))
 			.andExpect(method(HttpMethod.PUT))
-			.andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/crud_row_relationships")))
 			.andRespond(withResponse("", responseHeaders));
 		
@@ -115,7 +118,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	public void updateNotFound() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/2"))
 			.andExpect(method(HttpMethod.PUT))
-			.andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/crud_row_relationships")))
 			.andRespond(withResponse(compactedJson("data/error_not_found"), responseHeaders, HttpStatus.NOT_FOUND, ""));
 		
@@ -221,7 +224,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void readAllLimitOffset() {
-		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?expand_relationships=false&limit=10&offset=100"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?limit=10&offset=100&expand_relationships=false"))
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/crud_rows"), responseHeaders));
 		
@@ -233,7 +236,7 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 	
 	@Test
 	public void readAllFiterArguments() {
-		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?expand_relationships=false&filter_column=name&filter_query=John%20Due"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?filter_column=name&filter_query=John%20Due&expand_relationships=false"))
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withResponse(compactedJson("data/crud_rows"), responseHeaders));
 		
@@ -263,6 +266,66 @@ public class CrudTemplateTest extends AbstractAppgluApiTest {
 		
 		boolean success = crudOperations.delete("user", 2);
 		Assert.assertFalse(success);
+		
+		mockServer.verify();
+	}
+	
+	@Test
+	public void readAllDataTypes() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/data_types/1?expand_relationships=false"))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withResponse(compactedJson("data/crud_read_all_data_types"), responseHeaders));
+		
+		Row row = crudOperations.read("data_types", 1);
+		
+		String string = new String("a very long string for test");
+		
+		Assert.assertEquals(new Boolean(true), row.getBoolean("boolean"));
+		Assert.assertEquals(new Short((short) 1), row.getShort("short"));
+		Assert.assertEquals(new Byte((byte) 2), row.getByte("byte"));
+		Assert.assertEquals(string, new String(row.getByteArray("byteArray")));
+		Assert.assertEquals(new Float(1.5f), row.getFloat("float"));
+		Assert.assertEquals(new Double(7.5d), row.getDouble("double"));
+		Assert.assertEquals(new Integer(10), row.getInt("integer"));
+		Assert.assertEquals(new Long(21474836475L), row.getLong("long"));
+		Assert.assertEquals(new BigInteger("9223372036854775807123"), row.getBigInteger("bigInteger"));
+		Assert.assertEquals(string, row.getString("string"));
+		
+		Assert.assertEquals("2010-01-15T12:10:00+0000", DateUtils.formatDatetime(row.getDate("datetime")));
+		Assert.assertEquals("1970-01-01T12:10:00+0000", DateUtils.formatDatetime(row.getDate("time")));
+		Assert.assertEquals("2010-01-15T00:00:00+0000", DateUtils.formatDatetime(row.getDate("date")));
+		
+		mockServer.verify();
+	}
+	
+	@Test
+	public void writeAllDataTypes() throws ParseException {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/data_types"))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
+			.andExpect(body(compactedJson("data/crud_write_all_data_types")))
+			.andRespond(withResponse(compactedJson("data/crud_create_response"), responseHeaders, HttpStatus.CREATED, ""));
+		
+		Row row = new Row();
+		
+		String string = new String("a very long string for test");
+		
+		row.put("boolean", true);
+		row.put("short", new Short((short) 1));
+		row.put("byte", new Byte((byte) 2));
+		row.put("byteArray", string.getBytes());
+		row.put("float", new Float(1.5f));
+		row.put("double", new Double(7.5d));
+		row.put("integer", new Integer(10));
+		row.put("long", new Long(21474836475L));
+		row.put("bigInteger", new BigInteger("9223372036854775807123"));
+		row.put("string", string);
+		
+		Date date = DateUtils.parseDate("2010-01-15T12:10:00+0000");
+		row.put("datetime", date);
+		
+		Object id = crudOperations.create("data_types", row);
+		Assert.assertEquals(8, id);
 		
 		mockServer.verify();
 	}

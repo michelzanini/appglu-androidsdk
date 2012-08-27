@@ -41,6 +41,8 @@ public class ApiExceptionsTest extends AbstractAppgluApiTest {
 			Assert.assertEquals(ErrorCode.EMPTY_REQUEST_BODY, error.getCode());
 			Assert.assertEquals("The request body is empty.", error.getMessage());
 		}
+		
+		mockServer.verify();
 	}
 	
 	@Test
@@ -57,6 +59,8 @@ public class ApiExceptionsTest extends AbstractAppgluApiTest {
 			Assert.assertEquals(ErrorCode.GENERIC_SERVER_ERROR, error.getCode());
 			Assert.assertEquals("An unexpected error occurred while processing your request. Please try again later.", error.getMessage());
 		}
+		
+		mockServer.verify();
 	}
 
 }
