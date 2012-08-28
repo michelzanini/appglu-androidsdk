@@ -73,7 +73,7 @@ public class AppgluTemplate implements Appglu {
 		return savedQueriesOperations;
 	}
 	
-	public PushOperations getPushOperations() {
+	public PushOperations pushOperations() {
 		return pushOperations;
 	}
 

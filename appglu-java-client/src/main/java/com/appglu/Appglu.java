@@ -8,6 +8,8 @@ public interface Appglu {
 	
 	SavedQueriesOperations savedQueriesOperations();
 	
+	PushOperations pushOperations();
+	
 	RestOperations restOperations();
 
 }
