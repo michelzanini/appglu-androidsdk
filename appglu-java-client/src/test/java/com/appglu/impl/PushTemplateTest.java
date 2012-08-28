@@ -17,14 +17,14 @@ import com.appglu.DevicePlatform;
 import com.appglu.PushOperations;
 
 @SuppressWarnings("deprecation")
-public class PushTemplateTest extends AbstractAppgluApiTest {
+public class PushTemplateTest extends AbstractAppGluApiTest {
 	
 	private PushOperations pushOperations;
 	
 	@Before
 	public void setup() {
 		super.setup();
-		pushOperations = appgluTemplate.pushOperations();
+		pushOperations = appGluTemplate.pushOperations();
 	}
 	
 	private Device device() {

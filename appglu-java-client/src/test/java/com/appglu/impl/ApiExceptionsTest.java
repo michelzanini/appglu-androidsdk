@@ -10,21 +10,21 @@ import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
-import com.appglu.AppgluHttpClientException;
-import com.appglu.AppgluHttpServerException;
+import com.appglu.AppGluHttpClientException;
+import com.appglu.AppGluHttpServerException;
 import com.appglu.CrudOperations;
 import com.appglu.Error;
 import com.appglu.ErrorCode;
 
 @SuppressWarnings("deprecation")
-public class ApiExceptionsTest extends AbstractAppgluApiTest {
+public class ApiExceptionsTest extends AbstractAppGluApiTest {
 	
 	private CrudOperations crudOperations;
 	
 	@Before
 	public void setup() {
 		super.setup();
-		crudOperations = appgluTemplate.crudOperations();
+		crudOperations = appGluTemplate.crudOperations();
 	}
 	
 	@Test
@@ -36,7 +36,7 @@ public class ApiExceptionsTest extends AbstractAppgluApiTest {
 		try {
 			crudOperations.delete("user", 2);
 			Assert.fail("Should had caused a exception");
-		} catch (AppgluHttpClientException e) {
+		} catch (AppGluHttpClientException e) {
 			Error error = e.getError();
 			Assert.assertEquals(ErrorCode.EMPTY_REQUEST_BODY, error.getCode());
 			Assert.assertEquals("The request body is empty.", error.getMessage());
@@ -54,7 +54,7 @@ public class ApiExceptionsTest extends AbstractAppgluApiTest {
 		try {
 			crudOperations.delete("user", 2);
 			Assert.fail("Should had caused a exception");
-		} catch (AppgluHttpServerException e) {
+		} catch (AppGluHttpServerException e) {
 			Error error = e.getError();
 			Assert.assertEquals(ErrorCode.GENERIC_SERVER_ERROR, error.getCode());
 			Assert.assertEquals("An unexpected error occurred while processing your request. Please try again later.", error.getMessage());

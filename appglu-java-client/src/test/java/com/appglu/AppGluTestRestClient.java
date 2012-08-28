@@ -6,20 +6,20 @@ import com.appglu.QueryResult;
 import com.appglu.Row;
 import com.appglu.Rows;
 import com.appglu.SavedQueriesOperations;
-import com.appglu.impl.AppgluTemplate;
+import com.appglu.impl.AppGluTemplate;
 
-public class AppgluTestRestClient {
+public class AppGluTestRestClient {
 	
-	private AppgluTemplate appgluTemplate = new AppgluTemplate("http://localhost:8080/appglu", "173691782634", "zQO9GtlCNJjC87hQXvGcKrMyVkOHLK7f9LAaKeXSew");
+	private AppGluTemplate appGluTemplate = new AppGluTemplate("http://localhost:8080/appglu", "173691782634", "zQO9GtlCNJjC87hQXvGcKrMyVkOHLK7f9LAaKeXSew");
 	
-	private CrudOperations crudOperations = appgluTemplate.crudOperations();
+	private CrudOperations crudOperations = appGluTemplate.crudOperations();
 	
-	private SavedQueriesOperations savedQueriesOperations = appgluTemplate.savedQueriesOperations();
+	private SavedQueriesOperations savedQueriesOperations = appGluTemplate.savedQueriesOperations();
 	
-	private PushOperations pushOperations = appgluTemplate.pushOperations();
+	private PushOperations pushOperations = appGluTemplate.pushOperations();
 	
 	public static void main(String[] args) {
-		AppgluTestRestClient restClient = new AppgluTestRestClient();
+		AppGluTestRestClient restClient = new AppGluTestRestClient();
 		
 		Object id = restClient.crud_create();
 		restClient.crud_delete(id);

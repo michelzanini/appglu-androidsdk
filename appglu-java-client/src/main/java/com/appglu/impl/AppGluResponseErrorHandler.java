@@ -9,17 +9,17 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestClientException;
 
-import com.appglu.AppgluHttpClientException;
-import com.appglu.AppgluHttpServerException;
-import com.appglu.AppgluNotFoundException;
+import com.appglu.AppGluHttpClientException;
+import com.appglu.AppGluHttpServerException;
+import com.appglu.AppGluNotFoundException;
 import com.appglu.Error;
 import com.appglu.ErrorResponse;
 
-public class AppgluResponseErrorHandler extends DefaultResponseErrorHandler {
+public class AppGluResponseErrorHandler extends DefaultResponseErrorHandler {
 	
 	private HttpMessageConverter<Object> jsonMessageConverter;
 	
-	public AppgluResponseErrorHandler(HttpMessageConverter<Object> httpMessageConverter) {
+	public AppGluResponseErrorHandler(HttpMessageConverter<Object> httpMessageConverter) {
 		this.jsonMessageConverter = httpMessageConverter;
 	}
 	
@@ -29,14 +29,14 @@ public class AppgluResponseErrorHandler extends DefaultResponseErrorHandler {
 		Error error = this.readErrorFromResponse(response);
 		
 		if (statusCode == HttpStatus.NOT_FOUND) {
-			throw new AppgluNotFoundException(error);
+			throw new AppGluNotFoundException(error);
 		}
 		
 		switch (statusCode.series()) {
 			case CLIENT_ERROR:
-				throw new AppgluHttpClientException(statusCode, error);
+				throw new AppGluHttpClientException(statusCode, error);
 			case SERVER_ERROR:
-				throw new AppgluHttpServerException(statusCode, error);
+				throw new AppGluHttpServerException(statusCode, error);
 			default:
 				throw new RestClientException("Unknown status code [" + statusCode + "]");
 		}

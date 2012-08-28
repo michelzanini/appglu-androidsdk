@@ -12,9 +12,9 @@ import com.appglu.Row;
 import com.appglu.Rows;
 import com.appglu.Tuple;
 
-public class AppgluModule extends SimpleModule {
+public class AppGluModule extends SimpleModule {
 
-	public AppgluModule() {
+	public AppGluModule() {
 		super("AppgluModule", new Version(1, 0, 0, null));
 	}
 	
