@@ -67,6 +67,18 @@ public class PushTemplateTest extends AbstractAppGluApiTest {
 	}
 	
 	@Test
+	public void readDeviceNotFound() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/push/device/f3f71c5a-0a98-48f7-9acd-d38d714d76ad"))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withResponse(compactedJson("data/error_not_found"), responseHeaders, HttpStatus.NOT_FOUND, ""));
+		
+		Device device = pushOperations.readDevice("f3f71c5a-0a98-48f7-9acd-d38d714d76ad");
+		Assert.assertNull(device);
+		
+		mockServer.verify();
+	}
+	
+	@Test
 	public void removeDevice() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/push/device/f3f71c5a-0a98-48f7-9acd-d38d714d76ad"))
 			.andExpect(method(HttpMethod.DELETE))
