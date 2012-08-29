@@ -13,14 +13,14 @@ import org.springframework.http.HttpMethod;
 import com.appglu.CrudOperations;
 
 @SuppressWarnings("deprecation")
-public class ApiHeadersTest extends AbstractAppgluApiTest {
+public class ApiHeadersTest extends AbstractAppGluApiTest {
 	
 	private CrudOperations crudOperations;
 	
 	@Before
 	public void setup() {
 		super.setup();
-		crudOperations = appgluTemplate.crudOperations();
+		crudOperations = appGluTemplate.crudOperations();
 	}
 	
 	@Override

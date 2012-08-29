@@ -18,9 +18,9 @@ import org.springframework.test.web.client.MockRestServiceServer;
 
 import com.appglu.impl.util.DateUtils;
 
-public abstract class AbstractAppgluApiTest {
+public abstract class AbstractAppGluApiTest {
 	
-	protected AppgluTemplate appgluTemplate;
+	protected AppGluTemplate appGluTemplate;
 	protected MockRestServiceServer mockServer;
 	protected HttpHeaders responseHeaders;
 
@@ -28,8 +28,8 @@ public abstract class AbstractAppgluApiTest {
 	
 	@Before
 	public void setup() {
-		appgluTemplate = createAppgluTemplate();
-		mockServer = MockRestServiceServer.createServer(appgluTemplate.getRestTemplate());
+		appGluTemplate = createAppGluTemplate();
+		mockServer = MockRestServiceServer.createServer(appGluTemplate.getRestTemplate());
 		responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(jsonMediaType);
 		
@@ -38,8 +38,8 @@ public abstract class AbstractAppgluApiTest {
 		TimeZone.setDefault(gmt);
 	}
 
-	protected AppgluTemplate createAppgluTemplate() {
-		return new AppgluTemplate("http://localhost/appglu", createDefaultHttpHeaders(), "applicationKey", "applicationSecret") {
+	protected AppGluTemplate createAppGluTemplate() {
+		return new AppGluTemplate("http://localhost/appglu", createDefaultHttpHeaders(), "applicationKey", "applicationSecret") {
 			@Override
 			protected void configureObjectMapper(ObjectMapper objectMapper) {
 				super.configureObjectMapper(objectMapper);

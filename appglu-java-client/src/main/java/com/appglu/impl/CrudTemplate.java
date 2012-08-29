@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.web.client.RestOperations;
 
-import com.appglu.AppgluNotFoundException;
+import com.appglu.AppGluNotFoundException;
 import com.appglu.CrudOperations;
 import com.appglu.ReadAllFilterArguments;
 import com.appglu.Row;
@@ -47,7 +47,7 @@ public class CrudTemplate implements CrudOperations {
 			String url = CRUD_ENTITY_URL + ("?expand_relationships=" + expandRelationships);
 			RowBody rowBody = this.restOperations.getForObject(url, RowBody.class, tableName, id);
 			return rowBody.getRow();
-		} catch (AppgluNotFoundException e) {
+		} catch (AppGluNotFoundException e) {
 			return null;
 		}
 	}
@@ -96,7 +96,7 @@ public class CrudTemplate implements CrudOperations {
 		try {
 			this.restOperations.put(CRUD_ENTITY_URL, new RowBody(row), tableName, id);
 			return true;
-		} catch (AppgluNotFoundException e) {
+		} catch (AppGluNotFoundException e) {
 			return false;
 		}
 	}
@@ -105,7 +105,7 @@ public class CrudTemplate implements CrudOperations {
 		try {
 			this.restOperations.delete(CRUD_ENTITY_URL, tableName, id);
 			return true;
-		} catch (AppgluNotFoundException e) {
+		} catch (AppGluNotFoundException e) {
 			return false;
 		}
 	}

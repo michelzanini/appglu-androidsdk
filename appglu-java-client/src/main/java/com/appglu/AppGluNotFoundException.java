@@ -3,9 +3,9 @@ package com.appglu;
 import org.springframework.http.HttpStatus;
 
 @SuppressWarnings("serial")
-public class AppgluNotFoundException extends AppgluHttpClientException {
+public class AppGluNotFoundException extends AppGluHttpClientException {
 	
-	public AppgluNotFoundException(Error error) {
+	public AppGluNotFoundException(Error error) {
 		super(HttpStatus.NOT_FOUND, error);
 	}
 

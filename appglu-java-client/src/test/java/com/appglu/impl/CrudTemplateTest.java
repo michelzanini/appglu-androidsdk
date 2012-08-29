@@ -26,14 +26,14 @@ import com.appglu.Rows;
 import com.appglu.impl.util.DateUtils;
 
 @SuppressWarnings("deprecation")
-public class CrudTemplateTest extends AbstractAppgluApiTest {
+public class CrudTemplateTest extends AbstractAppGluApiTest {
 	
 	private CrudOperations crudOperations;
 	
 	@Before
 	public void setup() {
 		super.setup();
-		crudOperations = appgluTemplate.crudOperations();
+		crudOperations = appGluTemplate.crudOperations();
 	}
 	
 	private Row row() {

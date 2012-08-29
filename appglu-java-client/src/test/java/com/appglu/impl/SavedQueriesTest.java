@@ -17,14 +17,14 @@ import com.appglu.SavedQueriesOperations;
 import com.appglu.Tuple;
 
 @SuppressWarnings("deprecation")
-public class SavedQueriesTest extends AbstractAppgluApiTest {
+public class SavedQueriesTest extends AbstractAppGluApiTest {
 	
 	private SavedQueriesOperations savedQueriesOperations;
 	
 	@Before
 	public void setup() {
 		super.setup();
-		savedQueriesOperations = appgluTemplate.savedQueriesOperations();
+		savedQueriesOperations = appGluTemplate.savedQueriesOperations();
 	}
 	
 	private QueryParams queryParams() {
@@ -91,7 +91,7 @@ public class SavedQueriesTest extends AbstractAppgluApiTest {
 			.andExpect(body(compactedJson("data/saved_queries_params_empty")))
 			.andRespond(withResponse(compactedJson("data/saved_queries_update_result"), responseHeaders));
 	
-		savedQueriesOperations.executeQuery("queryName", null);
+		savedQueriesOperations.executeQuery("queryName");
 		
 		mockServer.verify();
 	}

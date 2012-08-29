@@ -16,13 +16,14 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
-import com.appglu.Appglu;
+import com.appglu.AppGlu;
 import com.appglu.CrudOperations;
+import com.appglu.PushOperations;
 import com.appglu.SavedQueriesOperations;
-import com.appglu.impl.json.AppgluModule;
+import com.appglu.impl.json.AppGluModule;
 import com.appglu.impl.util.DateUtils;
 
-public class AppgluTemplate implements Appglu {
+public class AppGluTemplate implements AppGlu {
 	
 	private String baseUrl;
 	
@@ -38,13 +39,15 @@ public class AppgluTemplate implements Appglu {
 	
 	private SavedQueriesOperations savedQueriesOperations;
 	
+	private PushOperations pushOperations;
+	
 	private HttpMessageConverter<Object> jsonMessageConverter;
 	
-	public AppgluTemplate(String baseUrl, String applicationKey, String applicationSecret) {
+	public AppGluTemplate(String baseUrl, String applicationKey, String applicationSecret) {
 		this(baseUrl, new HttpHeaders(), applicationKey, applicationSecret);
 	}
 	
-	public AppgluTemplate(String baseUrl, HttpHeaders defaultHeaders, String applicationKey, String applicationSecret) {
+	public AppGluTemplate(String baseUrl, HttpHeaders defaultHeaders, String applicationKey, String applicationSecret) {
 		if (!StringUtils.hasText(baseUrl)) {
 			throw new IllegalArgumentException("Base URL cannot be empty");
 		}
@@ -70,6 +73,10 @@ public class AppgluTemplate implements Appglu {
 		return savedQueriesOperations;
 	}
 	
+	public PushOperations pushOperations() {
+		return pushOperations;
+	}
+
 	public RestOperations restOperations() {
 		return getRestTemplate();
 	}
@@ -87,7 +94,7 @@ public class AppgluTemplate implements Appglu {
 	}
 	
 	protected void configureObjectMapper(ObjectMapper objectMapper) {
-		objectMapper.registerModule(new AppgluModule());
+		objectMapper.registerModule(new AppGluModule());
 		DateFormat dateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT);
 		objectMapper.setDateFormat(dateFormat);
 	}
@@ -104,7 +111,7 @@ public class AppgluTemplate implements Appglu {
 	}
 
 	private ResponseErrorHandler getResponseErrorHandler() {
-		return new AppgluResponseErrorHandler(this.jsonMessageConverter);
+		return new AppGluResponseErrorHandler(this.jsonMessageConverter);
 	}
 	
 	private List<ClientHttpRequestInterceptor> createInterceptors() {
@@ -121,6 +128,7 @@ public class AppgluTemplate implements Appglu {
 	private void initSubApis() {
 		this.crudOperations = new CrudTemplate(this.restOperations());
 		this.savedQueriesOperations = new SavedQueriesTemplate(this.restOperations());
+		this.pushOperations = new PushTemplate(this.restOperations());
 	}
 
 }
