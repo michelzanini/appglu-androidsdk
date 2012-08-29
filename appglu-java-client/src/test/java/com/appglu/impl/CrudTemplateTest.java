@@ -47,7 +47,7 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 		
 		Row manyToOne = new Row();
 		manyToOne.put("id", 1);
-		row.addManyToOneRelationship("many_to_one", manyToOne);
+		row.put("many_to_one", manyToOne);
 		
 		List<Row> manyToMany = new ArrayList<Row>();
 		
@@ -59,7 +59,7 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 		two.put("id", 1);
 		manyToMany.add(two);
 		
-		row.addManyToManyRelationship("many_to_many", manyToMany);
+		row.put("many_to_many", manyToMany);
 		return row;
 	}
 	
@@ -74,10 +74,10 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 	private void assertRowWithRelationships(Row row) {
 		assertRow(row);
 		
-		Row manyToOne = row.getManyToOneRelationship("many_to_one");
+		Row manyToOne = row.getRow("many_to_one");
 		Assert.assertEquals(1, manyToOne.get("id"));
 		
-		List<Row> manyToMany = row.getManyToManyRelationship("many_to_many");
+		List<Row> manyToMany = row.getRows("many_to_many");
 		Assert.assertEquals(2, manyToMany.get(0).get("id"));
 		Assert.assertEquals(1, manyToMany.get(1).get("id"));
 	}

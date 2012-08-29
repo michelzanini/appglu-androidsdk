@@ -1,7 +1,11 @@
 package com.appglu;
 
-public class Error {
+import java.io.Serializable;
+
+public class Error implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	private ErrorCode code;
 	
 	private String message;

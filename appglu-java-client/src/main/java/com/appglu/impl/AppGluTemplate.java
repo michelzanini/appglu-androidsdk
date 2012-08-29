@@ -16,6 +16,7 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
+import com.appglu.AnalyticsOperations;
 import com.appglu.AppGlu;
 import com.appglu.CrudOperations;
 import com.appglu.PushOperations;
@@ -40,6 +41,8 @@ public class AppGluTemplate implements AppGlu {
 	private SavedQueriesOperations savedQueriesOperations;
 	
 	private PushOperations pushOperations;
+	
+	private AnalyticsOperations analyticsOperations;
 	
 	private HttpMessageConverter<Object> jsonMessageConverter;
 	
@@ -75,6 +78,10 @@ public class AppGluTemplate implements AppGlu {
 	
 	public PushOperations pushOperations() {
 		return pushOperations;
+	}
+	
+	public AnalyticsOperations analyticsOperations() {
+		return analyticsOperations;
 	}
 
 	public RestOperations restOperations() {
@@ -129,6 +136,7 @@ public class AppGluTemplate implements AppGlu {
 		this.crudOperations = new CrudTemplate(this.restOperations());
 		this.savedQueriesOperations = new SavedQueriesTemplate(this.restOperations());
 		this.pushOperations = new PushTemplate(this.restOperations());
+		this.analyticsOperations = new AnalyticsTemplate(this.restOperations());
 	}
 
 }

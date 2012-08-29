@@ -1,5 +1,10 @@
 package com.appglu;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.appglu.CrudOperations;
 import com.appglu.QueryParams;
 import com.appglu.QueryResult;
@@ -18,6 +23,8 @@ public class AppGluTestRestClient {
 	
 	private PushOperations pushOperations = appGluTemplate.pushOperations();
 	
+	private AnalyticsOperations analyticsOperations = appGluTemplate.analyticsOperations();
+	
 	public static void main(String[] args) {
 		AppGluTestRestClient restClient = new AppGluTestRestClient();
 		
@@ -32,6 +39,8 @@ public class AppGluTestRestClient {
 		restClient.push_registerDevice();
 		restClient.push_readDevice();
 		restClient.push_removeDevice();
+		
+		restClient.analytics_createSession();
 	}
 	
 	private Object crud_create() {
@@ -93,6 +102,28 @@ public class AppGluTestRestClient {
 	private void push_removeDevice() {
 		boolean success = pushOperations.removeDevice("123-0a98-48f7-9acd-456");
 		System.out.println("push_removeDevice: " + success);
+	}
+	
+	private void analytics_createSession() {
+		AnalyticsSession session = new AnalyticsSession();
+		
+		Map<String, String> parameters = new HashMap<String, String>();
+		parameters.put("key", "value");
+		
+		session.setParameters(parameters);
+		
+		AnalyticsSessionEvent event = new AnalyticsSessionEvent();
+		
+		event.setName("event");
+		event.setParameters(parameters);
+		
+		List<AnalyticsSessionEvent> events = new ArrayList<AnalyticsSessionEvent>();
+		events.add(event);
+		
+		session.setEvents(events);
+		
+		analyticsOperations.createSession(session);
+		System.out.println("analytics_createSession: executed");
 	}
 
 }
