@@ -4,7 +4,8 @@ import static org.springframework.test.web.client.RequestMatchers.body;
 import static org.springframework.test.web.client.RequestMatchers.header;
 import static org.springframework.test.web.client.RequestMatchers.method;
 import static org.springframework.test.web.client.RequestMatchers.requestTo;
-import static org.springframework.test.web.client.ResponseCreators.withResponse;
+import static org.springframework.test.web.client.ResponseCreators.withStatus;
+import static org.springframework.test.web.client.ResponseCreators.withSuccess;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,7 +17,6 @@ import com.appglu.Device;
 import com.appglu.DevicePlatform;
 import com.appglu.PushOperations;
 
-@SuppressWarnings("deprecation")
 public class PushTemplateTest extends AbstractAppGluApiTest {
 	
 	private PushOperations pushOperations;
@@ -47,7 +47,7 @@ public class PushTemplateTest extends AbstractAppGluApiTest {
 			.andExpect(method(HttpMethod.PUT))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/push_device")))
-			.andRespond(withResponse("", responseHeaders));
+			.andRespond(withSuccess().headers(responseHeaders));
 		
 		pushOperations.registerDevice(device());
 		
@@ -58,7 +58,7 @@ public class PushTemplateTest extends AbstractAppGluApiTest {
 	public void readDevice() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/push/device/f3f71c5a-0a98-48f7-9acd-d38d714d76ad"))
 			.andExpect(method(HttpMethod.GET))
-			.andRespond(withResponse(compactedJson("data/push_device"), responseHeaders));
+			.andRespond(withSuccess().body(compactedJson("data/push_device")).headers(responseHeaders));
 		
 		Device device = pushOperations.readDevice("f3f71c5a-0a98-48f7-9acd-d38d714d76ad");
 		this.assertDevice(device);
@@ -70,7 +70,7 @@ public class PushTemplateTest extends AbstractAppGluApiTest {
 	public void readDeviceNotFound() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/push/device/f3f71c5a-0a98-48f7-9acd-d38d714d76ad"))
 			.andExpect(method(HttpMethod.GET))
-			.andRespond(withResponse(compactedJson("data/error_not_found"), responseHeaders, HttpStatus.NOT_FOUND, ""));
+			.andRespond(withStatus(HttpStatus.NOT_FOUND).body(compactedJson("data/error_not_found")).headers(responseHeaders));
 		
 		Device device = pushOperations.readDevice("f3f71c5a-0a98-48f7-9acd-d38d714d76ad");
 		Assert.assertNull(device);
@@ -82,7 +82,7 @@ public class PushTemplateTest extends AbstractAppGluApiTest {
 	public void removeDevice() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/push/device/f3f71c5a-0a98-48f7-9acd-d38d714d76ad"))
 			.andExpect(method(HttpMethod.DELETE))
-			.andRespond(withResponse("", responseHeaders));
+			.andRespond(withSuccess().headers(responseHeaders));
 		
 		boolean success = pushOperations.removeDevice("f3f71c5a-0a98-48f7-9acd-d38d714d76ad");
 		Assert.assertTrue(success);
@@ -94,7 +94,7 @@ public class PushTemplateTest extends AbstractAppGluApiTest {
 	public void removeDeviceNotFound() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/push/device/f3f71c5a-0a98-48f7-9acd-d38d714d76ad"))
 			.andExpect(method(HttpMethod.DELETE))
-			.andRespond(withResponse(compactedJson("data/error_not_found"), responseHeaders, HttpStatus.NOT_FOUND, ""));
+			.andRespond(withStatus(HttpStatus.NOT_FOUND).body(compactedJson("data/error_not_found")).headers(responseHeaders));
 		
 		boolean success = pushOperations.removeDevice("f3f71c5a-0a98-48f7-9acd-d38d714d76ad");
 		Assert.assertFalse(success);

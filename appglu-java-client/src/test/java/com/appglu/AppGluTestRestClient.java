@@ -79,7 +79,7 @@ public class AppGluTestRestClient {
 	private void savedQueries_executeQuery() {
 		QueryParams params = new QueryParams();
 		
-		QueryResult result = savedQueriesOperations.executeQuery("queryName5", params);
+		QueryResult result = savedQueriesOperations.executeQuery("queryName1", params);
 		System.out.println("savedQueries_executeQuery: " + result);
 	}
 	
@@ -106,6 +106,7 @@ public class AppGluTestRestClient {
 	
 	private void analytics_createSession() {
 		AnalyticsSession session = new AnalyticsSession();
+		session.setClientUUID("123");
 		
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("key", "value");

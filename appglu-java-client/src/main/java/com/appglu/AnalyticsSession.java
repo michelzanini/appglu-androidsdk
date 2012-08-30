@@ -13,6 +13,8 @@ public class AnalyticsSession implements Serializable {
 	
 	private Date endDate;
 	
+	private String clientUUID;
+	
 	private Map<String, String> parameters;
 	
 	private List<AnalyticsSessionEvent> events;
@@ -31,6 +33,14 @@ public class AnalyticsSession implements Serializable {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+	
+	public String getClientUUID() {
+		return clientUUID;
+	}
+
+	public void setClientUUID(String clientUUID) {
+		this.clientUUID = clientUUID;
 	}
 
 	public Map<String, String> getParameters() {
@@ -51,9 +61,9 @@ public class AnalyticsSession implements Serializable {
 
 	@Override
 	public String toString() {
-		return "AnalyticsSession [startDate=" + startDate + ", endDate="
-				+ endDate + ", parameters=" + parameters + ", events=" + events
-				+ "]";
+		return "AnalyticsSession [clientUUID=" + clientUUID + ", startDate="
+				+ startDate + ", endDate=" + endDate + ", parameters="
+				+ parameters + "]";
 	}
 	
 }

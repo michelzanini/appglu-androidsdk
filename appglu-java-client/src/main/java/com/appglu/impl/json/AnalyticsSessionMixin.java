@@ -11,7 +11,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 import com.appglu.AnalyticsSessionEvent;
 
-@JsonPropertyOrder({"startDate", "endDate", "parameters", "events"})
+@JsonPropertyOrder({"startDate", "endDate", "clientUUID", "parameters", "events"})
 public abstract class AnalyticsSessionMixin {
 	
 	@JsonProperty("startDate")
@@ -19,6 +19,9 @@ public abstract class AnalyticsSessionMixin {
 	
 	@JsonProperty("endDate")
 	Date endDate;
+	
+	@JsonProperty("clientUUID")
+	String clientUUID;
 	
 	@JsonProperty("parameters")
 	@JsonSerialize(include=Inclusion.NON_EMPTY)
