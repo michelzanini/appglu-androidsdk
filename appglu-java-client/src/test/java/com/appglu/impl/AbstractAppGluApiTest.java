@@ -39,7 +39,7 @@ public abstract class AbstractAppGluApiTest {
 	}
 
 	protected AppGluTemplate createAppGluTemplate() {
-		return new AppGluTemplate("http://localhost/appglu", createDefaultHttpHeaders(), "applicationKey", "applicationSecret") {
+		AppGluTemplate appgluTemplate = new AppGluTemplate("http://localhost/appglu", "applicationKey", "applicationSecret") {
 			@Override
 			protected void configureObjectMapper(ObjectMapper objectMapper) {
 				super.configureObjectMapper(objectMapper);
@@ -49,6 +49,8 @@ public abstract class AbstractAppGluApiTest {
 				objectMapper.setDateFormat(dateFormat);
 			}
 		};
+		appgluTemplate.setDefaultHeaders(this.createDefaultHttpHeaders());
+		return appgluTemplate;
 	}
 
 	protected HttpHeaders createDefaultHttpHeaders() {

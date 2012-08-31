@@ -5,12 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.appglu.CrudOperations;
-import com.appglu.QueryParams;
-import com.appglu.QueryResult;
-import com.appglu.Row;
-import com.appglu.Rows;
-import com.appglu.SavedQueriesOperations;
 import com.appglu.impl.AppGluTemplate;
 
 public class AppGluTestRestClient {

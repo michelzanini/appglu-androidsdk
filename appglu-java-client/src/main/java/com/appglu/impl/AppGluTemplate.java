@@ -11,6 +11,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestOperations;
@@ -26,9 +27,9 @@ import com.appglu.impl.util.DateUtils;
 
 public class AppGluTemplate implements AppGlu {
 	
-	private String baseUrl;
+	private static final boolean ANDROID_ENVIRONMENT = ClassUtils.isPresent("android.os.Build", ClientHttpRequestFactorySelector.class.getClassLoader());
 	
-	private HttpHeaders defaultHeaders;
+	private String baseUrl;
 	
 	private String applicationKey;
 	
@@ -46,16 +47,15 @@ public class AppGluTemplate implements AppGlu {
 	
 	private HttpMessageConverter<Object> jsonMessageConverter;
 	
-	public AppGluTemplate(String baseUrl, String applicationKey, String applicationSecret) {
-		this(baseUrl, new HttpHeaders(), applicationKey, applicationSecret);
-	}
+	private DefaultHeadersHttpRequestInterceptor defaultHeadersHttpRequestInterceptor;
 	
-	public AppGluTemplate(String baseUrl, HttpHeaders defaultHeaders, String applicationKey, String applicationSecret) {
+	private BasicAuthHttpRequestInterceptor basicAuthHttpRequestInterceptor;
+	
+	public AppGluTemplate(String baseUrl, String applicationKey, String applicationSecret) {
 		if (!StringUtils.hasText(baseUrl)) {
 			throw new IllegalArgumentException("Base URL cannot be empty");
 		}
 		this.baseUrl = baseUrl;
-		this.defaultHeaders = defaultHeaders;
 		this.applicationKey = applicationKey;
 		this.applicationSecret = applicationSecret;
 
@@ -68,6 +68,34 @@ public class AppGluTemplate implements AppGlu {
 		this.initSubApis();
 	}
 	
+	private void checkInterceptorsAreInitialized() {
+		if (this.defaultHeadersHttpRequestInterceptor == null) {
+			throw new IllegalStateException("Http interceptors are not initialized. Did you override configureHttpRequestInterceptors() without calling super?");
+		}
+	}
+	
+	public void setDefaultHeaders(HttpHeaders defaultHeaders) {
+		this.checkInterceptorsAreInitialized();
+		this.defaultHeadersHttpRequestInterceptor.setDefaultHeaders(defaultHeaders);
+	}
+	
+	public HttpHeaders getDefaultHeaders() {
+		this.checkInterceptorsAreInitialized();
+		return defaultHeadersHttpRequestInterceptor.getDefaultHeaders();
+	}
+	
+	public String getBaseUrl() {
+		return baseUrl;
+	}
+
+	public String getApplicationKey() {
+		return applicationKey;
+	}
+
+	public String getApplicationSecret() {
+		return applicationSecret;
+	}
+
 	public CrudOperations crudOperations() {
 		return crudOperations;
 	}
@@ -92,7 +120,7 @@ public class AppGluTemplate implements AppGlu {
 		return restTemplate;
 	}
 	
-	protected HttpMessageConverter<Object> createJsonMessageConverter() {
+	private HttpMessageConverter<Object> createJsonMessageConverter() {
 		MappingJacksonHttpMessageConverter converter = new MappingJacksonHttpMessageConverter();
 		ObjectMapper objectMapper = new ObjectMapper();
 		this.configureObjectMapper(objectMapper);
@@ -100,23 +128,13 @@ public class AppGluTemplate implements AppGlu {
 		return converter;
 	}
 	
-	protected void configureObjectMapper(ObjectMapper objectMapper) {
-		objectMapper.registerModule(new AppGluModule());
-		DateFormat dateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT);
-		objectMapper.setDateFormat(dateFormat);
-	}
-
-	protected List<HttpMessageConverter<?>> getMessageConverters() {
+	private List<HttpMessageConverter<?>> getMessageConverters() {
 		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
 		messageConverters.add(new StringHttpMessageConverter());
 		messageConverters.add(this.jsonMessageConverter);
 		return messageConverters;
 	}
 	
-	protected RestTemplate createRestTemplate() {
-		return new RestTemplate();
-	}
-
 	private ResponseErrorHandler getResponseErrorHandler() {
 		return new AppGluResponseErrorHandler(this.jsonMessageConverter);
 	}
@@ -126,17 +144,37 @@ public class AppGluTemplate implements AppGlu {
 		this.configureHttpRequestInterceptors(interceptors);
 		return interceptors;
 	}
-
-	protected void configureHttpRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
-		interceptors.add(new DefaultHeadersHttpRequestInterceptor(this.baseUrl, this.defaultHeaders));
-		interceptors.add(new BasicAuthHttpRequestInterceptor(this.applicationKey, this.applicationSecret));
-	}
-
+	
 	private void initSubApis() {
 		this.crudOperations = new CrudTemplate(this.restOperations());
 		this.savedQueriesOperations = new SavedQueriesTemplate(this.restOperations());
 		this.pushOperations = new PushTemplate(this.restOperations());
 		this.analyticsOperations = new AnalyticsTemplate(this.restOperations());
+	}
+	
+	protected RestTemplate createRestTemplate() {
+		if (ANDROID_ENVIRONMENT) {
+			return new RestTemplate();
+		}
+		return new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
+	}
+	
+	protected void configureObjectMapper(ObjectMapper objectMapper) {
+		objectMapper.registerModule(new AppGluModule());
+		DateFormat dateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT);
+		objectMapper.setDateFormat(dateFormat);
+	}
+
+	protected void configureHttpRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
+		this.defaultHeadersHttpRequestInterceptor = new DefaultHeadersHttpRequestInterceptor(this.baseUrl);
+		this.basicAuthHttpRequestInterceptor = new BasicAuthHttpRequestInterceptor(this.applicationKey, this.applicationSecret);
+		
+		interceptors.add(this.defaultHeadersHttpRequestInterceptor);
+		interceptors.add(this.basicAuthHttpRequestInterceptor);
+		
+		if (ANDROID_ENVIRONMENT) {
+			interceptors.add(new GZipHttpRequestInterceptor());
+		}
 	}
 
 }
