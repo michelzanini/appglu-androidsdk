@@ -1,10 +1,13 @@
 package com.appglu;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Rows {
+public class Rows implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	private List<Row> rows;
 
 	private Integer totalRows;

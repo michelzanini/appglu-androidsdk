@@ -10,6 +10,8 @@ public interface AppGlu {
 	
 	PushOperations pushOperations();
 	
+	AnalyticsOperations analyticsOperations();
+	
 	RestOperations restOperations();
 
 }

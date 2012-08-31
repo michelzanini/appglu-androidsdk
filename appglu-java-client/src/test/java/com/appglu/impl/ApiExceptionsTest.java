@@ -2,13 +2,13 @@ package com.appglu.impl;
 
 import static org.springframework.test.web.client.RequestMatchers.method;
 import static org.springframework.test.web.client.RequestMatchers.requestTo;
-import static org.springframework.test.web.client.ResponseCreators.withResponse;
+import static org.springframework.test.web.client.ResponseCreators.withBadRequest;
+import static org.springframework.test.web.client.ResponseCreators.withServerError;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 
 import com.appglu.AppGluHttpClientException;
 import com.appglu.AppGluHttpServerException;
@@ -16,7 +16,6 @@ import com.appglu.CrudOperations;
 import com.appglu.Error;
 import com.appglu.ErrorCode;
 
-@SuppressWarnings("deprecation")
 public class ApiExceptionsTest extends AbstractAppGluApiTest {
 	
 	private CrudOperations crudOperations;
@@ -31,7 +30,7 @@ public class ApiExceptionsTest extends AbstractAppGluApiTest {
 	public void badRequest() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/2"))
 			.andExpect(method(HttpMethod.DELETE))
-			.andRespond(withResponse(compactedJson("data/error_bad_request"), responseHeaders, HttpStatus.BAD_REQUEST, ""));
+			.andRespond(withBadRequest().body(compactedJson("data/error_bad_request")).headers(responseHeaders));
 		
 		try {
 			crudOperations.delete("user", 2);
@@ -49,7 +48,7 @@ public class ApiExceptionsTest extends AbstractAppGluApiTest {
 	public void serverError() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/2"))
 			.andExpect(method(HttpMethod.DELETE))
-			.andRespond(withResponse(compactedJson("data/error_server_error"), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR, ""));
+			.andRespond(withServerError().body(compactedJson("data/error_server_error")).headers(responseHeaders));
 		
 		try {
 			crudOperations.delete("user", 2);

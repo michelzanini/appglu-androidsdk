@@ -15,13 +15,19 @@ public class DefaultHeadersHttpRequestInterceptor implements ClientHttpRequestIn
 	
 	private String baseUrl;
 	
-	private HttpHeaders defaultHeaders;
+	private HttpHeaders defaultHeaders = new HttpHeaders();
 	
-	public DefaultHeadersHttpRequestInterceptor(String baseUrl, HttpHeaders defaultHeaders) {
+	public DefaultHeadersHttpRequestInterceptor(String baseUrl) {
 		this.baseUrl = baseUrl;
-		this.defaultHeaders = defaultHeaders;
-		if (this.defaultHeaders == null) {
-			this.defaultHeaders = new HttpHeaders();
+	}
+	
+	public HttpHeaders getDefaultHeaders() {
+		return defaultHeaders;
+	}
+
+	public void setDefaultHeaders(HttpHeaders defaultHeaders) {
+		if (this.defaultHeaders != null) {
+			this.defaultHeaders = defaultHeaders;
 		}
 	}
 

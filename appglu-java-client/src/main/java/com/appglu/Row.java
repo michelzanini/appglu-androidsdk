@@ -16,9 +16,10 @@ import org.springframework.util.StringUtils;
 import com.appglu.impl.util.Base64;
 import com.appglu.impl.util.DateUtils;
 
-@SuppressWarnings("serial")
-public class Row extends HashMap<String, Object> implements Tuple {
+public class Row extends HashMap<String, Object> {
 	
+	private static final long serialVersionUID = 1L;
+
 	public Boolean getBoolean(String columnName) {
 		try {
 			return (Boolean) this.get(columnName);
@@ -126,46 +127,29 @@ public class Row extends HashMap<String, Object> implements Tuple {
 		}
 	}
 	
-	public void addManyToOneRelationship(String relationshipName, Row row) {
-		this.put(relationshipName, row);
-	}
-	
-	public void addManyToManyRelationship(String relationshipName, List<Row> rows) {
-		List<Map<String, Object>> entries = new ArrayList<Map<String,Object>>();
-		for (Row row : rows) {
-			entries.add(row);	
-		}
-		this.put(relationshipName, entries);
-	}
-	
-	public Row getManyToOneRelationship(String relationshipName) {
+	public Row getRow(String relationshipName) {
 		Object relationship = this.get(relationshipName);
 		if (relationship == null) {
 			return null;
 		}
 		
 		Row row = new Row();
-		row.putAll(this.extractRowColumns(relationship));
+		row.putAll(this.getMap(relationship));
 		return row;
 	}
 	
-	public List<Row> getManyToManyRelationship(String relationshipName) {
-		Object relationship = this.get(relationshipName);
-		if (relationship == null) {
+	public List<Row> getRows(String relationshipName) {
+		Collection<Object> relationshipColumns = this.getCollection(relationshipName);
+		if (relationshipColumns == null) {
 			return null;
 		}
-		
-		if (!(relationship instanceof Collection<?>)) {
-			throw new InvalidRelationshipException();
-		}
-		Collection<?> relationshipColumns = (Collection<?>) relationship;
 		
 		List<Row> rows = new ArrayList<Row>();
 		
 		for (Object item : relationshipColumns) {
 			if (item != null) {
 				Row row = new Row();
-				row.putAll(this.extractRowColumns(item));
+				row.putAll(this.getMap(item));
 				rows.add(row);
 			}
 		}
@@ -174,11 +158,37 @@ public class Row extends HashMap<String, Object> implements Tuple {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> extractRowColumns(Object relationship) {
-		if (!(relationship instanceof Map<?,?>)) {
-			throw new InvalidRelationshipException();
+	private Collection<Object> getCollection(String relationshipName) {
+		Object relationship = this.get(relationshipName);
+		if (relationship == null) {
+			return null;
 		}
-		return (Map<String, Object>) relationship;
+		try {
+			return (Collection<Object>) relationship;
+		} catch (ClassCastException e) {
+			throw new DataTypeConversionException(e);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private Map<String, Object> getMap(Object relationship) {
+		try {
+			return (Map<String, Object>) relationship;
+		} catch (ClassCastException e) {
+			throw new DataTypeConversionException(e);
+		}
+	}
+	
+	public void put(String key, Row row) {
+		this.put(key, (Map<String, Object>) row);
+	}
+	
+	public void put(String key, List<Row> rows) {
+		List<Map<String, Object>> entries = new ArrayList<Map<String,Object>>();
+		for (Row row : rows) {
+			entries.add(row);	
+		}
+		this.put(key, entries);
 	}
 
 }

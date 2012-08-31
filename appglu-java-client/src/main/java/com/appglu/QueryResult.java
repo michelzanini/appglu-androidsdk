@@ -1,32 +1,27 @@
 package com.appglu;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class QueryResult {
+public class QueryResult implements Serializable {
 	
-	private List<Tuple> tuples;
+	private static final long serialVersionUID = 1L;
+
+	private List<Row> rows;
 	
 	private Integer rowsAffected;
 
-	public List<Tuple> getTuples() {
-		return tuples;
-	}
-
-	public void setTuples(List<Tuple> tuples) {
-		this.tuples = tuples;
+	public List<Row> getRows() {
+		return rows;
 	}
 
 	public Integer getRowsAffected() {
 		return rowsAffected;
 	}
 
-	public void setRowsAffected(Integer rowsAffected) {
-		this.rowsAffected = rowsAffected;
-	}
-
 	@Override
 	public String toString() {
-		return "QueryResult [tuples=" + tuples + ", rowsAffected=" + rowsAffected + "]";
+		return "QueryResult [rows=" + rows + ", rowsAffected=" + rowsAffected + "]";
 	}
 
 }

@@ -1,7 +1,11 @@
 package com.appglu;
 
-public class Device {
+import java.io.Serializable;
+
+public class Device implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	private String token;
 	
 	private String alias;

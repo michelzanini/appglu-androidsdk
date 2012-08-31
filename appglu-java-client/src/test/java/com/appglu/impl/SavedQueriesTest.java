@@ -4,7 +4,7 @@ import static org.springframework.test.web.client.RequestMatchers.body;
 import static org.springframework.test.web.client.RequestMatchers.header;
 import static org.springframework.test.web.client.RequestMatchers.method;
 import static org.springframework.test.web.client.RequestMatchers.requestTo;
-import static org.springframework.test.web.client.ResponseCreators.withResponse;
+import static org.springframework.test.web.client.ResponseCreators.withSuccess;
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -13,10 +13,9 @@ import org.springframework.http.HttpMethod;
 
 import com.appglu.QueryParams;
 import com.appglu.QueryResult;
+import com.appglu.Row;
 import com.appglu.SavedQueriesOperations;
-import com.appglu.Tuple;
 
-@SuppressWarnings("deprecation")
 public class SavedQueriesTest extends AbstractAppGluApiTest {
 	
 	private SavedQueriesOperations savedQueriesOperations;
@@ -39,12 +38,12 @@ public class SavedQueriesTest extends AbstractAppGluApiTest {
 		return params;
 	}
 	
-	private void assertTuple(Tuple tuple) {
-		Assert.assertEquals(true, tuple.get("first"));
-		Assert.assertEquals(new Integer(10), tuple.get("second"));
-		Assert.assertEquals("string", tuple.get("third"));
-		Assert.assertEquals(null, tuple.get("forth"));
-		Assert.assertEquals(new Double(1.5), tuple.get("fifth"));
+	private void assertRow(Row row) {
+		Assert.assertEquals(true, row.get("first"));
+		Assert.assertEquals(new Integer(10), row.get("second"));
+		Assert.assertEquals("string", row.get("third"));
+		Assert.assertEquals(null, row.get("forth"));
+		Assert.assertEquals(new Double(1.5), row.get("fifth"));
 	}
 	
 	@Test
@@ -53,16 +52,16 @@ public class SavedQueriesTest extends AbstractAppGluApiTest {
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/saved_queries_params")))
-			.andRespond(withResponse(compactedJson("data/saved_queries_result"), responseHeaders));
+			.andRespond(withSuccess().body(compactedJson("data/saved_queries_result")).headers(responseHeaders));
 		
 		QueryResult result = savedQueriesOperations.executeQuery("queryName", queryParams());
 		
-		Assert.assertEquals(3, result.getTuples().size());
+		Assert.assertEquals(3, result.getRows().size());
 		Assert.assertNull(result.getRowsAffected());
 		
-		assertTuple(result.getTuples().get(0));
-		assertTuple(result.getTuples().get(1));
-		assertTuple(result.getTuples().get(2));
+		assertRow(result.getRows().get(0));
+		assertRow(result.getRows().get(1));
+		assertRow(result.getRows().get(2));
 		
 		mockServer.verify();
 	}
@@ -73,11 +72,11 @@ public class SavedQueriesTest extends AbstractAppGluApiTest {
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/saved_queries_params")))
-			.andRespond(withResponse(compactedJson("data/saved_queries_update_result"), responseHeaders));
+			.andRespond(withSuccess().body(compactedJson("data/saved_queries_update_result")).headers(responseHeaders));
 		
 		QueryResult result = savedQueriesOperations.executeQuery("queryName", queryParams());
 		
-		Assert.assertNull(result.getTuples());
+		Assert.assertNull(result.getRows());
 		Assert.assertEquals(new Integer(10), result.getRowsAffected());
 		
 		mockServer.verify();
@@ -89,7 +88,7 @@ public class SavedQueriesTest extends AbstractAppGluApiTest {
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/saved_queries_params_empty")))
-			.andRespond(withResponse(compactedJson("data/saved_queries_update_result"), responseHeaders));
+			.andRespond(withSuccess().body(compactedJson("data/saved_queries_update_result")).headers(responseHeaders));
 	
 		savedQueriesOperations.executeQuery("queryName");
 		
@@ -102,7 +101,7 @@ public class SavedQueriesTest extends AbstractAppGluApiTest {
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/saved_queries_params_empty")))
-			.andRespond(withResponse(compactedJson("data/saved_queries_update_result"), responseHeaders));
+			.andRespond(withSuccess().body(compactedJson("data/saved_queries_update_result")).headers(responseHeaders));
 
 		savedQueriesOperations.executeQuery("queryName", new QueryParams());
 		

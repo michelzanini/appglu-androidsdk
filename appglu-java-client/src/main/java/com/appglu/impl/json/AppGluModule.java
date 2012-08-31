@@ -1,16 +1,15 @@
 package com.appglu.impl.json;
 
 import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.module.SimpleAbstractTypeResolver;
 import org.codehaus.jackson.map.module.SimpleModule;
 
+import com.appglu.AnalyticsSession;
+import com.appglu.AnalyticsSessionEvent;
 import com.appglu.Device;
 import com.appglu.Error;
 import com.appglu.ErrorResponse;
 import com.appglu.QueryResult;
-import com.appglu.Row;
 import com.appglu.Rows;
-import com.appglu.Tuple;
 
 public class AppGluModule extends SimpleModule {
 
@@ -26,12 +25,11 @@ public class AppGluModule extends SimpleModule {
 		context.setMixInAnnotations(QueryResult.class, QueryResultMixin.class);
 		context.setMixInAnnotations(Device.class, DeviceMixin.class);
 		context.setMixInAnnotations(DeviceBody.class, DeviceBodyMixin.class);
+		context.setMixInAnnotations(AnalyticsSession.class, AnalyticsSessionMixin.class);
+		context.setMixInAnnotations(AnalyticsSessionEvent.class, AnalyticsSessionEventMixin.class);
+		context.setMixInAnnotations(AnalyticsSessionsBody.class, AnalyticsSessionsBodyMixin.class);
 		context.setMixInAnnotations(Error.class, ErrorMixin.class);
 		context.setMixInAnnotations(ErrorResponse.class, ErrorResponseMixin.class);
-		
-		SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
-		resolver.addMapping(Tuple.class, Row.class);
-		context.addAbstractTypeResolver(resolver);
 	}
 
 }
