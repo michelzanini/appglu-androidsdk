@@ -1,10 +1,22 @@
-package com.appglu;
+package com.appglu.android.sample;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.appglu.AnalyticsOperations;
+import com.appglu.AnalyticsSession;
+import com.appglu.AnalyticsSessionEvent;
+import com.appglu.CrudOperations;
+import com.appglu.Device;
+import com.appglu.DevicePlatform;
+import com.appglu.PushOperations;
+import com.appglu.QueryParams;
+import com.appglu.QueryResult;
+import com.appglu.Row;
+import com.appglu.Rows;
+import com.appglu.SavedQueriesOperations;
 import com.appglu.impl.AppGluTemplate;
 
 public class AppGluTestRestClient {
