@@ -21,20 +21,23 @@ public class AppGluTestRestClient {
 	
 	public static void main(String[] args) {
 		AppGluTestRestClient restClient = new AppGluTestRestClient();
+		restClient.callApiEndpoints();
+	}
+	
+	public void callApiEndpoints() {
+		Object id = this.crud_create();
+		this.crud_delete(id);
+		this.crud_update();
+		this.crud_read();
+		this.crud_readAll();
 		
-		Object id = restClient.crud_create();
-		restClient.crud_delete(id);
-		restClient.crud_update();
-		restClient.crud_read();
-		restClient.crud_readAll();
+		this.savedQueries_executeQuery();
 		
-		restClient.savedQueries_executeQuery();
+		this.push_registerDevice();
+		this.push_readDevice();
+		this.push_removeDevice();
 		
-		restClient.push_registerDevice();
-		restClient.push_readDevice();
-		restClient.push_removeDevice();
-		
-		restClient.analytics_createSession();
+		this.analytics_createSession();
 	}
 	
 	private Object crud_create() {
@@ -85,7 +88,7 @@ public class AppGluTestRestClient {
 		device.setPlatform(DevicePlatform.ANDROID);
 		
 		pushOperations.registerDevice(device);
-		System.out.println("push_readDevice: executed");
+		System.out.println("push_registerDevice: executed");
 	}
 	
 	private void push_readDevice() {
