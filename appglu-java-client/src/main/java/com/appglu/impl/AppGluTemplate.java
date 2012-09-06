@@ -18,14 +18,14 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import com.appglu.AnalyticsOperations;
-import com.appglu.AppGlu;
+import com.appglu.AppGluOperations;
 import com.appglu.CrudOperations;
 import com.appglu.PushOperations;
 import com.appglu.SavedQueriesOperations;
 import com.appglu.impl.json.AppGluModule;
 import com.appglu.impl.util.DateUtils;
 
-public class AppGluTemplate implements AppGlu {
+public class AppGluTemplate implements AppGluOperations {
 	
 	private static final boolean ANDROID_ENVIRONMENT = ClassUtils.isPresent("android.os.Build", AppGluTemplate.class.getClassLoader());
 	

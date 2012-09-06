@@ -17,11 +17,11 @@ public class SavedQueriesTemplate implements SavedQueriesOperations {
 		this.restOperations = restOperations;
 	}
 	
-	public QueryResult executeQuery(String queryName) {
-		return this.executeQuery(queryName, null);
+	public QueryResult runQuery(String queryName) {
+		return this.runQuery(queryName, null);
 	}
 	
-	public QueryResult executeQuery(String queryName, QueryParams params) {
+	public QueryResult runQuery(String queryName, QueryParams params) {
 		return this.restOperations.postForObject(QUERY_RUN_URL, new QueryParamsBody(params), QueryResult.class, queryName);
 	}
 	
