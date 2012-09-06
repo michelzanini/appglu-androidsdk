@@ -27,7 +27,7 @@ import com.appglu.impl.util.DateUtils;
 
 public class AppGluTemplate implements AppGlu {
 	
-	private static final boolean ANDROID_ENVIRONMENT = ClassUtils.isPresent("android.os.Build", ClientHttpRequestFactorySelector.class.getClassLoader());
+	private static final boolean ANDROID_ENVIRONMENT = ClassUtils.isPresent("android.os.Build", AppGluTemplate.class.getClassLoader());
 	
 	private String baseUrl;
 	
