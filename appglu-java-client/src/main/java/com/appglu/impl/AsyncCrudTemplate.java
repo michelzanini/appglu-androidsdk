@@ -18,64 +18,64 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		this.crudOperations = crudOperations;
 	}
 
-	public void createInBackground(final String tableName, final Row row, AsyncCallback<Object> createCallback) {
-		asyncExecutor.execute(createCallback, new AsyncExecutorCallback<Object>() {
+	public void createInBackground(final String tableName, final Row row, AsyncCallback<Object> primaryKeyCallback) {
+		asyncExecutor.execute(primaryKeyCallback, new AsyncExecutorCallback<Object>() {
 			public Object doExecute() {
 				return crudOperations.create(tableName, row);
 			}
 		});
 	}
 
-	public void readInBackground(final String tableName, final Object id, AsyncCallback<Row> createCallback) {
-		asyncExecutor.execute(createCallback, new AsyncExecutorCallback<Row>() {
+	public void readInBackground(final String tableName, final Object id, AsyncCallback<Row> rowCallback) {
+		asyncExecutor.execute(rowCallback, new AsyncExecutorCallback<Row>() {
 			public Row doExecute() {
 				return crudOperations.read(tableName, id);
 			}
 		});
 	}
 
-	public void readInBackground(final String tableName, final Object id, final boolean expandRelationships, AsyncCallback<Row> createCallback) {
-		asyncExecutor.execute(createCallback, new AsyncExecutorCallback<Row>() {
+	public void readInBackground(final String tableName, final Object id, final boolean expandRelationships, AsyncCallback<Row> rowCallback) {
+		asyncExecutor.execute(rowCallback, new AsyncExecutorCallback<Row>() {
 			public Row doExecute() {
 				return crudOperations.read(tableName, id, expandRelationships);
 			}
 		});
 	}
 
-	public void readAllInBackground(final String tableName, AsyncCallback<Rows> createCallback) {
-		asyncExecutor.execute(createCallback, new AsyncExecutorCallback<Rows>() {
+	public void readAllInBackground(final String tableName, AsyncCallback<Rows> rowsCallback) {
+		asyncExecutor.execute(rowsCallback, new AsyncExecutorCallback<Rows>() {
 			public Rows doExecute() {
 				return crudOperations.readAll(tableName);
 			}
 		});
 	}
 
-	public void readAllInBackground(final String tableName, final boolean expandRelationships, AsyncCallback<Rows> createCallback) {
-		asyncExecutor.execute(createCallback, new AsyncExecutorCallback<Rows>() {
+	public void readAllInBackground(final String tableName, final boolean expandRelationships, AsyncCallback<Rows> rowsCallback) {
+		asyncExecutor.execute(rowsCallback, new AsyncExecutorCallback<Rows>() {
 			public Rows doExecute() {
 				return crudOperations.readAll(tableName, expandRelationships);
 			}
 		});
 	}
 
-	public void readAllInBackground(final String tableName, final boolean expandRelationships, final ReadAllFilterArguments arguments, AsyncCallback<Rows> createCallback) {
-		asyncExecutor.execute(createCallback, new AsyncExecutorCallback<Rows>() {
+	public void readAllInBackground(final String tableName, final boolean expandRelationships, final ReadAllFilterArguments arguments, AsyncCallback<Rows> rowsCallback) {
+		asyncExecutor.execute(rowsCallback, new AsyncExecutorCallback<Rows>() {
 			public Rows doExecute() {
 				return crudOperations.readAll(tableName, expandRelationships, arguments);
 			}
 		});
 	}
 
-	public void updateInBackground(final String tableName, final Object id, final Row row, AsyncCallback<Boolean> createCallback) {
-		asyncExecutor.execute(createCallback, new AsyncExecutorCallback<Boolean>() {
+	public void updateInBackground(final String tableName, final Object id, final Row row, AsyncCallback<Boolean> updateCallback) {
+		asyncExecutor.execute(updateCallback, new AsyncExecutorCallback<Boolean>() {
 			public Boolean doExecute() {
 				return crudOperations.update(tableName, id, row);
 			}
 		});
 	}
 
-	public void deleteInBackground(final String tableName, final Object id, AsyncCallback<Boolean> createCallback) {
-		asyncExecutor.execute(createCallback, new AsyncExecutorCallback<Boolean>() {
+	public void deleteInBackground(final String tableName, final Object id, AsyncCallback<Boolean> deleteCallback) {
+		asyncExecutor.execute(deleteCallback, new AsyncExecutorCallback<Boolean>() {
 			public Boolean doExecute() {
 				return crudOperations.delete(tableName, id);
 			}
