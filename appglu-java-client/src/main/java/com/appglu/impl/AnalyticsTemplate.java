@@ -9,7 +9,7 @@ import com.appglu.AnalyticsOperations;
 import com.appglu.AnalyticsSession;
 import com.appglu.impl.json.AnalyticsSessionsBody;
 
-public class AnalyticsTemplate implements AnalyticsOperations {
+public final class AnalyticsTemplate implements AnalyticsOperations {
 	
 	static final String CREATE_SESSION_URL = "/v1/analytics";
 	

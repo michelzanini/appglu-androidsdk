@@ -1,28 +1,46 @@
 package com.appglu.android.sample;
 
 import android.app.Activity;
-import android.os.AsyncTask;
+import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.widget.Toast;
+
+import com.appglu.AsyncCallback;
+import com.appglu.Rows;
+import com.appglu.android.AppGlu;
 
 public class MainActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        this.setContentView(R.layout.main);
         
-        new AsyncTask<Void, Void, Void>() {
+        this.readAllQueries();
+    }
 
-			@Override
-			protected Void doInBackground(Void... params) {
-				AppGluTestRestClient restClient = new AppGluTestRestClient();
-				restClient.callApiEndpoints();
-				return null;
+	private void readAllQueries() {
+		AppGlu.crudApi().readAllInBackground("appglu_queries", new AsyncCallback<Rows>() {
+			
+			private ProgressDialog progressDialog;
+			
+        	public void onPreExecute() {
+        		this.progressDialog = ProgressDialog.show(MainActivity.this, "Loading", "Please wait...");
+        	}
+        	
+			public void onResult(Rows rows) {
+				Toast.makeText(MainActivity.this, rows.toString(), Toast.LENGTH_LONG).show();
 			}
 			
-		}.execute();
-		
-    }
+			public void onException(Exception exception) {
+				Toast.makeText(MainActivity.this, exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			}
+			
+			public void onFinish() {
+				this.progressDialog.dismiss();
+			}
+			
+		});
+	}
     
 }
-
