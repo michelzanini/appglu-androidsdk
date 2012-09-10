@@ -50,36 +50,36 @@ public final class CrudApi implements CrudOperations, AsyncCrudOperations {
 		return crudOperations.delete(tableName, id);
 	}
 
-	public void createInBackground(String tableName, Row row, AsyncCallback<Object> createCallback) {
-		asyncCrudOperations.createInBackground(tableName, row, createCallback);
+	public void createInBackground(String tableName, Row row, AsyncCallback<Object> primaryKeyCallback) {
+		asyncCrudOperations.createInBackground(tableName, row, primaryKeyCallback);
 	}
 
-	public void readInBackground(String tableName, Object id, AsyncCallback<Row> createCallback) {
-		asyncCrudOperations.readInBackground(tableName, id, createCallback);
+	public void readInBackground(String tableName, Object id, AsyncCallback<Row> rowCallback) {
+		asyncCrudOperations.readInBackground(tableName, id, rowCallback);
 	}
 
-	public void readInBackground(String tableName, Object id, boolean expandRelationships, AsyncCallback<Row> createCallback) {
-		asyncCrudOperations.readInBackground(tableName, id, expandRelationships, createCallback);
+	public void readInBackground(String tableName, Object id, boolean expandRelationships, AsyncCallback<Row> rowCallback) {
+		asyncCrudOperations.readInBackground(tableName, id, expandRelationships, rowCallback);
 	}
 
-	public void readAllInBackground(String tableName, AsyncCallback<Rows> createCallback) {
-		asyncCrudOperations.readAllInBackground(tableName, createCallback);
+	public void readAllInBackground(String tableName, AsyncCallback<Rows> rowsCallback) {
+		asyncCrudOperations.readAllInBackground(tableName, rowsCallback);
 	}
 
-	public void readAllInBackground(String tableName, boolean expandRelationships, AsyncCallback<Rows> createCallback) {
-		asyncCrudOperations.readAllInBackground(tableName, expandRelationships, createCallback);
+	public void readAllInBackground(String tableName, boolean expandRelationships, AsyncCallback<Rows> rowsCallback) {
+		asyncCrudOperations.readAllInBackground(tableName, expandRelationships, rowsCallback);
 	}
 
-	public void readAllInBackground(String tableName, boolean expandRelationships, ReadAllFilterArguments arguments, AsyncCallback<Rows> createCallback) {
-		asyncCrudOperations.readAllInBackground(tableName, expandRelationships, arguments, createCallback);
+	public void readAllInBackground(String tableName, boolean expandRelationships, ReadAllFilterArguments arguments, AsyncCallback<Rows> rowsCallback) {
+		asyncCrudOperations.readAllInBackground(tableName, expandRelationships, arguments, rowsCallback);
 	}
 
-	public void updateInBackground(String tableName, Object id, Row row, AsyncCallback<Boolean> createCallback) {
-		asyncCrudOperations.updateInBackground(tableName, id, row, createCallback);
+	public void updateInBackground(String tableName, Object id, Row row, AsyncCallback<Boolean> updateCallback) {
+		asyncCrudOperations.updateInBackground(tableName, id, row, updateCallback);
 	}
 
-	public void deleteInBackground(String tableName, Object id, AsyncCallback<Boolean> createCallback) {
-		asyncCrudOperations.deleteInBackground(tableName, id, createCallback);
+	public void deleteInBackground(String tableName, Object id, AsyncCallback<Boolean> deleteCallback) {
+		asyncCrudOperations.deleteInBackground(tableName, id, deleteCallback);
 	}
 	
 }
