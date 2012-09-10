@@ -47,14 +47,14 @@ public class SavedQueriesTest extends AbstractAppGluApiTest {
 	}
 	
 	@Test
-	public void executeQuery() {
+	public void runQuery() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/queries/queryName/run"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/saved_queries_params")))
 			.andRespond(withSuccess().body(compactedJson("data/saved_queries_result")).headers(responseHeaders));
 		
-		QueryResult result = savedQueriesOperations.executeQuery("queryName", queryParams());
+		QueryResult result = savedQueriesOperations.runQuery("queryName", queryParams());
 		
 		Assert.assertEquals(3, result.getRows().size());
 		Assert.assertNull(result.getRowsAffected());
@@ -67,14 +67,14 @@ public class SavedQueriesTest extends AbstractAppGluApiTest {
 	}
 
 	@Test
-	public void executeUpdateQuery() {
+	public void runUpdateQuery() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/queries/queryName/run"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/saved_queries_params")))
 			.andRespond(withSuccess().body(compactedJson("data/saved_queries_update_result")).headers(responseHeaders));
 		
-		QueryResult result = savedQueriesOperations.executeQuery("queryName", queryParams());
+		QueryResult result = savedQueriesOperations.runQuery("queryName", queryParams());
 		
 		Assert.assertNull(result.getRows());
 		Assert.assertEquals(new Integer(10), result.getRowsAffected());
@@ -83,27 +83,27 @@ public class SavedQueriesTest extends AbstractAppGluApiTest {
 	}
 	
 	@Test
-	public void executeQueryNullQueryParams() {
+	public void runQueryNullQueryParams() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/queries/queryName/run"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/saved_queries_params_empty")))
 			.andRespond(withSuccess().body(compactedJson("data/saved_queries_update_result")).headers(responseHeaders));
 	
-		savedQueriesOperations.executeQuery("queryName");
+		savedQueriesOperations.runQuery("queryName");
 		
 		mockServer.verify();
 	}
 	
 	@Test
-	public void executeQueryEmptyQueryParams() {
+	public void runQueryEmptyQueryParams() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/queries/queryName/run"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(body(compactedJson("data/saved_queries_params_empty")))
 			.andRespond(withSuccess().body(compactedJson("data/saved_queries_update_result")).headers(responseHeaders));
 
-		savedQueriesOperations.executeQuery("queryName", new QueryParams());
+		savedQueriesOperations.runQuery("queryName", new QueryParams());
 		
 		mockServer.verify();
 	}

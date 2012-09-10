@@ -2,8 +2,8 @@ package com.appglu;
 
 public interface SavedQueriesOperations {
 	
-	public QueryResult executeQuery(String queryName);
+	QueryResult runQuery(String queryName);
 	
-	public QueryResult executeQuery(String queryName, QueryParams params);
+	QueryResult runQuery(String queryName, QueryParams params);
 
 }

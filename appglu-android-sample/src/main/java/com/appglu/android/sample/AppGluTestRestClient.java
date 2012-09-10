@@ -23,8 +23,6 @@ public class AppGluTestRestClient {
 	
 	private AppGluTemplate appGluTemplate = new AppGluTemplate("https://dashboard.appglu.com", "2856G3EX7p1042m", "YE79wRR2e81RW977AT563UP25o2ctd");
 	
-	//private AppGluTemplate appGluTemplate = new AppGluTemplate("http://localhost:8080/appglu", "173691782634", "zQO9GtlCNJjC87hQXvGcKrMyVkOHLK7f9LAaKeXSew");
-	
 	private CrudOperations crudOperations = appGluTemplate.crudOperations();
 	
 	private SavedQueriesOperations savedQueriesOperations = appGluTemplate.savedQueriesOperations();
@@ -92,7 +90,7 @@ public class AppGluTestRestClient {
 	private void savedQueries_executeQuery() {
 		QueryParams params = new QueryParams();
 		
-		QueryResult result = savedQueriesOperations.executeQuery("queryName1", params);
+		QueryResult result = savedQueriesOperations.runQuery("queryName1", params);
 		System.out.println("savedQueries_executeQuery: " + result);
 	}
 	
