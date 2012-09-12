@@ -1,6 +1,4 @@
-package com.appglu.android;
-
-import com.appglu.AppGluHttpException;
+package com.appglu;
 
 public abstract class AsyncCallback<Result> {
 	
@@ -10,7 +8,7 @@ public abstract class AsyncCallback<Result> {
 	
 	public abstract void onResult(Result result);
 	
-	public void onException(AppGluHttpException exception) {
+	public void onException(Exception exception) {
 		
 	}
 	

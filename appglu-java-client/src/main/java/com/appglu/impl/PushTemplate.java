@@ -7,7 +7,7 @@ import com.appglu.Device;
 import com.appglu.PushOperations;
 import com.appglu.impl.json.DeviceBody;
 
-public class PushTemplate implements PushOperations {
+public final class PushTemplate implements PushOperations {
 	
 	static final String DEVICE_REGISTRATION_URL = "/v1/push/device";
 	

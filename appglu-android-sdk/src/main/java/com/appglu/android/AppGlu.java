@@ -1,21 +1,19 @@
 package com.appglu.android;
 
-import android.content.Context;
-
-import com.appglu.android.impl.CrudTemplateAsync;
+import com.appglu.android.impl.AsyncTaskExecutor;
 import com.appglu.impl.AppGluTemplate;
 
 public final class AppGlu {
 	
 	private static AppGlu instance;
 	
-	//private Context context;
-	
 	private AppGluTemplate appGluTemplate;
 	
 	private AppGluSettings settings;
 	
 	private CrudApi crudApi;
+	
+	private SavedQueriesApi savedQueriesApi;
 	
 	protected AppGlu() { 
 		
@@ -28,11 +26,10 @@ public final class AppGlu {
 		return instance;
 	}
 	
-	protected void doInitialize(Context context, AppGluSettings settings) {
-		//this.context = context.getApplicationContext();
+	protected void doInitialize(AppGluSettings settings) {
 		this.settings = settings;
-		
 		this.appGluTemplate = settings.createAppGluTemplate();
+		this.appGluTemplate.setAsyncExecutor(new AsyncTaskExecutor());
 	}
 
 	protected AppGluTemplate getAppGluTemplate() {
@@ -50,20 +47,31 @@ public final class AppGlu {
 	}
 	
 	protected CrudApi getCrudApi() {
-		if (crudApi == null) {
-			crudApi = new CrudTemplateAsync(this.appGluTemplate.restOperations());
+		if (this.crudApi == null) {
+			this.crudApi = new CrudApi(this.getAppGluTemplate().crudOperations(), this.getAppGluTemplate().asyncCrudOperations());
 		}
 		return crudApi;
 	}
 	
+	protected SavedQueriesApi getSavedQueriesApi() {
+		if (this.savedQueriesApi == null) {
+			this.savedQueriesApi = new SavedQueriesApi(this.getAppGluTemplate().savedQueriesOperations(), this.getAppGluTemplate().asyncSavedQueriesOperations());
+		}
+		return savedQueriesApi;
+	}
+	
 	//Public Methods
 	
-	public static void initialize(Context context, AppGluSettings settings) {
-		getInstance().doInitialize(context, settings);
+	public static void initialize(AppGluSettings settings) {
+		getInstance().doInitialize(settings);
 	}
 	
 	public static CrudApi crudApi() {
 		return getInstance().getCrudApi();
+	}
+	
+	public static SavedQueriesApi savedQueriesApi() {
+		return getInstance().getSavedQueriesApi();
 	}
 	
 }

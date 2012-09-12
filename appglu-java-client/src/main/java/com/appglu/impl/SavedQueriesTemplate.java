@@ -7,7 +7,7 @@ import com.appglu.QueryResult;
 import com.appglu.SavedQueriesOperations;
 import com.appglu.impl.json.QueryParamsBody;
 
-public class SavedQueriesTemplate implements SavedQueriesOperations {
+public final class SavedQueriesTemplate implements SavedQueriesOperations {
 	
 	static final String QUERY_RUN_URL = "/v1/queries/{queryName}/run";
 

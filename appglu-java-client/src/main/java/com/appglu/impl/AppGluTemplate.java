@@ -11,6 +11,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -19,6 +20,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.appglu.AnalyticsOperations;
 import com.appglu.AppGluOperations;
+import com.appglu.AsyncCrudOperations;
+import com.appglu.AsyncSavedQueriesOperations;
 import com.appglu.CrudOperations;
 import com.appglu.PushOperations;
 import com.appglu.SavedQueriesOperations;
@@ -37,9 +40,15 @@ public class AppGluTemplate implements AppGluOperations {
 	
 	private RestTemplate restTemplate;
 	
+	private AsyncExecutor asyncExecutor;
+	
 	private CrudOperations crudOperations;
 	
+	private AsyncCrudOperations asyncCrudOperations;
+	
 	private SavedQueriesOperations savedQueriesOperations;
+	
+	private AsyncSavedQueriesOperations asyncSavedQueriesOperations;
 	
 	private PushOperations pushOperations;
 	
@@ -65,9 +74,21 @@ public class AppGluTemplate implements AppGluOperations {
 		this.restTemplate.setErrorHandler(this.getResponseErrorHandler());
 		this.restTemplate.setInterceptors(this.createInterceptors());
 		
-		this.initSubApis();
+		this.initApis();
 	}
 	
+	public void setAsyncExecutor(AsyncExecutor asyncExecutor) {
+		Assert.notNull(asyncExecutor, "AsyncExecutor param cannot be null.");
+		this.asyncExecutor = asyncExecutor;
+		this.initAsyncApis();
+	}
+	
+	private void checkAsyncExecutor() {
+		if (asyncExecutor == null) {
+			throw new IllegalStateException("AsyncExecutor is not initialized. It is requiered to call setAsyncExecutor() before using async operations.");
+		}
+	}
+
 	private void checkInterceptorsAreInitialized() {
 		if (this.defaultHeadersHttpRequestInterceptor == null) {
 			throw new IllegalStateException("Http interceptors are not initialized. Did you override configureHttpRequestInterceptors() without calling super?");
@@ -100,8 +121,18 @@ public class AppGluTemplate implements AppGluOperations {
 		return crudOperations;
 	}
 	
+	public AsyncCrudOperations asyncCrudOperations() {
+		this.checkAsyncExecutor();
+		return asyncCrudOperations;
+	}
+
 	public SavedQueriesOperations savedQueriesOperations() {
 		return savedQueriesOperations;
+	}
+	
+	public AsyncSavedQueriesOperations asyncSavedQueriesOperations() {
+		this.checkAsyncExecutor();
+		return asyncSavedQueriesOperations;
 	}
 	
 	public PushOperations pushOperations() {
@@ -145,11 +176,16 @@ public class AppGluTemplate implements AppGluOperations {
 		return interceptors;
 	}
 	
-	private void initSubApis() {
+	private void initApis() {
 		this.crudOperations = new CrudTemplate(this.restOperations());
 		this.savedQueriesOperations = new SavedQueriesTemplate(this.restOperations());
 		this.pushOperations = new PushTemplate(this.restOperations());
 		this.analyticsOperations = new AnalyticsTemplate(this.restOperations());
+	}
+	
+	private void initAsyncApis() {
+		this.asyncCrudOperations = new AsyncCrudTemplate(this.asyncExecutor, this.crudOperations);
+		this.asyncSavedQueriesOperations = new AsyncSavedQueriesTemplate(this.asyncExecutor, this.savedQueriesOperations);
 	}
 	
 	protected RestTemplate createRestTemplate() {

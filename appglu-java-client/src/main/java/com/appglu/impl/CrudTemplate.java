@@ -11,7 +11,7 @@ import com.appglu.Row;
 import com.appglu.Rows;
 import com.appglu.impl.json.RowBody;
 
-public class CrudTemplate implements CrudOperations {
+public final class CrudTemplate implements CrudOperations {
 	
 	static final String CRUD_TABLE_URL = "/v1/tables/{table}";
 	
