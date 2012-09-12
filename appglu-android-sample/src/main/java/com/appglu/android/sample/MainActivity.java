@@ -34,9 +34,9 @@ public class MainActivity extends Activity {
 		
 		private ProgressDialog progressDialog;
 		
-    	public void onPreExecute() {
-    		this.progressDialog = ProgressDialog.show(MainActivity.this, "Loading", "Please wait...");
-    	}
+		public void onPreExecute() {
+			this.progressDialog = ProgressDialog.show(MainActivity.this, "Loading", "Please wait...");
+		}
     	
 		public void onResult(Rows rows) {
 			Toast.makeText(MainActivity.this, rows.toString(), Toast.LENGTH_SHORT).show();
@@ -57,9 +57,9 @@ public class MainActivity extends Activity {
 		
 		private ProgressDialog progressDialog;
 		
-    	public void onPreExecute() {
-    		this.progressDialog = ProgressDialog.show(MainActivity.this, "Loading", "Please wait...");
-    	}
+		public void onPreExecute() {
+			this.progressDialog = ProgressDialog.show(MainActivity.this, "Loading", "Please wait...");
+		}
     	
 		public void onResult(QueryResult queryResult) {
 			Toast.makeText(MainActivity.this, queryResult.toString(), Toast.LENGTH_SHORT).show();

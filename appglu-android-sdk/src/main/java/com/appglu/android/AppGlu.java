@@ -15,6 +15,8 @@ public final class AppGlu {
 	
 	private SavedQueriesApi savedQueriesApi;
 	
+	private PushApi pushApi;
+	
 	protected AppGlu() { 
 		
 	}
@@ -50,14 +52,21 @@ public final class AppGlu {
 		if (this.crudApi == null) {
 			this.crudApi = new CrudApi(this.getAppGluTemplate().crudOperations(), this.getAppGluTemplate().asyncCrudOperations());
 		}
-		return crudApi;
+		return this.crudApi;
 	}
 	
 	protected SavedQueriesApi getSavedQueriesApi() {
 		if (this.savedQueriesApi == null) {
 			this.savedQueriesApi = new SavedQueriesApi(this.getAppGluTemplate().savedQueriesOperations(), this.getAppGluTemplate().asyncSavedQueriesOperations());
 		}
-		return savedQueriesApi;
+		return this.savedQueriesApi;
+	}
+	
+	protected PushApi getPushApi() {
+		if (this.pushApi == null) {
+			this.pushApi = new PushApi(this.getAppGluTemplate().pushOperations(), this.getAppGluTemplate().asyncPushOperations());
+		}
+		return this.pushApi;
 	}
 	
 	//Public Methods
@@ -72,6 +81,10 @@ public final class AppGlu {
 	
 	public static SavedQueriesApi savedQueriesApi() {
 		return getInstance().getSavedQueriesApi();
+	}
+	
+	public static PushApi pushApi() {
+		return getInstance().getPushApi();
 	}
 	
 }
