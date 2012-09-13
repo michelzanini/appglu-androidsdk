@@ -1,15 +1,21 @@
 package com.appglu.android;
 
+import android.content.Context;
+
 import com.appglu.android.impl.AsyncTaskExecutor;
 import com.appglu.impl.AppGluTemplate;
 
 public final class AppGlu {
+	
+	static final String APPGLU_PREFERENCES_KEY = "com.appglu.android.AppGlu.APPGLU_PREFERENCES_KEY";
 	
 	private static AppGlu instance;
 	
 	private AppGluTemplate appGluTemplate;
 	
 	private AppGluSettings settings;
+	
+	private DeviceInformation deviceInformation;
 	
 	private CrudApi crudApi;
 	
@@ -21,15 +27,16 @@ public final class AppGlu {
 		
 	}
 	
-	static synchronized AppGlu getInstance() {
+	protected static synchronized AppGlu getInstance() {
 		if (instance == null) {
 			instance = new AppGlu();
 		}
 		return instance;
 	}
 	
-	protected void doInitialize(AppGluSettings settings) {
+	protected void doInitialize(Context context, AppGluSettings settings) {
 		this.settings = settings;
+		this.deviceInformation = new DeviceInformation(context);
 		this.appGluTemplate = settings.createAppGluTemplate();
 		this.appGluTemplate.setAsyncExecutor(new AsyncTaskExecutor());
 	}
@@ -46,6 +53,13 @@ public final class AppGlu {
 			throw new AppGluException("AppGlu not initialized");
 		}
 		return settings;
+	}
+	
+	protected DeviceInformation getDeviceInformation() {
+		if (this.deviceInformation == null) {
+			throw new AppGluException("AppGlu not initialized");
+		}
+		return deviceInformation;
 	}
 	
 	protected CrudApi getCrudApi() {
@@ -71,8 +85,12 @@ public final class AppGlu {
 	
 	//Public Methods
 	
-	public static void initialize(AppGluSettings settings) {
-		getInstance().doInitialize(settings);
+	public static void initialize(Context context, AppGluSettings settings) {
+		getInstance().doInitialize(context, settings);
+	}
+	
+	public static DeviceInformation deviceInformation() {
+		return getInstance().getDeviceInformation();
 	}
 	
 	public static CrudApi crudApi() {
