@@ -87,6 +87,14 @@ public final class CrudTemplate implements CrudOperations {
 			url.append("filter_query=" + arguments.getFilterQuery());
 			url.append("&");
 		}
+		if (arguments.hasSortColumn()) {
+			url.append("sort_column=" + arguments.getSortColumn());
+			url.append("&");
+		}
+		if (arguments.hasSortDirection()) {
+			url.append("sort_direction=" + arguments.getSortDirection());
+			url.append("&");
+		}
 		url.append("expand_relationships=" + expandRelationships);
 		
 		return url.toString();

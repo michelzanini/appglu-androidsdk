@@ -24,6 +24,7 @@ import com.appglu.CrudOperations;
 import com.appglu.ReadAllFilterArguments;
 import com.appglu.Row;
 import com.appglu.Rows;
+import com.appglu.SortDirection;
 import com.appglu.impl.util.DateUtils;
 
 public class CrudTemplateTest extends AbstractAppGluApiTest {
@@ -228,7 +229,7 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withSuccess().body(compactedJson("data/crud_rows")).headers(responseHeaders));
 		
-		ReadAllFilterArguments arguments = new ReadAllFilterArguments(10, 100, null, null);
+		ReadAllFilterArguments arguments = new ReadAllFilterArguments(10, 100, null, null, null, null);
 		crudOperations.readAll("user", false, arguments);
 		
 		mockServer.verify();
@@ -240,7 +241,19 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withSuccess().body(compactedJson("data/crud_rows")).headers(responseHeaders));
 		
-		ReadAllFilterArguments arguments = new ReadAllFilterArguments(0, 0, "name", "John Due");
+		ReadAllFilterArguments arguments = new ReadAllFilterArguments(0, 0, "name", "John Due", null, null);
+		crudOperations.readAll("user", false, arguments);
+		
+		mockServer.verify();
+	}
+	
+	@Test
+	public void readAllSortArguments() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user?sort_column=name&sort_direction=ASC&expand_relationships=false"))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withSuccess().body(compactedJson("data/crud_rows")).headers(responseHeaders));
+		
+		ReadAllFilterArguments arguments = new ReadAllFilterArguments(0, 0, null, null, "name", SortDirection.ASC);
 		crudOperations.readAll("user", false, arguments);
 		
 		mockServer.verify();

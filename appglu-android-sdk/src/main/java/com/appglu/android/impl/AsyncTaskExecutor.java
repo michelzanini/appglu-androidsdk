@@ -1,13 +1,14 @@
 package com.appglu.android.impl;
 
+import java.util.concurrent.Callable;
+
 import com.appglu.AsyncCallback;
 import com.appglu.impl.AsyncExecutor;
-import com.appglu.impl.AsyncExecutorCallback;
 
 public class AsyncTaskExecutor implements AsyncExecutor {
 
 	@Override
-	public <Result> void execute(final AsyncCallback<Result> asyncCallback, final AsyncExecutorCallback<Result> executorCallback) {
+	public <Result> void execute(final AsyncCallback<Result> asyncCallback, final Callable<Result> executorCallable) {
 		AppGluAsyncTask<Void, Void, Result> asyncTask = new AppGluAsyncTask<Void, Void, Result>() {
 			
 			@Override
@@ -18,7 +19,7 @@ public class AsyncTaskExecutor implements AsyncExecutor {
 
 			@Override
 			protected Result doExecuteInBackground(Void... params) throws Exception {
-				return executorCallback.doExecute();
+				return executorCallable.call();
 			}
 
 			@Override

@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import com.appglu.AnalyticsOperations;
 import com.appglu.AppGluOperations;
 import com.appglu.AsyncCrudOperations;
+import com.appglu.AsyncPushOperations;
 import com.appglu.AsyncSavedQueriesOperations;
 import com.appglu.CrudOperations;
 import com.appglu.PushOperations;
@@ -51,6 +52,8 @@ public class AppGluTemplate implements AppGluOperations {
 	private AsyncSavedQueriesOperations asyncSavedQueriesOperations;
 	
 	private PushOperations pushOperations;
+	
+	private AsyncPushOperations asyncPushOperations;
 	
 	private AnalyticsOperations analyticsOperations;
 	
@@ -139,6 +142,11 @@ public class AppGluTemplate implements AppGluOperations {
 		return pushOperations;
 	}
 	
+	public AsyncPushOperations asyncPushOperations() {
+		this.checkAsyncExecutor();
+		return asyncPushOperations;
+	}
+	
 	public AnalyticsOperations analyticsOperations() {
 		return analyticsOperations;
 	}
@@ -186,6 +194,7 @@ public class AppGluTemplate implements AppGluOperations {
 	private void initAsyncApis() {
 		this.asyncCrudOperations = new AsyncCrudTemplate(this.asyncExecutor, this.crudOperations);
 		this.asyncSavedQueriesOperations = new AsyncSavedQueriesTemplate(this.asyncExecutor, this.savedQueriesOperations);
+		this.asyncPushOperations = new AsyncPushTemplate(this.asyncExecutor, this.pushOperations);
 	}
 	
 	protected RestTemplate createRestTemplate() {
