@@ -1,10 +1,10 @@
 package com.appglu.impl;
 
-import static org.springframework.test.web.client.RequestMatchers.body;
-import static org.springframework.test.web.client.RequestMatchers.header;
-import static org.springframework.test.web.client.RequestMatchers.method;
-import static org.springframework.test.web.client.RequestMatchers.requestTo;
-import static org.springframework.test.web.client.ResponseCreators.withStatus;
+import static org.springframework.test.web.client.match.RequestMatchers.content;
+import static org.springframework.test.web.client.match.RequestMatchers.header;
+import static org.springframework.test.web.client.match.RequestMatchers.method;
+import static org.springframework.test.web.client.match.RequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.ResponseCreators.withStatus;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -80,7 +80,7 @@ public class AnalyticsTemplateTest extends AbstractAppGluApiTest {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/analytics"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
-			.andExpect(body(compactedJson("data/analytics_no_sessions")))
+			.andExpect(content().string(compactedJson("data/analytics_no_sessions")))
 			.andRespond(withStatus(HttpStatus.CREATED).body("").headers(responseHeaders));
 		
 		analyticsOperations.createSessions(new ArrayList<AnalyticsSession>());
@@ -93,7 +93,7 @@ public class AnalyticsTemplateTest extends AbstractAppGluApiTest {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/analytics"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
-			.andExpect(body(compactedJson("data/analytics_empty_session")))
+			.andExpect(content().string(compactedJson("data/analytics_empty_session")))
 			.andRespond(withStatus(HttpStatus.CREATED).body("").headers(responseHeaders));
 		
 		analyticsOperations.createSession(new AnalyticsSession());
@@ -106,7 +106,7 @@ public class AnalyticsTemplateTest extends AbstractAppGluApiTest {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/analytics"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
-			.andExpect(body(compactedJson("data/analytics_session")))
+			.andExpect(content().string(compactedJson("data/analytics_session")))
 			.andRespond(withStatus(HttpStatus.CREATED).body("").headers(responseHeaders));
 		
 		analyticsOperations.createSession(session());
@@ -119,7 +119,7 @@ public class AnalyticsTemplateTest extends AbstractAppGluApiTest {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/analytics"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
-			.andExpect(body(compactedJson("data/analytics_sessions")))
+			.andExpect(content().string(compactedJson("data/analytics_sessions")))
 			.andRespond(withStatus(HttpStatus.CREATED).body("").headers(responseHeaders));
 		
 		List<AnalyticsSession> sessions = new ArrayList<AnalyticsSession>();
