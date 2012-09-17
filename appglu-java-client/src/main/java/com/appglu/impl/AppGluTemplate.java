@@ -20,6 +20,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.appglu.AnalyticsOperations;
 import com.appglu.AppGluOperations;
+import com.appglu.AsyncAnalyticsOperations;
+import com.appglu.AsyncAppGluOperations;
 import com.appglu.AsyncCrudOperations;
 import com.appglu.AsyncPushOperations;
 import com.appglu.AsyncSavedQueriesOperations;
@@ -29,7 +31,7 @@ import com.appglu.SavedQueriesOperations;
 import com.appglu.impl.json.AppGluModule;
 import com.appglu.impl.util.DateUtils;
 
-public class AppGluTemplate implements AppGluOperations {
+public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	
 	private static final boolean ANDROID_ENVIRONMENT = ClassUtils.isPresent("android.os.Build", AppGluTemplate.class.getClassLoader());
 	
@@ -56,6 +58,8 @@ public class AppGluTemplate implements AppGluOperations {
 	private AsyncPushOperations asyncPushOperations;
 	
 	private AnalyticsOperations analyticsOperations;
+	
+	private AsyncAnalyticsOperations asyncAnalyticsOperations;
 	
 	private HttpMessageConverter<Object> jsonMessageConverter;
 	
@@ -150,6 +154,11 @@ public class AppGluTemplate implements AppGluOperations {
 	public AnalyticsOperations analyticsOperations() {
 		return analyticsOperations;
 	}
+	
+	public AsyncAnalyticsOperations asyncAnalyticsOperations() {
+		this.checkAsyncExecutor();
+		return asyncAnalyticsOperations;
+	}
 
 	public RestOperations restOperations() {
 		return getRestTemplate();
@@ -195,6 +204,7 @@ public class AppGluTemplate implements AppGluOperations {
 		this.asyncCrudOperations = new AsyncCrudTemplate(this.asyncExecutor, this.crudOperations);
 		this.asyncSavedQueriesOperations = new AsyncSavedQueriesTemplate(this.asyncExecutor, this.savedQueriesOperations);
 		this.asyncPushOperations = new AsyncPushTemplate(this.asyncExecutor, this.pushOperations);
+		this.asyncAnalyticsOperations = new AsyncAnalyticsTemplate(this.asyncExecutor, this.analyticsOperations);
 	}
 	
 	protected RestTemplate createRestTemplate() {
