@@ -1,11 +1,11 @@
 package com.appglu.impl;
 
-import static org.springframework.test.web.client.RequestMatchers.body;
-import static org.springframework.test.web.client.RequestMatchers.header;
-import static org.springframework.test.web.client.RequestMatchers.method;
-import static org.springframework.test.web.client.RequestMatchers.requestTo;
-import static org.springframework.test.web.client.ResponseCreators.withStatus;
-import static org.springframework.test.web.client.ResponseCreators.withSuccess;
+import static org.springframework.test.web.client.match.RequestMatchers.content;
+import static org.springframework.test.web.client.match.RequestMatchers.header;
+import static org.springframework.test.web.client.match.RequestMatchers.method;
+import static org.springframework.test.web.client.match.RequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.ResponseCreators.withStatus;
+import static org.springframework.test.web.client.response.ResponseCreators.withSuccess;
 
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -88,7 +88,7 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
-			.andExpect(body(compactedJson("data/crud_row_relationships")))
+			.andExpect(content().string(compactedJson("data/crud_row_relationships")))
 			.andRespond(withStatus(HttpStatus.CREATED).body(compactedJson("data/crud_create_response")).headers(responseHeaders));
 		
 		Row row = row();
@@ -104,7 +104,7 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/1"))
 			.andExpect(method(HttpMethod.PUT))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
-			.andExpect(body(compactedJson("data/crud_row_relationships")))
+			.andExpect(content().string(compactedJson("data/crud_row_relationships")))
 			.andRespond(withSuccess().headers(responseHeaders));
 		
 		Row row = row();
@@ -120,7 +120,7 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/2"))
 			.andExpect(method(HttpMethod.PUT))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
-			.andExpect(body(compactedJson("data/crud_row_relationships")))
+			.andExpect(content().string(compactedJson("data/crud_row_relationships")))
 			.andRespond(withStatus(HttpStatus.NOT_FOUND).body(compactedJson("data/error_not_found")).headers(responseHeaders));
 		
 		Row row = row();
@@ -316,7 +316,7 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/data_types"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
-			.andExpect(body(compactedJson("data/crud_write_all_data_types")))
+			.andExpect(content().string(compactedJson("data/crud_write_all_data_types")))
 			.andRespond(withStatus(HttpStatus.CREATED).body(compactedJson("data/crud_create_response")).headers(responseHeaders));
 		
 		Row row = new Row();

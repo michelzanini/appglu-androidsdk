@@ -12,7 +12,7 @@ public class SampleApplication extends Application {
 		super.onCreate();
 		
 		AppGluSettings settings = new AppGluSettings("https://dashboard.appglu.com", "2856G3EX7p1042m", "YE79wRR2e81RW977AT563UP25o2ctd");
-		AppGlu.initialize(settings);
+		AppGlu.initialize(this, settings);
 	}
 	
 }

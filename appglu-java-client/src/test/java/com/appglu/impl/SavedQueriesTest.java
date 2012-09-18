@@ -1,10 +1,10 @@
 package com.appglu.impl;
 
-import static org.springframework.test.web.client.RequestMatchers.body;
-import static org.springframework.test.web.client.RequestMatchers.header;
-import static org.springframework.test.web.client.RequestMatchers.method;
-import static org.springframework.test.web.client.RequestMatchers.requestTo;
-import static org.springframework.test.web.client.ResponseCreators.withSuccess;
+import static org.springframework.test.web.client.match.RequestMatchers.content;
+import static org.springframework.test.web.client.match.RequestMatchers.header;
+import static org.springframework.test.web.client.match.RequestMatchers.method;
+import static org.springframework.test.web.client.match.RequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.ResponseCreators.withSuccess;
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -51,7 +51,7 @@ public class SavedQueriesTest extends AbstractAppGluApiTest {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/queries/queryName/run"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
-			.andExpect(body(compactedJson("data/saved_queries_params")))
+			.andExpect(content().string(compactedJson("data/saved_queries_params")))
 			.andRespond(withSuccess().body(compactedJson("data/saved_queries_result")).headers(responseHeaders));
 		
 		QueryResult result = savedQueriesOperations.runQuery("queryName", queryParams());
@@ -71,7 +71,7 @@ public class SavedQueriesTest extends AbstractAppGluApiTest {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/queries/queryName/run"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
-			.andExpect(body(compactedJson("data/saved_queries_params")))
+			.andExpect(content().string(compactedJson("data/saved_queries_params")))
 			.andRespond(withSuccess().body(compactedJson("data/saved_queries_update_result")).headers(responseHeaders));
 		
 		QueryResult result = savedQueriesOperations.runQuery("queryName", queryParams());
@@ -87,7 +87,7 @@ public class SavedQueriesTest extends AbstractAppGluApiTest {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/queries/queryName/run"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
-			.andExpect(body(compactedJson("data/saved_queries_params_empty")))
+			.andExpect(content().string(compactedJson("data/saved_queries_params_empty")))
 			.andRespond(withSuccess().body(compactedJson("data/saved_queries_update_result")).headers(responseHeaders));
 	
 		savedQueriesOperations.runQuery("queryName");
@@ -100,7 +100,7 @@ public class SavedQueriesTest extends AbstractAppGluApiTest {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/queries/queryName/run"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
-			.andExpect(body(compactedJson("data/saved_queries_params_empty")))
+			.andExpect(content().string(compactedJson("data/saved_queries_params_empty")))
 			.andRespond(withSuccess().body(compactedJson("data/saved_queries_update_result")).headers(responseHeaders));
 
 		savedQueriesOperations.runQuery("queryName", new QueryParams());

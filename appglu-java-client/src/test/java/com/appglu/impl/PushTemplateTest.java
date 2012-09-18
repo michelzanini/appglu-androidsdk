@@ -1,11 +1,11 @@
 package com.appglu.impl;
 
-import static org.springframework.test.web.client.RequestMatchers.body;
-import static org.springframework.test.web.client.RequestMatchers.header;
-import static org.springframework.test.web.client.RequestMatchers.method;
-import static org.springframework.test.web.client.RequestMatchers.requestTo;
-import static org.springframework.test.web.client.ResponseCreators.withStatus;
-import static org.springframework.test.web.client.ResponseCreators.withSuccess;
+import static org.springframework.test.web.client.match.RequestMatchers.content;
+import static org.springframework.test.web.client.match.RequestMatchers.header;
+import static org.springframework.test.web.client.match.RequestMatchers.method;
+import static org.springframework.test.web.client.match.RequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.ResponseCreators.withStatus;
+import static org.springframework.test.web.client.response.ResponseCreators.withSuccess;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,7 +46,7 @@ public class PushTemplateTest extends AbstractAppGluApiTest {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/push/device"))
 			.andExpect(method(HttpMethod.PUT))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
-			.andExpect(body(compactedJson("data/push_device")))
+			.andExpect(content().string(compactedJson("data/push_device")))
 			.andRespond(withSuccess().headers(responseHeaders));
 		
 		pushOperations.registerDevice(device());
