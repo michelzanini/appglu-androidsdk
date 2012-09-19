@@ -1,7 +1,9 @@
 package com.appglu;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +46,9 @@ public class AnalyticsSession implements Serializable {
 	}
 
 	public Map<String, String> getParameters() {
+		if (parameters == null) {
+			parameters = new HashMap<String, String>();
+		}
 		return parameters;
 	}
 
@@ -52,11 +57,22 @@ public class AnalyticsSession implements Serializable {
 	}
 	
 	public List<AnalyticsSessionEvent> getEvents() {
+		if (events == null) {
+			events = new ArrayList<AnalyticsSessionEvent>();
+		}
 		return events;
 	}
 
 	public void setEvents(List<AnalyticsSessionEvent> events) {
 		this.events = events;
+	}
+	
+	public void addParameter(String name, String value) {
+		this.getParameters().put(name, value);
+	}
+	
+	public void addEvent(AnalyticsSessionEvent event) {
+		this.getEvents().add(event);
 	}
 
 	@Override

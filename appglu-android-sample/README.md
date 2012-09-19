@@ -1,4 +1,4 @@
-Appglu Android Sample
+AppGlu Android Sample
 =====================
 
-An Android sample project to illustrate how to use Appglu Android SDK.
+An Android sample project to illustrate how to use AppGlu Android SDK.

@@ -2,6 +2,7 @@ package com.appglu;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 public class AnalyticsSessionEvent implements Serializable {
@@ -31,11 +32,18 @@ public class AnalyticsSessionEvent implements Serializable {
 	}
 
 	public Map<String, String> getParameters() {
+		if (parameters == null) {
+			parameters = new HashMap<String, String>();
+		}
 		return parameters;
 	}
 
 	public void setParameters(Map<String, String> parameters) {
 		this.parameters = parameters;
+	}
+	
+	public void addParameter(String name, String value) {
+		this.getParameters().put(name, value);
 	}
 
 	@Override
