@@ -34,34 +34,59 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		this.analyticsDatabaseHelper = new AnalyticsDatabaseHelper(getContext());
 		this.analyticsDatabaseHelper.onUpgrade(analyticsDatabaseHelper.getWritableDatabase(), AnalyticsDatabaseHelper.DATABASE_VERSION, AnalyticsDatabaseHelper.DATABASE_VERSION);
 		
-		this.lastTimestamp = new Date().getTime();
-		
-		this.execSQL("insert into sessions (id, start_date, end_date, client_uuid) values (1, " + lastTimestamp + ", null, '123')");
-		this.execSQL("insert into sessions (id, start_date, end_date, client_uuid) values (2, " + lastTimestamp + ", " + lastTimestamp + ", '12345')");
-		this.execSQL("insert into sessions (id, start_date, end_date, client_uuid) values (3, " + lastTimestamp + ", null, '123')");
-		
-		this.execSQL("insert into session_parameters (id, session_id, name, value) values (1, 1, 'name1', 'value1')");
-		this.execSQL("insert into session_parameters (id, session_id, name, value) values (2, 1, 'name2', 'value2')");
-		this.execSQL("insert into session_parameters (id, session_id, name, value) values (3, 1, 'name3', 'value3')");
-		this.execSQL("insert into session_parameters (id, session_id, name, value) values (4, 3, 'name7', 'value4')");
-		this.execSQL("insert into session_parameters (id, session_id, name, value) values (5, 3, 'name8', 'value5')");
-		this.execSQL("insert into session_parameters (id, session_id, name, value) values (6, 3, 'name9', 'value6')");
-		
-		this.execSQL("insert into session_events (id, session_id, name, date) values (1, 1, 'event1', " + lastTimestamp + ")");
-		this.execSQL("insert into session_events (id, session_id, name, date) values (2, 2, 'event2', " + lastTimestamp + ")");
-		this.execSQL("insert into session_events (id, session_id, name, date) values (3, 2, 'event3', " + lastTimestamp + ")");
-		
-		this.execSQL("insert into session_event_parameters (id, event_id, name, value) values (1, 1, 'name1', 'value1')");
-		this.execSQL("insert into session_event_parameters (id, event_id, name, value) values (2, 1, 'name2', 'value2')");
-		this.execSQL("insert into session_event_parameters (id, event_id, name, value) values (3, 1, 'name3', 'value3')");
-		this.execSQL("insert into session_event_parameters (id, event_id, name, value) values (4, 3, 'name4', 'value4')");
-		this.execSQL("insert into session_event_parameters (id, event_id, name, value) values (5, 3, 'name5', 'value5')");
-		this.execSQL("insert into session_event_parameters (id, event_id, name, value) values (6, 3, 'name6', 'value6')");
+		this.setUpScript();
 		
 		this.analyticsRepository = new SQLiteAnalyticsRepository(this.analyticsDatabaseHelper);
 	}
-	
+
 	/* --- Helper methods for tests --- */
+	
+	private void setUpScript() {
+		this.lastTimestamp = new Date().getTime();
+		
+		SQLiteDatabase database = this.analyticsDatabaseHelper.getWritableDatabase();
+		database.beginTransaction();
+		
+		try {
+			database.execSQL("insert into sessions (id, start_date, end_date, client_uuid) values (1, " + lastTimestamp + ", null, '123')");
+			database.execSQL("insert into sessions (id, start_date, end_date, client_uuid) values (2, " + lastTimestamp + ", " + lastTimestamp + ", '12345')");
+			database.execSQL("insert into sessions (id, start_date, end_date, client_uuid) values (3, " + lastTimestamp + ", null, '123')");
+			database.execSQL("insert into session_parameters (id, session_id, name, value) values (1, 1, 'name1', 'value1')");
+			database.execSQL("insert into session_parameters (id, session_id, name, value) values (2, 1, 'name2', 'value2')");
+			database.execSQL("insert into session_parameters (id, session_id, name, value) values (3, 1, 'name3', 'value3')");
+			database.execSQL("insert into session_parameters (id, session_id, name, value) values (4, 3, 'name7', 'value4')");
+			database.execSQL("insert into session_parameters (id, session_id, name, value) values (5, 3, 'name8', 'value5')");
+			database.execSQL("insert into session_parameters (id, session_id, name, value) values (6, 3, 'name9', 'value6')");
+			database.execSQL("insert into session_events (id, session_id, name, date) values (1, 1, 'event1', " + lastTimestamp + ")");
+			database.execSQL("insert into session_events (id, session_id, name, date) values (2, 2, 'event2', " + lastTimestamp + ")");
+			database.execSQL("insert into session_events (id, session_id, name, date) values (3, 2, 'event3', " + lastTimestamp + ")");
+			database.execSQL("insert into session_event_parameters (id, event_id, name, value) values (1, 1, 'name1', 'value1')");
+			database.execSQL("insert into session_event_parameters (id, event_id, name, value) values (2, 1, 'name2', 'value2')");
+			database.execSQL("insert into session_event_parameters (id, event_id, name, value) values (3, 1, 'name3', 'value3')");
+			database.execSQL("insert into session_event_parameters (id, event_id, name, value) values (4, 3, 'name4', 'value4')");
+			database.execSQL("insert into session_event_parameters (id, event_id, name, value) values (5, 3, 'name5', 'value5')");
+			database.execSQL("insert into session_event_parameters (id, event_id, name, value) values (6, 3, 'name6', 'value6')");
+			
+			database.setTransactionSuccessful();
+		} finally {
+			database.endTransaction();
+			database.close();
+		}
+	}
+	
+	private int countTable(String tableName) {
+		SQLiteDatabase database = this.analyticsDatabaseHelper.getReadableDatabase();
+		Cursor cursor = null;
+		try {
+			cursor = database.query(tableName, null, null, null, null, null, null);
+			return cursor.getCount();
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+			database.close();
+		}
+	}
 	
 	private AnalyticsSessionEvent event(String name, Map<String, String> parameters) {
 		AnalyticsSessionEvent event = new AnalyticsSessionEvent();
@@ -75,7 +100,7 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		return Arrays.asList(eventArray);
 	}
 	
-	private Map<String, String> parametersOne() {
+	private Map<String, String> parameters123() {
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("name1", "value1");
 		parameters.put("name2", "value2");
@@ -83,7 +108,7 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		return parameters;
 	}
 	
-	private Map<String, String> parametersTwo() {
+	private Map<String, String> parameters456() {
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("name4", "value4");
 		parameters.put("name5", "value5");
@@ -140,7 +165,7 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		}
 		
 		Assert.assertNotNull(session.getEvents());
-		Assert.assertEquals(session.getEvents().size(), events.size());
+		Assert.assertEquals(events.size(), session.getEvents().size());
 		
 		for (int i = 0; i < events.size(); i++) {
 			AnalyticsSessionEvent expectedEvent = events.get(i);
@@ -152,22 +177,18 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		}
 	}
 	
-	private void execSQL(String sql) {
-		SQLiteDatabase database = this.analyticsDatabaseHelper.getWritableDatabase();
-		database.execSQL(sql);
-		database.close();
-	}
-	
-	private int countTable(String tableName) {
-		SQLiteDatabase database = this.analyticsDatabaseHelper.getReadableDatabase();
-		Cursor cursor = database.query(tableName, null, null, null, null, null, null);
-		int count = cursor.getCount();
-		cursor.close();
-		database.close();
-		return count;
-	}
-	
 	/* --- Test methods --- */
+	
+	public void testGetCurrentSessionId()  {
+		Long currentSessionId = this.analyticsRepository.getCurrentSessionId();
+		Assert.assertEquals(Long.valueOf(1L), currentSessionId);
+		
+		int affectedRows = this.analyticsRepository.closeSessions(new Date());
+		Assert.assertEquals(2, affectedRows);
+		
+		Long noSessionId = this.analyticsRepository.getCurrentSessionId();
+		Assert.assertNull(noSessionId);
+	}
 	
 	public void testGetAllClosedSessions() {
 		List<AnalyticsSession> closedSessions = this.analyticsRepository.getAllClosedSessions();
@@ -175,10 +196,9 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		
 		AnalyticsSession sessionTwo = closedSessions.get(0);
 		this.assertClosedSession(sessionTwo, "12345");
-		
 		this.assertSessionParameters(sessionTwo, null);
 		
-		List<AnalyticsSessionEvent> expectedEvents = this.events(event("event2", null), event("event3", parametersTwo()));
+		List<AnalyticsSessionEvent> expectedEvents = events(event("event2", null), event("event3", parameters456()));
 		this.assertSessionEvents(sessionTwo, expectedEvents);
 	}
 	
@@ -186,10 +206,27 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		AnalyticsSession sessionOne = this.analyticsRepository.getSessionById(1L);
 		this.assertOpenSession(sessionOne, "123");
 		
-		this.assertSessionParameters(sessionOne, parametersOne());
+		this.assertSessionParameters(sessionOne, parameters123());
 		
-		List<AnalyticsSessionEvent> expectedEvents = this.events(event("event1", parametersOne()));
+		List<AnalyticsSessionEvent> expectedEvents = events(event("event1", parameters123()));
 		this.assertSessionEvents(sessionOne, expectedEvents);
+	}
+	
+	public void testRemoveAllClosedSessions() {
+		Assert.assertEquals(3, this.countTable("sessions"));
+		Assert.assertEquals(6, this.countTable("session_parameters"));
+		Assert.assertEquals(3, this.countTable("session_events"));
+		Assert.assertEquals(6, this.countTable("session_event_parameters"));
+		
+		this.analyticsRepository.removeAllClosedSessions();
+		
+		List<AnalyticsSession> closedSessions = this.analyticsRepository.getAllClosedSessions();
+		Assert.assertEquals(0, closedSessions.size());
+		
+		Assert.assertEquals(2, this.countTable("sessions"));
+		Assert.assertEquals(6, this.countTable("session_parameters"));
+		Assert.assertEquals(1, this.countTable("session_events"));
+		Assert.assertEquals(3, this.countTable("session_event_parameters"));
 	}
 
 	public void testCreateSession() {
@@ -213,11 +250,38 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		this.assertSessionEvents(sessionFour, null);
 	}
 	
+	public void testCreateSessionWithParamsAndEvents() {
+		Assert.assertEquals(3, this.countTable("sessions"));
+		
+		AnalyticsSession session = new AnalyticsSession();
+		
+		Date now = new Date();
+		long timestamp = now.getTime();
+		
+		session.setStartDate(now);
+		session.setClientUUID(this.deviceInformation.getDeviceUUID());
+		
+		List<AnalyticsSessionEvent> events = events(event("eventOne", parameters456()), event("eventTwo", parameters123()), event("eventThree", parameters123()));
+		
+		session.setParameters(parameters123());
+		session.setEvents(events);
+		
+		this.analyticsRepository.createSession(session);
+		
+		Assert.assertEquals(4, this.countTable("sessions"));
+		
+		AnalyticsSession sessionFour = this.analyticsRepository.getSessionById(4L);
+		this.assertOpenSession(sessionFour, timestamp, sessionFour.getClientUUID());
+		this.assertSessionParameters(sessionFour, parameters123());
+		this.assertSessionEvents(sessionFour, events);
+	}
+	
 	public void testCloseSessions() {
 		Date now = new Date();
 		long timestamp = now.getTime();
 		
-		this.analyticsRepository.closeSessions(now);
+		int affectedRows = this.analyticsRepository.closeSessions(now);
+		Assert.assertEquals(2, affectedRows);
 		
 		List<AnalyticsSession> closedSessions = this.analyticsRepository.getAllClosedSessions();
 		Assert.assertEquals(3, closedSessions.size());
@@ -241,7 +305,7 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		
 		AnalyticsSession sessionOne = this.analyticsRepository.getSessionById(1L);
 		
-		Map<String, String> parameters = parametersOne();
+		Map<String, String> parameters = parameters123();
 		parameters.put("name7", "value7");
 		
 		this.assertSessionParameters(sessionOne, parameters);
@@ -262,20 +326,37 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		this.assertSessionEvents(sessionThree, events(event));
 	}
 	
+	public void testCreateEventWithParams() {
+		Assert.assertEquals(3, this.countTable("session_events"));
+		
+		AnalyticsSessionEvent event = new AnalyticsSessionEvent();
+		event.setName("name");
+		event.setDate(new Date());
+		event.setParameters(parameters123());
+		
+		this.analyticsRepository.createEvent(3L, event);
+		
+		Assert.assertEquals(4, this.countTable("session_events"));
+		
+		AnalyticsSession sessionThree = this.analyticsRepository.getSessionById(3L);
+		this.assertSessionEvents(sessionThree, events(event));
+	}
+	
 	public void testAddEventParameter() {
 		AnalyticsSessionEvent event = new AnalyticsSessionEvent();
 		event.setName("name");
 		event.setDate(new Date());
-		event.addParameter("name", "value");
 		
 		long eventId = this.analyticsRepository.createEvent(3L, event);
 		
 		Assert.assertEquals(6, this.countTable("session_event_parameters"));
-		
+
 		this.analyticsRepository.addEventParameter(eventId, "name", "value");
 		
 		Assert.assertEquals(7, this.countTable("session_event_parameters"));
-		
+
+		event.addParameter("name", "value");
+
 		AnalyticsSession sessionThree = this.analyticsRepository.getSessionById(3L);
 		this.assertSessionEvents(sessionThree, events(event));
 	}

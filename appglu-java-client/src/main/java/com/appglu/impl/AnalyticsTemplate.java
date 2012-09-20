@@ -19,13 +19,13 @@ public final class AnalyticsTemplate implements AnalyticsOperations {
 		this.restOperations = restOperations;
 	}
 
-	public void createSession(AnalyticsSession session) {
+	public void uploadSession(AnalyticsSession session) {
 		List<AnalyticsSession> sessions = new ArrayList<AnalyticsSession>();
 		sessions.add(session);
-		this.createSessions(sessions);
+		this.uploadSessions(sessions);
 	}
 
-	public void createSessions(List<AnalyticsSession> sessions) {
+	public void uploadSessions(List<AnalyticsSession> sessions) {
 		this.restOperations.postForObject(CREATE_SESSION_URL, new AnalyticsSessionsBody(sessions), String.class);
 	}
 

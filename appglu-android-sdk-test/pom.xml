@@ -10,7 +10,7 @@
     <name>appglu-android-sdk-test</name>
     
     <properties>
-        <platform.version>2.1.2</platform.version>
+        <platform.version>2.2.1</platform.version>
         <appglu.android.sdk.version>1.0.0-SNAPSHOT</appglu.android.sdk.version>
     </properties>
 
@@ -47,7 +47,7 @@
                 <configuration>
                     <androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
                     <sdk>
-                        <platform>7</platform>
+                        <platform>8</platform>
                     </sdk>
                     <undeployBeforeDeploy>true</undeployBeforeDeploy>
                 </configuration>

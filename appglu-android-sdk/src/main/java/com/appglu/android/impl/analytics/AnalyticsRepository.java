@@ -7,21 +7,23 @@ import com.appglu.AnalyticsSession;
 import com.appglu.AnalyticsSessionEvent;
 
 public interface AnalyticsRepository {
-
+	
+	public Long getCurrentSessionId();
+	
 	public List<AnalyticsSession> getAllClosedSessions();
 	
-	public AnalyticsSession getCurrentSession();
-	
-	public AnalyticsSession getSessionById(long id);
+	public AnalyticsSession getSessionById(long sessionId);
+
+	public void removeAllClosedSessions();
+
+	public int closeSessions(Date endDate);
 	
 	public long createSession(AnalyticsSession session);
 	
-	public void closeSessions(Date endDate);
+	public void addSessionParameter(long sessionId, String name, String value);
 	
-	public void addSessionParameter(Long sessionId, String name, String value);
+	public long createEvent(long sessionId, AnalyticsSessionEvent event);
 	
-	public long createEvent(Long sessionId, AnalyticsSessionEvent event);
-	
-	public void addEventParameter(Long eventId, String name, String value);
+	public void addEventParameter(long eventId, String name, String value);
 	
 }

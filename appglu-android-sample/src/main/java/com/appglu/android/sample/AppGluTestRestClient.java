@@ -49,7 +49,7 @@ public class AppGluTestRestClient {
 		this.push_readDevice();
 		this.push_removeDevice();
 		
-		this.analytics_createSession();
+		this.analytics_uploadSession();
 	}
 	
 	private Object crud_create() {
@@ -115,7 +115,7 @@ public class AppGluTestRestClient {
 		System.out.println("push_removeDevice: " + success);
 	}
 	
-	private void analytics_createSession() {
+	private void analytics_uploadSession() {
 		AnalyticsSession session = new AnalyticsSession();
 		session.setClientUUID("123");
 		
@@ -134,8 +134,8 @@ public class AppGluTestRestClient {
 		
 		session.setEvents(events);
 		
-		analyticsOperations.createSession(session);
-		System.out.println("analytics_createSession: executed");
+		analyticsOperations.uploadSession(session);
+		System.out.println("analytics_uploadSession: executed");
 	}
 
 }

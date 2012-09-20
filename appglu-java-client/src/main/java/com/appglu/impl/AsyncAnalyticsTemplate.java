@@ -19,19 +19,19 @@ public final class AsyncAnalyticsTemplate implements AsyncAnalyticsOperations {
 		this.analyticsOperations = analyticsOperations;
 	}
 
-	public void createSessionInBackground(final AnalyticsSession session, AsyncCallback<Void> callback) {
+	public void uploadSessionInBackground(final AnalyticsSession session, AsyncCallback<Void> callback) {
 		asyncExecutor.execute(callback, new Callable<Void>() {
 			public Void call() {
-				analyticsOperations.createSession(session);
+				analyticsOperations.uploadSession(session);
 				return null;
 			}
 		});
 	}
 
-	public void createSessionsInBackground(final List<AnalyticsSession> sessions, AsyncCallback<Void> callback) {
+	public void uploadSessionsInBackground(final List<AnalyticsSession> sessions, AsyncCallback<Void> callback) {
 		asyncExecutor.execute(callback, new Callable<Void>() {
 			public Void call() {
-				analyticsOperations.createSessions(sessions);
+				analyticsOperations.uploadSessions(sessions);
 				return null;
 			}
 		});
