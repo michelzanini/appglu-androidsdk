@@ -20,6 +20,8 @@ public class AnalyticsDatabaseHelper extends SQLiteOpenHelper {
 		database.execSQL("CREATE TABLE session_parameters (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, session_id INTEGER NOT NULL, name TEXT NOT NULL, value TEXT, FOREIGN KEY(session_id) REFERENCES sessions(id) ON DELETE CASCADE);");
 		database.execSQL("CREATE TABLE session_events (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, session_id INTEGER NOT NULL, name TEXT NOT NULL, date NUMERIC, FOREIGN KEY(session_id) REFERENCES sessions(id) ON DELETE CASCADE);");
 		database.execSQL("CREATE TABLE session_event_parameters (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, event_id INTEGER NOT NULL, name TEXT NOT NULL, value TEXT, FOREIGN KEY(event_id) REFERENCES session_events(id) ON DELETE CASCADE);");
+		database.execSQL("CREATE UNIQUE INDEX session_parameters_name_unique ON session_parameters (session_id, name);");
+		database.execSQL("CREATE UNIQUE INDEX session_event_parameters_name_unique ON session_event_parameters (event_id, name);");
 	}
 
 	@Override
