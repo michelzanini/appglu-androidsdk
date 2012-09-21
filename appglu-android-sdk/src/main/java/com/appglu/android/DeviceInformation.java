@@ -8,11 +8,17 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
+
+import com.appglu.android.util.AppGluUtils;
 
 public class DeviceInformation {
 	
 	static final String UUID_KEY = "com.appglu.android.DeviceInformation.UUID_KEY";
+	
+	private Context context;
 	
 	private String deviceUUID;
 	
@@ -31,6 +37,9 @@ public class DeviceInformation {
 	private String deviceManufacturer;
 	
 	public DeviceInformation(Context context) {
+		AppGluUtils.assertNotNull(context, "Context cannot be null");
+		this.context = context.getApplicationContext();
+		
 		this.setDeviceUUID(context);
 		this.setDeviceInfo(context);
 		this.setAppInfo(context);
@@ -66,6 +75,12 @@ public class DeviceInformation {
 
 	public String getDeviceManufacturer() {
 		return deviceManufacturer;
+	}
+	
+	public boolean hasInternetConnection() {
+		ConnectivityManager connectivityManager = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+	    return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 	}
 
 	protected void setDeviceUUID(Context context) {
@@ -104,7 +119,7 @@ public class DeviceInformation {
 			this.appIdentifier = "";
 		}
 	}
-
+	
 	@Override
 	public String toString() {
 		return "DeviceInformation [deviceUUID=" + deviceUUID + ", deviceOS="

@@ -1,4 +1,4 @@
-package com.appglu.android.impl.analytics;
+package com.appglu.android.analytics;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

@@ -1,19 +1,19 @@
-package com.appglu.android.impl.analytics;
+package com.appglu.android.analytics;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.springframework.util.StringUtils;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.appglu.AnalyticsSession;
 import com.appglu.AnalyticsSessionEvent;
+import com.appglu.android.util.AppGluUtils;
 
 public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 	
@@ -139,15 +139,33 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 		}
 	}
 
-	public void addSessionParameter(long sessionId, String name, String value) {
-		if (!StringUtils.hasText(name)) {
+	public void setSessionParameter(long sessionId, String name, String value) {
+		if (!AppGluUtils.hasText(name)) {
 			throw new AnalyticsRepositoryException();
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.beginTransaction();
 	    try {
-			this.doAddSessionParameter(database, sessionId, name, value);
+			try {
+				this.doAddSessionParameter(database, sessionId, name, value);
+			} catch (SQLiteConstraintException e) {
+				this.doUpdateSessionParameter(database, sessionId, name, value);
+			}
+			database.setTransactionSuccessful();
+		} catch (SQLException e) {
+			throw new AnalyticsRepositoryException(e);
+		} finally {
+			database.endTransaction();
+			database.close();
+		}
+	}
+
+	public void removeSessionParameter(long sessionId, String name) {
+		SQLiteDatabase database = this.getWritableDatabase();
+		database.beginTransaction();
+	    try {
+	    	database.delete("session_parameters", "session_id = ? and name = ?", new String[] { String.valueOf(sessionId), name });
 			database.setTransactionSuccessful();
 		} catch (SQLException e) {
 			throw new AnalyticsRepositoryException(e);
@@ -158,7 +176,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 	}
 
 	public long createEvent(long sessionId, AnalyticsSessionEvent event) {
-		if (event == null || !StringUtils.hasText(event.getName())) {
+		if (event == null || !AppGluUtils.hasText(event.getName())) {
 			throw new AnalyticsRepositoryException();
 		}
 		
@@ -176,15 +194,19 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 		}
 	}
 
-	public void addEventParameter(long eventId, String name, String value) {
-		if (!StringUtils.hasText(name)) {
+	public void setEventParameter(long eventId, String name, String value) {
+		if (!AppGluUtils.hasText(name)) {
 			throw new AnalyticsRepositoryException();
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.beginTransaction();
 	    try {
-			this.doAddEventParameter(database, eventId, name, value);
+			try {
+				this.doAddEventParameter(database, eventId, name, value);
+			} catch (SQLiteConstraintException e) {
+				this.doUpdateEventParameter(database, eventId, name, value);
+			}
 			database.setTransactionSuccessful();
 		} catch (SQLException e) {
 			throw new AnalyticsRepositoryException(e);
@@ -251,6 +273,24 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 		values.put("value", value);
 		
 		database.insertOrThrow("session_event_parameters", null, values);
+	}
+	
+	private void doUpdateSessionParameter(SQLiteDatabase database, long sessionId, String name, String value) {
+		ContentValues values = new ContentValues();
+		
+		values.put("session_id", sessionId);
+		values.put("value", value);
+		
+		database.update("session_parameters", values, "name = ?", new String[] { name });
+	}
+	
+	private void doUpdateEventParameter(SQLiteDatabase database, long eventId, String name, String value) {
+		ContentValues values = new ContentValues();
+		
+		values.put("event_id", eventId);
+		values.put("value", value);
+		
+		database.update("session_event_parameters", values, "name = ?", new String[] { name });
 	}
 	
 	private String sessionSelectStatement(String whereClause) {

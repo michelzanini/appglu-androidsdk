@@ -1,4 +1,4 @@
-package com.appglu.android.impl;
+package com.appglu.android;
 
 import android.os.AsyncTask;
 

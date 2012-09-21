@@ -2,7 +2,11 @@ package com.appglu.android;
 
 import android.content.Context;
 
-import com.appglu.android.impl.AsyncTaskExecutor;
+import com.appglu.android.analytics.AnalyticsDatabaseHelper;
+import com.appglu.android.analytics.AnalyticsDispatcher;
+import com.appglu.android.analytics.AnalyticsRepository;
+import com.appglu.android.analytics.SQLiteAnalyticsRepository;
+import com.appglu.android.util.AppGluUtils;
 import com.appglu.impl.AppGluTemplate;
 
 public final class AppGlu {
@@ -10,6 +14,8 @@ public final class AppGlu {
 	static final String APPGLU_PREFERENCES_KEY = "com.appglu.android.AppGlu.APPGLU_PREFERENCES_KEY";
 	
 	private static AppGlu instance;
+	
+	private Context context;
 	
 	private AppGluTemplate appGluTemplate;
 	
@@ -23,6 +29,8 @@ public final class AppGlu {
 	
 	private PushApi pushApi;
 	
+	private AnalyticsApi analyticsApi;
+	
 	protected AppGlu() { 
 		
 	}
@@ -34,30 +42,43 @@ public final class AppGlu {
 		return instance;
 	}
 	
+	protected static AppGlu getRequiredInstance() {
+		if (instance == null) {
+			throw new AppGluNotInitializedException();
+		}
+		return instance;
+	}
+	
 	protected void doInitialize(Context context, AppGluSettings settings) {
+		AppGluUtils.assertNotNull(context, "Context cannot be null");
+		AppGluUtils.assertNotNull(settings, "AppGluSettings cannot be null");
+		
+		this.context = context.getApplicationContext();
+		
 		this.settings = settings;
-		this.deviceInformation = new DeviceInformation(context);
+		this.deviceInformation = new DeviceInformation(this.context);
+		
 		this.appGluTemplate = settings.createAppGluTemplate();
 		this.appGluTemplate.setAsyncExecutor(new AsyncTaskExecutor());
 	}
 
 	protected AppGluTemplate getAppGluTemplate() {
 		if (this.appGluTemplate == null) {
-			throw new AppGluException("AppGlu not initialized");
+			throw new AppGluNotInitializedException();
 		}
 		return appGluTemplate;
 	}
 
 	protected AppGluSettings getSettings() {
 		if (this.settings == null) {
-			throw new AppGluException("AppGlu not initialized");
+			throw new AppGluNotInitializedException();
 		}
 		return settings;
 	}
 	
 	protected DeviceInformation getDeviceInformation() {
 		if (this.deviceInformation == null) {
-			throw new AppGluException("AppGlu not initialized");
+			throw new AppGluNotInitializedException();
 		}
 		return deviceInformation;
 	}
@@ -83,26 +104,47 @@ public final class AppGlu {
 		return this.pushApi;
 	}
 	
+	protected AnalyticsApi getAnalyticsApi() {
+		if (this.analyticsApi == null) {
+			AnalyticsDatabaseHelper analyticsDatabaseHelper = new AnalyticsDatabaseHelper(this.context);
+			AnalyticsRepository analyticsRepository = new SQLiteAnalyticsRepository(analyticsDatabaseHelper);
+			
+			AnalyticsDispatcher analyticsDispatcher = this.settings.createAnalyticsDispatcher(this.getAppGluTemplate().analyticsOperations());
+			this.analyticsApi = new AnalyticsApi(analyticsDispatcher, analyticsRepository, this.deviceInformation);
+		}
+		return this.analyticsApi;
+	}
+
 	//Public Methods
 	
 	public static void initialize(Context context, AppGluSettings settings) {
-		getInstance().doInitialize(context, settings);
+		if (instance == null) {
+			getInstance().doInitialize(context, settings);
+		}
+	}
+	
+	public static boolean hasInternetConnection() {
+		return deviceInformation().hasInternetConnection();
 	}
 	
 	public static DeviceInformation deviceInformation() {
-		return getInstance().getDeviceInformation();
+		return getRequiredInstance().getDeviceInformation();
 	}
 	
 	public static CrudApi crudApi() {
-		return getInstance().getCrudApi();
+		return getRequiredInstance().getCrudApi();
 	}
 	
 	public static SavedQueriesApi savedQueriesApi() {
-		return getInstance().getSavedQueriesApi();
+		return getRequiredInstance().getSavedQueriesApi();
 	}
 	
 	public static PushApi pushApi() {
-		return getInstance().getPushApi();
+		return getRequiredInstance().getPushApi();
+	}
+	
+	public static AnalyticsApi analyticsApi() {
+		return getRequiredInstance().getAnalyticsApi();
 	}
 	
 }

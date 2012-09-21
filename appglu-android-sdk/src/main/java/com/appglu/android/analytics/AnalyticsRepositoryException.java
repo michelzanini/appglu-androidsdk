@@ -1,4 +1,4 @@
-package com.appglu.android.impl.analytics;
+package com.appglu.android.analytics;
 
 @SuppressWarnings("serial")
 public class AnalyticsRepositoryException extends RuntimeException {

@@ -1,4 +1,4 @@
-package com.appglu.android.impl.analytics;
+package com.appglu.android.analytics;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -14,6 +14,9 @@ import android.test.AndroidTestCase;
 import com.appglu.AnalyticsSession;
 import com.appglu.AnalyticsSessionEvent;
 import com.appglu.android.DeviceInformation;
+import com.appglu.android.analytics.AnalyticsDatabaseHelper;
+import com.appglu.android.analytics.AnalyticsRepository;
+import com.appglu.android.analytics.SQLiteAnalyticsRepository;
 
 public class AnalyticsRepositoryTest extends AndroidTestCase {
 
@@ -296,10 +299,10 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		this.assertSession(sessionThree, this.lastTimestamp, timestamp, "123");
 	}
 	
-	public void testAddSessionParameter() {
+	public void testSetSessionParameter() {
 		Assert.assertEquals(6, this.countTable("session_parameters"));
 		
-		this.analyticsRepository.addSessionParameter(1L, "name7", "value7");
+		this.analyticsRepository.setSessionParameter(1L, "name7", "value7");
 		
 		Assert.assertEquals(7, this.countTable("session_parameters"));
 		
@@ -309,6 +312,32 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		parameters.put("name7", "value7");
 		
 		this.assertSessionParameters(sessionOne, parameters);
+	}
+	
+	public void testSetSessionParameterMoreThenOnce() {
+		Assert.assertEquals(6, this.countTable("session_parameters"));
+		
+		this.analyticsRepository.setSessionParameter(2L, "name", "value1");
+		this.analyticsRepository.setSessionParameter(2L, "name", "value2");
+		
+		Assert.assertEquals(7, this.countTable("session_parameters"));
+		
+		AnalyticsSession sessionTwo = this.analyticsRepository.getSessionById(2L);
+		Assert.assertEquals(1, sessionTwo.getParameters().size());
+		Assert.assertEquals("value2", sessionTwo.getParameters().get("name"));
+	}
+	
+	public void testRemoveSessionParameter() {
+		Assert.assertEquals(6, this.countTable("session_parameters"));
+		
+		this.analyticsRepository.removeSessionParameter(1L, "name1");
+		this.analyticsRepository.removeSessionParameter(1L, "name2");
+		this.analyticsRepository.removeSessionParameter(1L, "does_not_exist");
+		
+		Assert.assertEquals(4, this.countTable("session_parameters"));
+		
+		AnalyticsSession sessionOne = this.analyticsRepository.getSessionById(1L);
+		Assert.assertEquals(1, sessionOne.getParameters().size());
 	}
 	
 	public void testCreateEvent() {
@@ -342,7 +371,7 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		this.assertSessionEvents(sessionThree, events(event));
 	}
 	
-	public void testAddEventParameter() {
+	public void testSetEventParameter() {
 		AnalyticsSessionEvent event = new AnalyticsSessionEvent();
 		event.setName("name");
 		event.setDate(new Date());
@@ -351,7 +380,7 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		
 		Assert.assertEquals(6, this.countTable("session_event_parameters"));
 
-		this.analyticsRepository.addEventParameter(eventId, "name", "value");
+		this.analyticsRepository.setEventParameter(eventId, "name", "value");
 		
 		Assert.assertEquals(7, this.countTable("session_event_parameters"));
 
@@ -359,6 +388,15 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 
 		AnalyticsSession sessionThree = this.analyticsRepository.getSessionById(3L);
 		this.assertSessionEvents(sessionThree, events(event));
+	}
+	
+	public void testSetEventParameterMoreThenOnce() {
+		Assert.assertEquals(6, this.countTable("session_event_parameters"));
+
+		this.analyticsRepository.setEventParameter(2L, "name", "value1");
+		this.analyticsRepository.setEventParameter(2L, "name", "value2");
+		
+		Assert.assertEquals(7, this.countTable("session_event_parameters"));
 	}
 	
 }

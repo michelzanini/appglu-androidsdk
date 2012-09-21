@@ -1,4 +1,4 @@
-package com.appglu.android.impl.analytics;
+package com.appglu.android.analytics;
 
 import java.util.Date;
 import java.util.List;
@@ -20,10 +20,12 @@ public interface AnalyticsRepository {
 	
 	public long createSession(AnalyticsSession session);
 	
-	public void addSessionParameter(long sessionId, String name, String value);
+	public void setSessionParameter(long sessionId, String name, String value);
+	
+	public void removeSessionParameter(long sessionId, String name);
 	
 	public long createEvent(long sessionId, AnalyticsSessionEvent event);
 	
-	public void addEventParameter(long eventId, String name, String value);
+	public void setEventParameter(long eventId, String name, String value);
 	
 }

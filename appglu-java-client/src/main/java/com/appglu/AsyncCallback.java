@@ -12,6 +12,10 @@ public abstract class AsyncCallback<Result> {
 		
 	}
 	
+	public void onNoInternetConnection() {
+		
+	}
+	
 	public void onFinish() {
 		
 	}
