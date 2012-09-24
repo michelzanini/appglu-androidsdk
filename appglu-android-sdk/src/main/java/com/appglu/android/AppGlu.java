@@ -6,12 +6,18 @@ import com.appglu.android.analytics.AnalyticsDatabaseHelper;
 import com.appglu.android.analytics.AnalyticsDispatcher;
 import com.appglu.android.analytics.AnalyticsRepository;
 import com.appglu.android.analytics.SQLiteAnalyticsRepository;
+import com.appglu.android.log.Logger;
+import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.util.AppGluUtils;
 import com.appglu.impl.AppGluTemplate;
 
 public final class AppGlu {
 	
+	public static final String LOG_TAG = "AppGlu";
+	
 	static final String APPGLU_PREFERENCES_KEY = "com.appglu.android.AppGlu.APPGLU_PREFERENCES_KEY";
+
+	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
 	
 	private static AppGlu instance;
 	
@@ -31,7 +37,7 @@ public final class AppGlu {
 	
 	private AnalyticsApi analyticsApi;
 	
-	protected AppGlu() { 
+	protected AppGlu() {
 		
 	}
 	
@@ -60,6 +66,8 @@ public final class AppGlu {
 		
 		this.appGluTemplate = settings.createAppGluTemplate();
 		this.appGluTemplate.setAsyncExecutor(new AsyncTaskExecutor());
+		
+		logger.info("AppGlu was initialized");
 	}
 
 	protected AppGluTemplate getAppGluTemplate() {
@@ -125,6 +133,10 @@ public final class AppGlu {
 	
 	public static boolean hasInternetConnection() {
 		return deviceInformation().hasInternetConnection();
+	}
+	
+	public static AppGluSettings settings() {
+		return getRequiredInstance().getSettings();
 	}
 	
 	public static DeviceInformation deviceInformation() {

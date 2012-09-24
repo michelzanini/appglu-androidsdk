@@ -7,18 +7,20 @@ import android.app.Activity;
 import android.os.Handler;
 
 import com.appglu.AnalyticsSessionEvent;
-import com.appglu.AppGluHttpException;
 import com.appglu.android.analytics.AnalyticsDispatcher;
 import com.appglu.android.analytics.AnalyticsRepository;
-import com.appglu.android.analytics.AnalyticsRepositoryException;
 import com.appglu.android.analytics.AnalyticsService;
 import com.appglu.android.analytics.AnalyticsSessionCallback;
+import com.appglu.android.log.Logger;
+import com.appglu.android.log.LoggerFactory;
 
 public final class AnalyticsApi {
 	
+	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
+	
 	private static final int DEFAULT_CLOSE_SESSIONS_DELAY = 10 * 1000;
 	
-	private AnalyticsService analyticsService;
+	private final AnalyticsService analyticsService;
 	
 	private final AnalyticsApiThread analyticsApiThread = new AnalyticsApiThread();
 	
@@ -123,7 +125,7 @@ public final class AnalyticsApi {
 	
 	private class AnalyticsApiThread extends Thread {
 		AnalyticsApiThread() {
-			super("AppGluAnalyticsApiThread");
+			super("AppGluAnalyticsThread");
 		}
 
 		@Override
@@ -133,15 +135,8 @@ public final class AnalyticsApi {
 				try {
 					runnable = runnableQueue.take();
 					runnable.run();
-				} catch (AppGluHttpException e) {
-					//TODO handle exception
-					e.printStackTrace();
-				} catch (AnalyticsRepositoryException e) {
-					//TODO handle exception
-					e.printStackTrace();
 				} catch (Throwable e) {
-					//TODO handle exception
-					e.printStackTrace();
+					logger.error(e);
 				}
 			}
 		}

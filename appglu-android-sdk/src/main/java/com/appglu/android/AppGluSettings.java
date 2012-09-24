@@ -2,7 +2,10 @@ package com.appglu.android;
 
 import com.appglu.AnalyticsOperations;
 import com.appglu.android.analytics.AnalyticsDispatcher;
-import com.appglu.android.analytics.AppGluAnalyticsDispatcher;
+import com.appglu.android.analytics.ApiAnalyticsDispatcher;
+import com.appglu.android.analytics.LogAnalyticsDispatcher;
+import com.appglu.android.log.LoggerFactory;
+import com.appglu.android.log.LoggerLevel;
 import com.appglu.impl.AppGluTemplate;
 
 public class AppGluSettings {
@@ -33,6 +36,14 @@ public class AppGluSettings {
 		return applicationSecret;
 	}
 	
+	public LoggerLevel getLoggerLevel() {
+		return LoggerFactory.getLevel();
+	}
+
+	public void setLoggerLevel(LoggerLevel loggerLevel) {
+		LoggerFactory.setLevel(loggerLevel);
+	}
+
 	public boolean isAnalyticsDeveloperModeEnabled() {
 		return analyticsDeveloperModeEnabled;
 	}
@@ -46,9 +57,11 @@ public class AppGluSettings {
 	}
 	
 	protected AnalyticsDispatcher createAnalyticsDispatcher(AnalyticsOperations analyticsOperations) {
-		AppGluAnalyticsDispatcher appGluAnalyticsDispatcher = new AppGluAnalyticsDispatcher(analyticsOperations);
-		appGluAnalyticsDispatcher.setDeveloperMode(this.isAnalyticsDeveloperModeEnabled());
-		return appGluAnalyticsDispatcher;
+		if (this.analyticsDeveloperModeEnabled) {
+			return new LogAnalyticsDispatcher();
+		} else {
+			return new ApiAnalyticsDispatcher(analyticsOperations);	
+		}
 	}
 	
 }

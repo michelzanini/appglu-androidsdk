@@ -7,9 +7,14 @@ import java.util.Map;
 import com.appglu.AnalyticsSession;
 import com.appglu.AnalyticsSessionEvent;
 import com.appglu.AppGluHttpClientException;
+import com.appglu.android.AppGlu;
 import com.appglu.android.DeviceInformation;
+import com.appglu.android.log.Logger;
+import com.appglu.android.log.LoggerFactory;
 
 public class AnalyticsService {
+	
+	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
 	
 	private AnalyticsDispatcher analyticsDispatcher;
 	
@@ -103,9 +108,9 @@ public class AnalyticsService {
 			}
 			try {
 				this.analyticsDispatcher.uploadSessions(sessions);
+				this.logger.info("%d sessions were uploaded to analytics", sessions.size());
 			} catch (AppGluHttpClientException e) {
-				//TODO handle exception
-				e.printStackTrace();
+				this.logger.error(e);
 			}
 			this.analyticsRepository.removeAllClosedSessions();
 		}
