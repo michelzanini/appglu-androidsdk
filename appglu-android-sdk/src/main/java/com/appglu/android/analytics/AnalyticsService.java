@@ -63,17 +63,17 @@ public class AnalyticsService {
 	}
 	
 	public void setSessionParameter(String name, String value) {
-		if (value == null) {
-			this.removeSessionParameter(name);
-			return;
-		}
 		long currentSessionId = this.startSessionIfNedeed();
-		this.analyticsRepository.setSessionParameter(currentSessionId, name, value);
+		
+		if (value == null) {
+			this.analyticsRepository.removeSessionParameter(currentSessionId, name);
+		} else {
+			this.analyticsRepository.setSessionParameter(currentSessionId, name, value);
+		}
 	}
 	
 	public void removeSessionParameter(String name) {
-		long currentSessionId = this.startSessionIfNedeed();
-		this.analyticsRepository.removeSessionParameter(currentSessionId, name);
+		this.setSessionParameter(name, null);
 	}
 	
 	public void logEvent(String name) {
