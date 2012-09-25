@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
 			event.setName("rowsCallback");
 			event.addParameter("totalRows", String.valueOf(rows.getTotalRows()));
 			
-			AppGlu.analyticsApi().logEvent("rowsCallback");
+			AppGlu.analyticsApi().logEvent(event);
 		}
 		
 		public void onException(Exception exception) {

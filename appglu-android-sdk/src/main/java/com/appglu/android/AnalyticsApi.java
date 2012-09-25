@@ -25,8 +25,6 @@ public final class AnalyticsApi {
 	
 	private final AnalyticsApiThread analyticsApiThread = new AnalyticsApiThread();
 	
-	private final Object runnableQueueLock = new Object();
-	
 	private final LinkedBlockingQueue<Runnable> runnableQueue = new LinkedBlockingQueue<Runnable>();
 	
 	private final Handler handler = new Handler();
@@ -66,7 +64,7 @@ public final class AnalyticsApi {
 	}
 	
 	protected void startSessionIfNeeded() {
-		this.queueRunnable(new Runnable() {
+		this.runnableQueue.add(new Runnable() {
 			public void run() {
 				analyticsService.startSessionIfNedeed();
 			}
@@ -74,7 +72,7 @@ public final class AnalyticsApi {
 	}
 	
 	protected void forceCloseSessions() {
-		this.queueRunnable(new Runnable() {
+		this.runnableQueue.add(new Runnable() {
 			public void run() {
 				analyticsService.forceCloseSessions();
 			}
@@ -82,7 +80,7 @@ public final class AnalyticsApi {
 	}
 	
 	protected void closeSessions(final Date closeDate) {
-		this.queueRunnable(new Runnable() {
+		this.runnableQueue.add(new Runnable() {
 			public void run() {
 				analyticsService.closeSessions(closeDate);
 			}
@@ -90,7 +88,7 @@ public final class AnalyticsApi {
 	}
 
 	public void setSessionParameter(final String name, final String value) {
-		this.queueRunnable(new Runnable() {
+		this.runnableQueue.add(new Runnable() {
 			public void run() {
 				analyticsService.setSessionParameter(name, value);	
 			}
@@ -98,7 +96,7 @@ public final class AnalyticsApi {
 	}
 	
 	public void removeSessionParameter(final String name) {
-		this.queueRunnable(new Runnable() {
+		this.runnableQueue.add(new Runnable() {
 			public void run() {
 				analyticsService.removeSessionParameter(name);	
 			}
@@ -106,7 +104,7 @@ public final class AnalyticsApi {
 	}
 	
 	public void logEvent(final String name) {
-		this.queueRunnable(new Runnable() {
+		this.runnableQueue.add(new Runnable() {
 			public void run() {
 				analyticsService.logEvent(name);	
 			}
@@ -114,7 +112,7 @@ public final class AnalyticsApi {
 	}
 	
 	public void logEvent(final String name, final Map<String, String> parameters) {
-		this.queueRunnable(new Runnable() {
+		this.runnableQueue.add(new Runnable() {
 			public void run() {
 				analyticsService.logEvent(name, parameters);	
 			}
@@ -122,17 +120,11 @@ public final class AnalyticsApi {
 	}
 	
 	public void logEvent(final AnalyticsSessionEvent event) {
-		this.queueRunnable(new Runnable() {
+		this.runnableQueue.add(new Runnable() {
 			public void run() {
 				analyticsService.logEvent(event);	
 			}
 		});
-	}
-	
-	private void queueRunnable(Runnable runnable) {
-		synchronized (this.runnableQueueLock) {
-			this.runnableQueue.add(runnable);
-		}
 	}
 	
 	private class AnalyticsApiThread extends Thread {
