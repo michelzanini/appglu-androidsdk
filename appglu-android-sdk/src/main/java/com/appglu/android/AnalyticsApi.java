@@ -1,5 +1,6 @@
 package com.appglu.android;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -30,9 +31,11 @@ public final class AnalyticsApi {
 	
 	private final Handler handler = new Handler();
 	
+	private Date lastOnActivityStopDate;
+	
 	private Runnable closeSessionsRunnable = new Runnable() {
 		public void run() {
-			closeSessions();
+			closeSessions(lastOnActivityStopDate);
 		}
 	};
 	
@@ -41,7 +44,7 @@ public final class AnalyticsApi {
 		this.analyticsApiThread.start();
 		
 		//on initialization we need to close sessions that may be left open
-		this.closeSessions();
+		this.forceCloseSessions();
 	}
 	
 	public void setSessionCallback(AnalyticsSessionCallback sessionCallback) {
@@ -58,6 +61,7 @@ public final class AnalyticsApi {
 	}
 
 	public void onActivityStop(final Activity activity) {
+		this.lastOnActivityStopDate = new Date();
 		handler.postDelayed(this.closeSessionsRunnable, DEFAULT_CLOSE_SESSIONS_DELAY);
 	}
 	
@@ -69,10 +73,18 @@ public final class AnalyticsApi {
 		});
 	}
 	
-	protected void closeSessions() {
+	protected void forceCloseSessions() {
 		this.queueRunnable(new Runnable() {
 			public void run() {
-				analyticsService.closeSessions();
+				analyticsService.forceCloseSessions();
+			}
+		});
+	}
+	
+	protected void closeSessions(final Date closeDate) {
+		this.queueRunnable(new Runnable() {
+			public void run() {
+				analyticsService.closeSessions(closeDate);
 			}
 		});
 	}

@@ -1,26 +1,18 @@
 package com.appglu.android.sample;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.appglu.AnalyticsSession;
 import com.appglu.AnalyticsSessionEvent;
 import com.appglu.AsyncCallback;
 import com.appglu.QueryResult;
 import com.appglu.Rows;
 import com.appglu.android.AppGlu;
 import com.appglu.android.SavedQuery;
-import com.appglu.android.analytics.AnalyticsSessionCallback;
-import com.appglu.android.log.Logger;
-import com.appglu.android.log.LoggerFactory;
 
 public class MainActivity extends Activity {
-	
-	private Logger logger = LoggerFactory.getLogger("AppGluSample");
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,21 +20,6 @@ public class MainActivity extends Activity {
         this.setContentView(R.layout.main);
         
         AppGlu.crudApi().readAllInBackground("appglu_queries", this.rowsCallback);
-        
-        AppGlu.analyticsApi().setSessionCallback(new AnalyticsSessionCallback() {
-			
-			@Override
-			public void onStartSession(AnalyticsSession session) {
-				logger.info("onStartSession");
-				session.addParameter("onStartSession", "onStartSession");
-			}
-			
-			@Override
-			public void beforeUploadSessions(List<AnalyticsSession> sessions) {
-				logger.info("beforeUploadSessions");
-			}
-			
-		});
     }
     
     @Override

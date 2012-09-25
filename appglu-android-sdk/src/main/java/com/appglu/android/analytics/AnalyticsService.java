@@ -57,11 +57,32 @@ public class AnalyticsService {
 			sessionCallback.onStartSession(session);
 		}
 		
-		return this.analyticsRepository.createSession(session);
+		long sessionId = this.analyticsRepository.createSession(session);
+		
+		logger.debug("New analytics session created: %s", session);
+		
+		return sessionId;
 	}
 	
-	public void closeSessions() {
-		int rowsAffected = this.analyticsRepository.closeSessions(new Date());
+	public void forceCloseSessions() {
+		int rowsAffected = this.analyticsRepository.forceCloseSessions();
+		
+		if (rowsAffected > 0) {
+			logger.info("%d analytics sessions were closed on initialization", rowsAffected);
+			
+			this.uploadPendingSessions();
+		}
+	}
+	
+	public void closeSessions(Date closeDate) {
+		if (closeDate == null) {
+			closeDate = new Date();
+		}
+		
+		int rowsAffected = this.analyticsRepository.closeSessions(closeDate);
+		
+		logger.debug("%d analytics sessions were closed", rowsAffected);
+		
 		if (rowsAffected > 0) {
 			this.uploadPendingSessions();
 		}
@@ -72,8 +93,10 @@ public class AnalyticsService {
 		
 		if (value == null) {
 			this.analyticsRepository.removeSessionParameter(currentSessionId, name);
+			logger.debug("Analytics session parameter removed: %s", name);
 		} else {
 			this.analyticsRepository.setSessionParameter(currentSessionId, name, value);
+			logger.debug("New analytics session parameter created: %s, %s", name, value);
 		}
 	}
 	
@@ -98,6 +121,8 @@ public class AnalyticsService {
 		}
 		long currentSessionId = this.startSessionIfNedeed();
 		this.analyticsRepository.createEvent(currentSessionId, event);
+		
+		logger.debug("New analytics event created: %s", event);
 	}
 
 	public void uploadPendingSessions() {
@@ -107,7 +132,7 @@ public class AnalyticsService {
 				sessionCallback.beforeUploadSessions(sessions);
 			}
 			try {
-				this.analyticsDispatcher.uploadSessions(sessions);
+				this.analyticsDispatcher.dispatchSessions(sessions);
 				this.logger.info("%d sessions were uploaded to analytics", sessions.size());
 			} catch (AppGluHttpClientException e) {
 				this.logger.error(e);

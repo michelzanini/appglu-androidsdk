@@ -12,9 +12,9 @@ public interface AnalyticsRepository {
 	
 	public List<AnalyticsSession> getAllClosedSessions();
 	
-	public AnalyticsSession getSessionById(long sessionId);
-
 	public void removeAllClosedSessions();
+	
+	public int forceCloseSessions();
 
 	public int closeSessions(Date endDate);
 	

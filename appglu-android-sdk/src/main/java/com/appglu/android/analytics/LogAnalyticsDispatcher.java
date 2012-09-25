@@ -12,7 +12,7 @@ public class LogAnalyticsDispatcher implements AnalyticsDispatcher {
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
 
 	@Override
-	public void uploadSessions(List<AnalyticsSession> sessions) {
+	public void dispatchSessions(List<AnalyticsSession> sessions) {
 		logger.info(String.valueOf(sessions));
 	}
 

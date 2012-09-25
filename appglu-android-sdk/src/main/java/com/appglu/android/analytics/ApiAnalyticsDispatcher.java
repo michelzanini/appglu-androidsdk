@@ -14,7 +14,7 @@ public class ApiAnalyticsDispatcher implements AnalyticsDispatcher {
 	}
 	
 	@Override
-	public void uploadSessions(List<AnalyticsSession> sessions) {
+	public void dispatchSessions(List<AnalyticsSession> sessions) {
 		this.analyticsOperations.uploadSessions(sessions);
 	}
 	

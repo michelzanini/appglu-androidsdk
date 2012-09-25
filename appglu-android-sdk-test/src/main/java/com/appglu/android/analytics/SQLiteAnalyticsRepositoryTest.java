@@ -14,17 +14,14 @@ import android.test.AndroidTestCase;
 import com.appglu.AnalyticsSession;
 import com.appglu.AnalyticsSessionEvent;
 import com.appglu.android.DeviceInformation;
-import com.appglu.android.analytics.AnalyticsDatabaseHelper;
-import com.appglu.android.analytics.AnalyticsRepository;
-import com.appglu.android.analytics.SQLiteAnalyticsRepository;
 
-public class AnalyticsRepositoryTest extends AndroidTestCase {
+public class SQLiteAnalyticsRepositoryTest extends AndroidTestCase {
 
 	private DeviceInformation deviceInformation;
 	
 	private AnalyticsDatabaseHelper analyticsDatabaseHelper;
 	
-	private AnalyticsRepository analyticsRepository;
+	private SQLiteAnalyticsRepository analyticsRepository;
 	
 	private long lastTimestamp;
 	
@@ -277,6 +274,23 @@ public class AnalyticsRepositoryTest extends AndroidTestCase {
 		this.assertOpenSession(sessionFour, timestamp, sessionFour.getClientUUID());
 		this.assertSessionParameters(sessionFour, parameters123());
 		this.assertSessionEvents(sessionFour, events);
+	}
+	
+	public void testForceCloseSessions() {
+		int affectedRows = this.analyticsRepository.forceCloseSessions();
+		Assert.assertEquals(2, affectedRows);
+		
+		List<AnalyticsSession> closedSessions = this.analyticsRepository.getAllClosedSessions();
+		Assert.assertEquals(3, closedSessions.size());
+		
+		AnalyticsSession sessionOne = this.analyticsRepository.getSessionById(1L);
+		this.assertSession(sessionOne, this.lastTimestamp, this.lastTimestamp, "123");
+		
+		AnalyticsSession sessionTwo = this.analyticsRepository.getSessionById(2L);
+		this.assertSession(sessionTwo, this.lastTimestamp, this.lastTimestamp, "12345");
+		
+		AnalyticsSession sessionThree = this.analyticsRepository.getSessionById(3L);
+		this.assertSession(sessionThree, this.lastTimestamp, this.lastTimestamp, "123");
 	}
 	
 	public void testCloseSessions() {
