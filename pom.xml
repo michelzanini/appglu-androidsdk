@@ -1,0 +1,18 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.appglu</groupId>
+	<artifactId>appglu-androidsdk-all</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>appglu-java-client</module>
+		<module>appglu-android-sdk</module>
+		<module>appglu-android-sdk-test</module>
+		<module>appglu-android-sample</module>
+	</modules>
+
+</project>
