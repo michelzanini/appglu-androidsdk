@@ -19,6 +19,10 @@ public class AppGluSettings {
 	
 	private boolean uploadAnalyticsSessionsToServer = true;
 	
+	private AnalyticsDispatcher analyticsDispatcher;
+	
+	private AnalyticsSessionCallback analyticsSessionCallback;
+	
 	public AppGluSettings(String baseUrl, String applicationKey, String applicationSecret) {
 		this.baseUrl = baseUrl;
 		this.applicationKey = applicationKey;
@@ -52,21 +56,32 @@ public class AppGluSettings {
 	public void setUploadAnalyticsSessionsToServer(boolean uploadAnalyticsSessionsToServer) {
 		this.uploadAnalyticsSessionsToServer = uploadAnalyticsSessionsToServer;
 	}
+	
+	public void setAnalyticsDispatcher(AnalyticsDispatcher analyticsDispatcher) {
+		this.analyticsDispatcher = analyticsDispatcher;
+	}
 
+	public void setAnalyticsSessionCallback(AnalyticsSessionCallback analyticsSessionCallback) {
+		this.analyticsSessionCallback = analyticsSessionCallback;
+	}
+	
 	protected AppGluTemplate createAppGluTemplate() {
 		return new AppGluTemplate(this.getBaseUrl(), this.getApplicationKey(), this.getApplicationSecret());
 	}
-	
+
 	protected AnalyticsDispatcher createAnalyticsDispatcher(AnalyticsOperations analyticsOperations) {
-		if (this.isUploadAnalyticsSessionsToServer()) {
-			return new ApiAnalyticsDispatcher(analyticsOperations);
-		} else {
-			return new LogAnalyticsDispatcher();
+		if (this.analyticsDispatcher == null) {
+			if (this.isUploadAnalyticsSessionsToServer()) {
+				this.analyticsDispatcher = new ApiAnalyticsDispatcher(analyticsOperations);
+			} else {
+				this.analyticsDispatcher = new LogAnalyticsDispatcher();
+			}
 		}
+		return this.analyticsDispatcher;
 	}
 	
-	protected AnalyticsSessionCallback createAnalyticsSessionCallback() {
-		return null;
+	protected AnalyticsSessionCallback getAnalyticsSessionCallback() {
+		return this.analyticsSessionCallback;
 	}
 	
 }

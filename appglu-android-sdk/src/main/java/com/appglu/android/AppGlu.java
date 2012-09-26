@@ -119,7 +119,7 @@ public final class AppGlu {
 			
 			AnalyticsDispatcher analyticsDispatcher = this.settings.createAnalyticsDispatcher(this.getAppGluTemplate().analyticsOperations());
 			this.analyticsApi = new AnalyticsApi(analyticsDispatcher, analyticsRepository, this.deviceInformation);
-			this.analyticsApi.setSessionCallback(this.settings.createAnalyticsSessionCallback());
+			this.analyticsApi.setSessionCallback(this.settings.getAnalyticsSessionCallback());
 		}
 		return this.analyticsApi;
 	}
