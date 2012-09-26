@@ -6,6 +6,8 @@ import com.appglu.AnalyticsSession;
 
 public interface AnalyticsDispatcher {
 	
-	void uploadSessions(List<AnalyticsSession> sessions);
+	boolean shouldDispatchSessions(List<AnalyticsSession> sessions);
+	
+	void dispatchSessions(List<AnalyticsSession> sessions);
 	
 }

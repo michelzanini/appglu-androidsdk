@@ -2,7 +2,9 @@ package com.appglu.android.analytics;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import android.content.ContentValues;
@@ -98,9 +100,32 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 		}
 	}
 	
+	public int forceCloseSessions() {
+		SQLiteDatabase database = this.getWritableDatabase();
+		database.beginTransaction();
+	    try {
+			Map<Integer, Date> endDates = this.getEndDateForOpenSessions(database);
+	    	
+			for (Entry<Integer, Date> entry : endDates.entrySet()) {
+				ContentValues values = new ContentValues();
+				values.put("end_date", entry.getValue().getTime());
+				
+				database.update("sessions", values, "id = ?", new String[] { String.valueOf(entry.getKey()) });
+			}
+			
+			database.setTransactionSuccessful();
+			return endDates.size();
+		} catch (SQLException e) {
+			throw new AnalyticsRepositoryException(e);
+		} finally {
+			database.endTransaction();
+			database.close();
+		}
+	}
+	
 	public int closeSessions(Date endDate) {
 		if (endDate == null) {
-			throw new AnalyticsRepositoryException();
+			throw new AnalyticsRepositoryException("endDate cannot be null");
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
@@ -122,7 +147,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 	
 	public long createSession(AnalyticsSession session) {
 		if (session == null || session.getStartDate() == null) {
-			throw new AnalyticsRepositoryException();
+			throw new AnalyticsRepositoryException("session or it's startDate cannot be null");
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
@@ -141,7 +166,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 
 	public void setSessionParameter(long sessionId, String name, String value) {
 		if (!AppGluUtils.hasText(name)) {
-			throw new AnalyticsRepositoryException();
+			throw new AnalyticsRepositoryException("name cannot be null");
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
@@ -177,7 +202,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 
 	public long createEvent(long sessionId, AnalyticsSessionEvent event) {
 		if (event == null || !AppGluUtils.hasText(event.getName())) {
-			throw new AnalyticsRepositoryException();
+			throw new AnalyticsRepositoryException("event or it's name cannot be null");
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
@@ -196,7 +221,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 
 	public void setEventParameter(long eventId, String name, String value) {
 		if (!AppGluUtils.hasText(name)) {
-			throw new AnalyticsRepositoryException();
+			throw new AnalyticsRepositoryException("name cannot be null");
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
@@ -291,6 +316,35 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 		values.put("value", value);
 		
 		database.update("session_event_parameters", values, "name = ?", new String[] { name });
+	}
+	
+	private Map<Integer, Date> getEndDateForOpenSessions(SQLiteDatabase database) {
+		Map<Integer, Date> endDates = new HashMap<Integer, Date>();
+
+		Cursor cursor = null;
+		
+		try {
+			String sql = "select s.id, ifnull(max(e.date), s.start_date) from sessions s " +
+				"left outer join session_events e on s.id = e.session_id where s.end_date is null group by s.id";
+			
+			cursor = database.rawQuery(sql, null);
+		    cursor.moveToFirst();
+		    
+		    for (int i = 0; i < cursor.getCount(); i++) {
+		    	Integer sessionId = new Integer(cursor.getInt(0));
+		    	Date endDate = new Date(cursor.getLong(1));
+		    	
+		    	endDates.put(sessionId, endDate);
+		    	cursor.moveToNext();
+		    }
+		
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+		}
+		
+		return endDates;
 	}
 	
 	private String sessionSelectStatement(String whereClause) {

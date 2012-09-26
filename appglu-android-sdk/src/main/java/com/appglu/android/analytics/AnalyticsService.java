@@ -6,10 +6,14 @@ import java.util.Map;
 
 import com.appglu.AnalyticsSession;
 import com.appglu.AnalyticsSessionEvent;
-import com.appglu.AppGluHttpClientException;
+import com.appglu.android.AppGlu;
 import com.appglu.android.DeviceInformation;
+import com.appglu.android.log.Logger;
+import com.appglu.android.log.LoggerFactory;
 
 public class AnalyticsService {
+	
+	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
 	
 	private AnalyticsDispatcher analyticsDispatcher;
 	
@@ -52,13 +56,34 @@ public class AnalyticsService {
 			sessionCallback.onStartSession(session);
 		}
 		
-		return this.analyticsRepository.createSession(session);
+		long sessionId = this.analyticsRepository.createSession(session);
+		
+		logger.debug("New analytic session created: %s", session);
+		
+		return sessionId;
 	}
 	
-	public void closeSessions() {
-		int rowsAffected = this.analyticsRepository.closeSessions(new Date());
+	public void forceCloseSessions() {
+		int rowsAffected = this.analyticsRepository.forceCloseSessions();
+		
 		if (rowsAffected > 0) {
-			this.uploadPendingSessions();
+			logger.info("%d analytic session(s) closed on initialization", rowsAffected);
+			
+			this.dispatchPendingSessions();
+		}
+	}
+	
+	public void closeSessions(Date closeDate) {
+		if (closeDate == null) {
+			closeDate = new Date();
+		}
+		
+		int rowsAffected = this.analyticsRepository.closeSessions(closeDate);
+		
+		logger.debug("%d analytic session(s) closed", rowsAffected);
+		
+		if (rowsAffected > 0) {
+			this.dispatchPendingSessions();
 		}
 	}
 	
@@ -67,8 +92,10 @@ public class AnalyticsService {
 		
 		if (value == null) {
 			this.analyticsRepository.removeSessionParameter(currentSessionId, name);
+			logger.debug("Analytic session parameter removed: %s", name);
 		} else {
 			this.analyticsRepository.setSessionParameter(currentSessionId, name, value);
+			logger.debug("New analytic session parameter created: %s, %s", name, value);
 		}
 	}
 	
@@ -93,20 +120,20 @@ public class AnalyticsService {
 		}
 		long currentSessionId = this.startSessionIfNedeed();
 		this.analyticsRepository.createEvent(currentSessionId, event);
+		
+		logger.debug("New analytic event created: %s", event);
 	}
 
-	public void uploadPendingSessions() {
+	public void dispatchPendingSessions() {
 		List<AnalyticsSession> sessions = this.analyticsRepository.getAllClosedSessions();
-		if (!sessions.isEmpty() && this.deviceInformation.hasInternetConnection()) {
+		if (!sessions.isEmpty() && this.analyticsDispatcher.shouldDispatchSessions(sessions)) {
 			if (sessionCallback != null) {
-				sessionCallback.beforeUploadSessions(sessions);
+				sessionCallback.beforeDispatchSessions(sessions);
 			}
-			try {
-				this.analyticsDispatcher.uploadSessions(sessions);
-			} catch (AppGluHttpClientException e) {
-				//TODO handle exception
-				e.printStackTrace();
-			}
+
+			this.analyticsDispatcher.dispatchSessions(sessions);
+			this.logger.info("%d session(s) dispatched to analytics", sessions.size());
+			
 			this.analyticsRepository.removeAllClosedSessions();
 		}
 	}

@@ -1,21 +1,19 @@
 package com.appglu.android.sample;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
-import com.appglu.AnalyticsSession;
 import com.appglu.AnalyticsSessionEvent;
 import com.appglu.AsyncCallback;
 import com.appglu.QueryResult;
 import com.appglu.Rows;
 import com.appglu.android.AppGlu;
 import com.appglu.android.SavedQuery;
-import com.appglu.android.analytics.AnalyticsSessionCallback;
 
 public class MainActivity extends Activity {
 	
@@ -26,32 +24,25 @@ public class MainActivity extends Activity {
         
         AppGlu.crudApi().readAllInBackground("appglu_queries", this.rowsCallback);
         
-        AppGlu.analyticsApi().setSessionCallback(new AnalyticsSessionCallback() {
-			
-			@Override
-			public void onStartSession(AnalyticsSession session) {
-				Log.d("AppGluSample", "onStartSession");
-				session.addParameter("onStartSession", "onStartSession");
+        Button button = (Button) findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+				startActivity(intent);
 			}
-			
-			@Override
-			public void beforeUploadSessions(List<AnalyticsSession> sessions) {
-				Log.d("AppGluSample", "onUploadSessions");
-			}
-			
 		});
     }
     
     @Override
-    protected void onStart() {
-    	super.onStart();
-    	AppGlu.analyticsApi().onActivityStart(this);
+    protected void onResume() {
+    	super.onResume();
+    	AppGlu.analyticsApi().onActivityResume(this);
     }
     
     @Override
-    protected void onStop() {
-    	super.onStop();
-    	AppGlu.analyticsApi().onActivityStop(this);
+    protected void onPause() {
+    	super.onPause();
+    	AppGlu.analyticsApi().onActivityPause(this);
     }
     
     protected void runQueryWithService() {
@@ -78,7 +69,7 @@ public class MainActivity extends Activity {
 			event.setName("rowsCallback");
 			event.addParameter("totalRows", String.valueOf(rows.getTotalRows()));
 			
-			AppGlu.analyticsApi().logEvent("rowsCallback");
+			AppGlu.analyticsApi().logEvent(event);
 		}
 		
 		public void onException(Exception exception) {
