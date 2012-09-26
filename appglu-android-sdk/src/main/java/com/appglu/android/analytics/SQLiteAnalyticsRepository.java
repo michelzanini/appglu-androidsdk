@@ -324,7 +324,8 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 		Cursor cursor = null;
 		
 		try {
-			String sql = "select s.id, ifnull(max(e.date), s.start_date) from sessions s left outer join session_events e on s.id = e.session_id where s.end_date is null group by s.id";
+			String sql = "select s.id, ifnull(max(e.date), s.start_date) from sessions s " +
+				"left outer join session_events e on s.id = e.session_id where s.end_date is null group by s.id";
 			
 			cursor = database.rawQuery(sql, null);
 		    cursor.moveToFirst();

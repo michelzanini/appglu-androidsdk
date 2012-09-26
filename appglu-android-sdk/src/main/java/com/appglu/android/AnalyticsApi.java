@@ -53,16 +53,20 @@ public final class AnalyticsApi {
 		analyticsService.setSessionCallback(null);
 	}
 
-	public void onActivityStart(final Activity activity) {
+	public void onActivityResume(final Activity activity) {
+		logger.warn("Executing onActivityResume");
+		
 		handler.removeCallbacks(this.closeSessionsRunnable);
 		this.startSessionIfNeeded();
 	}
 
-	public void onActivityStop(final Activity activity) {
+	public void onActivityPause(final Activity activity) {
+		logger.warn("Executing onActivityPause");
+		
 		this.lastOnActivityStopDate = new Date();
 		handler.postDelayed(this.closeSessionsRunnable, DEFAULT_CLOSE_SESSIONS_DELAY);
 	}
-	
+
 	protected void startSessionIfNeeded() {
 		this.runnableQueue.add(new Runnable() {
 			public void run() {

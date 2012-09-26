@@ -2,7 +2,10 @@ package com.appglu.android.sample;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.appglu.AnalyticsSessionEvent;
@@ -20,18 +23,26 @@ public class MainActivity extends Activity {
         this.setContentView(R.layout.main);
         
         AppGlu.crudApi().readAllInBackground("appglu_queries", this.rowsCallback);
+        
+        Button button = (Button) findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+				startActivity(intent);
+			}
+		});
     }
     
     @Override
-    protected void onStart() {
-    	super.onStart();
-    	AppGlu.analyticsApi().onActivityStart(this);
+    protected void onResume() {
+    	super.onResume();
+    	AppGlu.analyticsApi().onActivityResume(this);
     }
     
     @Override
-    protected void onStop() {
-    	super.onStop();
-    	AppGlu.analyticsApi().onActivityStop(this);
+    protected void onPause() {
+    	super.onPause();
+    	AppGlu.analyticsApi().onActivityPause(this);
     }
     
     protected void runQueryWithService() {

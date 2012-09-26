@@ -12,7 +12,11 @@ public enum LoggerLevel {
     
     WARN (Log.WARN),
     
-    ERROR (Log.ERROR);
+    ERROR (Log.ERROR),
+	
+	NONE (LoggerLevel.NONE_CONSTANT);
+	
+	private static final int NONE_CONSTANT = 99;
 	
 	private final int androidLevel;
 	
