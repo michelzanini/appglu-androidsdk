@@ -7,9 +7,9 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestClientException;
 
 import com.appglu.AppGluHttpClientException;
+import com.appglu.AppGluHttpException;
 import com.appglu.AppGluHttpServerException;
 import com.appglu.AppGluNotFoundException;
 import com.appglu.Error;
@@ -38,7 +38,7 @@ public class AppGluResponseErrorHandler extends DefaultResponseErrorHandler {
 			case SERVER_ERROR:
 				throw new AppGluHttpServerException(statusCode, error);
 			default:
-				throw new RestClientException("Unknown status code [" + statusCode + "]");
+				throw new AppGluHttpException(statusCode, error);
 		}
 	}
 

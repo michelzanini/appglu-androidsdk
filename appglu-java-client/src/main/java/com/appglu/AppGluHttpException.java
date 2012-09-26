@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestClientException;
 
 @SuppressWarnings("serial")
-public abstract class AppGluHttpException extends RestClientException {
+public class AppGluHttpException extends RestClientException {
 
 	private final HttpStatus statusCode;
 

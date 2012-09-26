@@ -1,11 +1,15 @@
-package com.appglu.android.impl;
+package com.appglu.android;
 
 import java.util.concurrent.Callable;
+
+import android.os.Handler;
 
 import com.appglu.AsyncCallback;
 import com.appglu.impl.AsyncExecutor;
 
 public class AsyncTaskExecutor implements AsyncExecutor {
+	
+	private Handler handler = new Handler();
 
 	@Override
 	public <Result> void execute(final AsyncCallback<Result> asyncCallback, final Callable<Result> executorCallable) {
@@ -41,7 +45,15 @@ public class AsyncTaskExecutor implements AsyncExecutor {
 			
 		};
 		
-		asyncTask.execute();
+		if (AppGlu.hasInternetConnection()) {
+			asyncTask.execute();	
+		} else {
+			handler.post(new Runnable() {
+				public void run() {
+					asyncCallback.onNoInternetConnection();
+				}
+			});
+		}
 	}
 
 }

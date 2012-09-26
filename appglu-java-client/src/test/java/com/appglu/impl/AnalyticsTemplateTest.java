@@ -83,7 +83,7 @@ public class AnalyticsTemplateTest extends AbstractAppGluApiTest {
 			.andExpect(content().string(compactedJson("data/analytics_no_sessions")))
 			.andRespond(withStatus(HttpStatus.CREATED).body("").headers(responseHeaders));
 		
-		analyticsOperations.createSessions(new ArrayList<AnalyticsSession>());
+		analyticsOperations.uploadSessions(new ArrayList<AnalyticsSession>());
 		
 		mockServer.verify();
 	}
@@ -96,26 +96,26 @@ public class AnalyticsTemplateTest extends AbstractAppGluApiTest {
 			.andExpect(content().string(compactedJson("data/analytics_empty_session")))
 			.andRespond(withStatus(HttpStatus.CREATED).body("").headers(responseHeaders));
 		
-		analyticsOperations.createSession(new AnalyticsSession());
+		analyticsOperations.uploadSession(new AnalyticsSession());
 		
 		mockServer.verify();
 	}
 	
 	@Test
-	public void createSession() throws ParseException {
+	public void uploadSession() throws ParseException {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/analytics"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
 			.andExpect(content().string(compactedJson("data/analytics_session")))
 			.andRespond(withStatus(HttpStatus.CREATED).body("").headers(responseHeaders));
 		
-		analyticsOperations.createSession(session());
+		analyticsOperations.uploadSession(session());
 		
 		mockServer.verify();
 	}
 	
 	@Test
-	public void createSessions() throws ParseException {
+	public void uploadSessions() throws ParseException {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/analytics"))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", jsonMediaType.toString()))
@@ -125,7 +125,7 @@ public class AnalyticsTemplateTest extends AbstractAppGluApiTest {
 		List<AnalyticsSession> sessions = new ArrayList<AnalyticsSession>();
 		sessions.add(session());
 		sessions.add(session());
-		analyticsOperations.createSessions(sessions);
+		analyticsOperations.uploadSessions(sessions);
 		
 		mockServer.verify();
 	}
