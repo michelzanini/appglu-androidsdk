@@ -23,6 +23,11 @@ public class AnalyticsServiceTest extends SQLiteTest {
 		
 		this.testAnalyticsDispatcher = new AnalyticsDispatcher() {
 			@Override
+			public boolean shouldDispatchSessions(List<AnalyticsSession> sessions) {
+				return true;
+			}
+			
+			@Override
 			public void dispatchSessions(List<AnalyticsSession> sessions) {
 				Assert.assertEquals(expectedNumberOfSessionsToBeDispatched, sessions.size());
 			}
@@ -69,7 +74,7 @@ public class AnalyticsServiceTest extends SQLiteTest {
 	public void testUploadPendingSessions() {
 		this.expectedNumberOfSessionsToBeDispatched = 1;
 		
-		this.analyticsService.uploadPendingSessions();
+		this.analyticsService.dispatchPendingSessions();
 		
 		int sessionsCount = this.countTable("sessions");
 		Assert.assertEquals(2, sessionsCount);

@@ -8,6 +8,6 @@ public interface AnalyticsSessionCallback {
 
 	void onStartSession(AnalyticsSession session);
 	
-	void beforeUploadSessions(List<AnalyticsSession> sessions);
+	void beforeDispatchSessions(List<AnalyticsSession> sessions);
 	
 }

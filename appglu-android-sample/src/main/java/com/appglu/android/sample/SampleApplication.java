@@ -27,7 +27,7 @@ public class SampleApplication extends Application {
 		}
 		
 		@Override
-		public void beforeUploadSessions(List<AnalyticsSession> sessions) {
+		public void beforeDispatchSessions(List<AnalyticsSession> sessions) {
 			logger.info("beforeUploadSessions");
 			for (AnalyticsSession analyticsSession : sessions) {
 				analyticsSession.addParameter("beforeUploadSessions", "beforeUploadSessions");

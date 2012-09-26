@@ -54,14 +54,14 @@ public final class AnalyticsApi {
 	}
 
 	public void onActivityResume(final Activity activity) {
-		logger.warn("Executing onActivityResume");
+		logger.debug("Executing AnalyticsApi.onActivityResume()");
 		
 		handler.removeCallbacks(this.closeSessionsRunnable);
 		this.startSessionIfNeeded();
 	}
 
 	public void onActivityPause(final Activity activity) {
-		logger.warn("Executing onActivityPause");
+		logger.debug("Executing AnalyticsApi.onActivityPause()");
 		
 		this.lastOnActivityStopDate = new Date();
 		handler.postDelayed(this.closeSessionsRunnable, DEFAULT_CLOSE_SESSIONS_DELAY);

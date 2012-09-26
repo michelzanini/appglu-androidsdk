@@ -10,6 +10,11 @@ import com.appglu.android.log.LoggerFactory;
 public class LogAnalyticsDispatcher implements AnalyticsDispatcher {
 	
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
+	
+	@Override
+	public boolean shouldDispatchSessions(List<AnalyticsSession> sessions) {
+		return true;
+	}
 
 	@Override
 	public void dispatchSessions(List<AnalyticsSession> sessions) {
