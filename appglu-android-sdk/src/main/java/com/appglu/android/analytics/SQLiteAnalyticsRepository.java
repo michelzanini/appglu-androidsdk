@@ -125,7 +125,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 	
 	public int closeSessions(Date endDate) {
 		if (endDate == null) {
-			throw new AnalyticsRepositoryException();
+			throw new AnalyticsRepositoryException("endDate cannot be null");
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
@@ -147,7 +147,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 	
 	public long createSession(AnalyticsSession session) {
 		if (session == null || session.getStartDate() == null) {
-			throw new AnalyticsRepositoryException();
+			throw new AnalyticsRepositoryException("session or it's startDate cannot be null");
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
@@ -166,7 +166,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 
 	public void setSessionParameter(long sessionId, String name, String value) {
 		if (!AppGluUtils.hasText(name)) {
-			throw new AnalyticsRepositoryException();
+			throw new AnalyticsRepositoryException("name cannot be null");
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
@@ -202,7 +202,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 
 	public long createEvent(long sessionId, AnalyticsSessionEvent event) {
 		if (event == null || !AppGluUtils.hasText(event.getName())) {
-			throw new AnalyticsRepositoryException();
+			throw new AnalyticsRepositoryException("event or it's name cannot be null");
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
@@ -221,7 +221,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 
 	public void setEventParameter(long eventId, String name, String value) {
 		if (!AppGluUtils.hasText(name)) {
-			throw new AnalyticsRepositoryException();
+			throw new AnalyticsRepositoryException("name cannot be null");
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
