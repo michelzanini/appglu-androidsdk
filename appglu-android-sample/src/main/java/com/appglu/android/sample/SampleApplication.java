@@ -32,15 +32,10 @@ public class SampleApplication extends Application {
 	private void enableStrictMode() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-		        .detectDiskReads()
+				.detectDiskReads()
 		        .detectDiskWrites()
-		        .penaltyLog()
-		        .build());
-			
-			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 		        .detectNetwork()
 		        .penaltyLog()
-		        .penaltyDeath()
 		        .build());
 			
 			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
