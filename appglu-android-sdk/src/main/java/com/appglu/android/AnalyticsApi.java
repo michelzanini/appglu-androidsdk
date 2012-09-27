@@ -54,14 +54,18 @@ public final class AnalyticsApi {
 	}
 
 	public void onActivityResume(final Activity activity) {
-		logger.debug("Executing AnalyticsApi.onActivityResume()");
+		if (activity != null) {
+			logger.debug("Executing AnalyticsApi.onActivityResume() on %s", activity.getComponentName().getClassName());
+		}
 		
 		handler.removeCallbacks(this.closeSessionsRunnable);
 		this.startSessionIfNeeded();
 	}
 
 	public void onActivityPause(final Activity activity) {
-		logger.debug("Executing AnalyticsApi.onActivityPause()");
+		if (activity != null) {
+			logger.debug("Executing AnalyticsApi.onActivityPause() on %s", activity.getComponentName().getClassName());
+		}
 		
 		this.lastOnActivityStopDate = new Date();
 		handler.postDelayed(this.closeSessionsRunnable, DEFAULT_CLOSE_SESSIONS_DELAY);

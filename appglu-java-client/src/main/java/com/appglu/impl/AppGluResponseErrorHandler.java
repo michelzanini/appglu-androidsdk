@@ -11,7 +11,7 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import com.appglu.AppGluHttpClientException;
 import com.appglu.AppGluHttpException;
 import com.appglu.AppGluHttpServerException;
-import com.appglu.AppGluNotFoundException;
+import com.appglu.AppGluHttpNotFoundException;
 import com.appglu.Error;
 import com.appglu.ErrorResponse;
 
@@ -29,7 +29,7 @@ public class AppGluResponseErrorHandler extends DefaultResponseErrorHandler {
 		Error error = this.readErrorFromResponse(response);
 		
 		if (statusCode == HttpStatus.NOT_FOUND) {
-			throw new AppGluNotFoundException(error);
+			throw new AppGluHttpNotFoundException(error);
 		}
 		
 		switch (statusCode.series()) {
