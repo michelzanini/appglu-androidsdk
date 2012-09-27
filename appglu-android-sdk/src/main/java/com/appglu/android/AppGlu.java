@@ -15,6 +15,8 @@ public final class AppGlu {
 	
 	public static final String LOG_TAG = "AppGlu";
 	
+	public static final String VERSION = "1.0.0";
+	
 	static final String APPGLU_PREFERENCES_KEY = "com.appglu.android.AppGlu.APPGLU_PREFERENCES_KEY";
 
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
@@ -66,6 +68,7 @@ public final class AppGlu {
 		
 		this.appGluTemplate = settings.createAppGluTemplate();
 		this.appGluTemplate.setAsyncExecutor(new AsyncTaskExecutor());
+		this.appGluTemplate.setDefaultHeaders(this.deviceInformation.createDefaultHeaders());
 		
 		logger.info("AppGlu was initialized");
 	}

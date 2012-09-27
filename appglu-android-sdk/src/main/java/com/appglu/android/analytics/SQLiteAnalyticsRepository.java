@@ -267,7 +267,9 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 		values.put("name", name);
 		values.put("value", value);
 		
-		database.insertOrThrow("session_parameters", null, values);
+		if (name != null) {
+			database.insertOrThrow("session_parameters", null, values);
+		}
 	}
 	
 	private long doCreateEvent(SQLiteDatabase database, long sessionId, AnalyticsSessionEvent event) {
@@ -297,7 +299,9 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 		values.put("name", name);
 		values.put("value", value);
 		
-		database.insertOrThrow("session_event_parameters", null, values);
+		if (name != null) {
+			database.insertOrThrow("session_event_parameters", null, values);
+		}
 	}
 	
 	private void doUpdateSessionParameter(SQLiteDatabase database, long sessionId, String name, String value) {
@@ -390,6 +394,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 		        	sessions.add(lastSession);
 		        	lastSessionId = sessionId;
 		        	lastEventId = 0;
+		        	lastEventParamId = 0;
 		        	lastSessionParamsIds = new ArrayList<Integer>();
 		        }
 		    	
