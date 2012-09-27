@@ -2,7 +2,7 @@ package com.appglu.impl;
 
 import org.springframework.web.client.RestOperations;
 
-import com.appglu.AppGluNotFoundException;
+import com.appglu.AppGluHttpNotFoundException;
 import com.appglu.Device;
 import com.appglu.PushOperations;
 import com.appglu.impl.json.DeviceBody;
@@ -27,7 +27,7 @@ public final class PushTemplate implements PushOperations {
 		try {
 			DeviceBody deviceBody = this.restOperations.getForObject(DEVICE_TOKEN_URL, DeviceBody.class, token);
 			return deviceBody.getDevice();
-		} catch (AppGluNotFoundException e) {
+		} catch (AppGluHttpNotFoundException e) {
 			return null;
 		}
 	}
@@ -36,7 +36,7 @@ public final class PushTemplate implements PushOperations {
 		try {
 			this.restOperations.delete(DEVICE_TOKEN_URL, token);
 			return true;
-		} catch (AppGluNotFoundException e) {
+		} catch (AppGluHttpNotFoundException e) {
 			return false;
 		}
 	}

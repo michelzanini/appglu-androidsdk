@@ -28,6 +28,14 @@ public class Rows implements Serializable {
 	public Integer getTotalRows() {
 		return totalRows;
 	}
+	
+	public boolean hasRows() {
+		return rows != null && !rows.isEmpty();
+	}
+	
+	public boolean hasTotalRows() {
+		return totalRows != null && totalRows > 0;
+	}
 
 	@Override
 	public String toString() {

@@ -18,6 +18,14 @@ public class QueryResult implements Serializable {
 	public Integer getRowsAffected() {
 		return rowsAffected;
 	}
+	
+	public boolean hasRows() {
+		return rows != null && !rows.isEmpty();
+	}
+	
+	public boolean hasRowsAffected() {
+		return rowsAffected != null && rowsAffected > 0;
+	}
 
 	@Override
 	public String toString() {
