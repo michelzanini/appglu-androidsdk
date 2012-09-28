@@ -68,7 +68,9 @@ public class AnalyticsSession implements Serializable {
 	}
 	
 	public void addParameter(String name, String value) {
-		this.getParameters().put(name, value);
+		if (name != null) {
+			this.getParameters().put(name, value);
+		}
 	}
 	
 	public void addEvent(AnalyticsSessionEvent event) {

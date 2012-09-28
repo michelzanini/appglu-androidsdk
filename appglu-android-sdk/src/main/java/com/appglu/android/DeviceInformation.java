@@ -2,6 +2,8 @@ package com.appglu.android;
 
 import java.util.UUID;
 
+import org.springframework.http.HttpHeaders;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -11,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.util.DisplayMetrics;
 
 import com.appglu.android.util.AppGluUtils;
 
@@ -35,6 +38,8 @@ public class DeviceInformation {
 	private String deviceModel;
 	
 	private String deviceManufacturer;
+	
+	private String deviceResolution;
 	
 	public DeviceInformation(Context context) {
 		AppGluUtils.assertNotNull(context, "Context cannot be null");
@@ -77,6 +82,10 @@ public class DeviceInformation {
 		return deviceManufacturer;
 	}
 	
+	public String getDeviceResolution() {
+		return deviceResolution;
+	}
+
 	public boolean hasInternetConnection() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
 	    NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
@@ -101,6 +110,11 @@ public class DeviceInformation {
 		this.deviceOSVersion = Build.VERSION.RELEASE;
 		this.deviceModel = Build.MODEL;
 		this.deviceManufacturer = Build.MANUFACTURER;
+		
+		DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+		if (displayMetrics != null) {
+			this.deviceResolution = displayMetrics.densityDpi + "dpi";
+		}
 	}
 
 	protected void setAppInfo(Context context) {
@@ -120,6 +134,25 @@ public class DeviceInformation {
 		}
 	}
 	
+	protected HttpHeaders createDefaultHeaders() {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		
+		httpHeaders.add("X-AppGlu-Client", "AndroidSDK");
+		httpHeaders.add("X-AppGlu-Client-Version", AppGlu.VERSION);
+		httpHeaders.add("X-AppGlu-Client-App", this.createClientAppHeader());
+		httpHeaders.add("X-AppGlu-Client-Device", this.createClientDeviceHeader());
+		
+		return httpHeaders;
+	}
+	
+	private String createClientAppHeader() {
+		return String.format("%s;%s;%s", this.getAppName(), this.getAppVersion(), this.getAppIdentifier());
+	}
+	
+	private String createClientDeviceHeader() {
+		return String.format("%s;%s;%s;%s;%s;", this.getDeviceOS(), this.getDeviceOSVersion(), this.getDeviceModel(), this.getDeviceManufacturer(), this.getDeviceResolution());
+	}
+
 	@Override
 	public String toString() {
 		return "DeviceInformation [deviceUUID=" + deviceUUID + ", deviceOS="
@@ -127,7 +160,7 @@ public class DeviceInformation {
 				+ ", appName=" + appName + ", appVersion=" + appVersion
 				+ ", appIdentifier=" + appIdentifier + ", deviceModel="
 				+ deviceModel + ", deviceManufacturer=" + deviceManufacturer
-				+ "]";
+				+ ", deviceResolution=" + deviceResolution + "]";
 	}
 
 }
