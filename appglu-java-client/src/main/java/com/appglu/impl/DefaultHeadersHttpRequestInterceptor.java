@@ -3,6 +3,9 @@ package com.appglu.impl;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
@@ -15,17 +18,17 @@ public class DefaultHeadersHttpRequestInterceptor implements ClientHttpRequestIn
 	
 	private String baseUrl;
 	
-	private HttpHeaders defaultHeaders = new HttpHeaders();
+	private Map<String, List<String>> defaultHeaders = new HashMap<String, List<String>>();
 	
 	public DefaultHeadersHttpRequestInterceptor(String baseUrl) {
 		this.baseUrl = baseUrl;
 	}
 	
-	public HttpHeaders getDefaultHeaders() {
+	public Map<String, List<String>> getDefaultHeaders() {
 		return defaultHeaders;
 	}
 
-	public void setDefaultHeaders(HttpHeaders defaultHeaders) {
+	public void setDefaultHeaders(Map<String, List<String>> defaultHeaders) {
 		if (this.defaultHeaders != null) {
 			this.defaultHeaders = defaultHeaders;
 		}

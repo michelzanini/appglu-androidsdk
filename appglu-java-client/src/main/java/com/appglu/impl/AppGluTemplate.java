@@ -4,9 +4,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -102,12 +102,12 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		}
 	}
 	
-	public void setDefaultHeaders(HttpHeaders defaultHeaders) {
+	public void setDefaultHeaders(Map<String, List<String>> defaultHeaders) {
 		this.checkInterceptorsAreInitialized();
 		this.defaultHeadersHttpRequestInterceptor.setDefaultHeaders(defaultHeaders);
 	}
 	
-	public HttpHeaders getDefaultHeaders() {
+	public Map<String, List<String>> getDefaultHeaders() {
 		this.checkInterceptorsAreInitialized();
 		return defaultHeadersHttpRequestInterceptor.getDefaultHeaders();
 	}

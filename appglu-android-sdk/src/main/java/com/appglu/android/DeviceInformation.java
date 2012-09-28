@@ -1,8 +1,11 @@
 package com.appglu.android;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
-
-import org.springframework.http.HttpHeaders;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -40,6 +43,8 @@ public class DeviceInformation {
 	private String deviceManufacturer;
 	
 	private String deviceResolution;
+	
+	private String deviceLanguage;
 	
 	public DeviceInformation(Context context) {
 		AppGluUtils.assertNotNull(context, "Context cannot be null");
@@ -85,6 +90,10 @@ public class DeviceInformation {
 	public String getDeviceResolution() {
 		return deviceResolution;
 	}
+	
+	public String getDeviceLanguage() {
+		return deviceLanguage;
+	}
 
 	public boolean hasInternetConnection() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -115,6 +124,11 @@ public class DeviceInformation {
 		if (displayMetrics != null) {
 			this.deviceResolution = displayMetrics.densityDpi + "dpi";
 		}
+		
+		this.deviceLanguage = Locale.getDefault().getLanguage();
+		if (AppGluUtils.hasText(Locale.getDefault().getCountry())) {
+			this.deviceLanguage += "_" + Locale.getDefault().getCountry();
+		}
 	}
 
 	protected void setAppInfo(Context context) {
@@ -134,15 +148,19 @@ public class DeviceInformation {
 		}
 	}
 	
-	protected HttpHeaders createDefaultHeaders() {
-		HttpHeaders httpHeaders = new HttpHeaders();
+	protected Map<String, List<String>> createDefaultHeaders() {
+		Map<String, List<String>> httpHeaders = new HashMap<String, List<String>>();
 		
-		httpHeaders.add("X-AppGlu-Client", "AndroidSDK");
-		httpHeaders.add("X-AppGlu-Client-Version", AppGlu.VERSION);
-		httpHeaders.add("X-AppGlu-Client-App", this.createClientAppHeader());
-		httpHeaders.add("X-AppGlu-Client-Device", this.createClientDeviceHeader());
+		httpHeaders.put("User-Agent", Arrays.asList(this.createUserAgentHeader()));
+		httpHeaders.put("X-AppGlu-Client-App", Arrays.asList(this.createClientAppHeader()));
+		httpHeaders.put("X-AppGlu-Client-Device", Arrays.asList(this.createClientDeviceHeader()));
 		
 		return httpHeaders;
+	}
+	
+	private String createUserAgentHeader() {
+		return String.format("%s/%s (%s) %s/%s (%s)", "AndroidSDK", AppGlu.VERSION, 
+			this.createClientDeviceHeader(), this.getAppName(), this.getAppVersion(), this.getAppIdentifier());
 	}
 	
 	private String createClientAppHeader() {
@@ -150,17 +168,19 @@ public class DeviceInformation {
 	}
 	
 	private String createClientDeviceHeader() {
-		return String.format("%s;%s;%s;%s;%s;", this.getDeviceOS(), this.getDeviceOSVersion(), this.getDeviceModel(), this.getDeviceManufacturer(), this.getDeviceResolution());
+		return String.format("%s;%s;%s;%s;%s;%s", this.getDeviceOS(), this.getDeviceOSVersion(), 
+			this.getDeviceModel(), this.getDeviceManufacturer(), this.getDeviceResolution(), this.getDeviceLanguage());
 	}
 
 	@Override
 	public String toString() {
-		return "DeviceInformation [deviceUUID=" + deviceUUID + ", deviceOS="
-				+ deviceOS + ", deviceOSVersion=" + deviceOSVersion
-				+ ", appName=" + appName + ", appVersion=" + appVersion
-				+ ", appIdentifier=" + appIdentifier + ", deviceModel="
-				+ deviceModel + ", deviceManufacturer=" + deviceManufacturer
-				+ ", deviceResolution=" + deviceResolution + "]";
+		return "DeviceInformation [context=" + context + ", deviceUUID="
+				+ deviceUUID + ", deviceOS=" + deviceOS + ", deviceOSVersion="
+				+ deviceOSVersion + ", appName=" + appName + ", appVersion="
+				+ appVersion + ", appIdentifier=" + appIdentifier
+				+ ", deviceModel=" + deviceModel + ", deviceManufacturer="
+				+ deviceManufacturer + ", deviceResolution=" + deviceResolution
+				+ ", deviceLanguage=" + deviceLanguage + "]";
 	}
 
 }
