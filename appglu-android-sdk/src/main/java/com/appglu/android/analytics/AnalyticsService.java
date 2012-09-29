@@ -47,6 +47,7 @@ public class AnalyticsService {
 		session.addParameter("appglu.client_device", this.deviceInformation.getDeviceModel());
 		session.addParameter("appglu.client_device_manufacturer", this.deviceInformation.getDeviceManufacturer());
 		session.addParameter("appglu.client_device_resolution", this.deviceInformation.getDeviceResolution());
+		session.addParameter("appglu.client_device_language", this.deviceInformation.getDeviceLanguage());
 		session.addParameter("appglu.client_os", this.deviceInformation.getDeviceOS());
 		session.addParameter("appglu.client_os_version", this.deviceInformation.getDeviceOSVersion());
 		session.addParameter("appglu.app_name", this.deviceInformation.getAppName());
