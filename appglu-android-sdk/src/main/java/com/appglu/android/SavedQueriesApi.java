@@ -1,5 +1,6 @@
 package com.appglu.android;
 
+import com.appglu.AppGluRestClientException;
 import com.appglu.AsyncCallback;
 import com.appglu.AsyncSavedQueriesOperations;
 import com.appglu.QueryParams;
@@ -17,11 +18,11 @@ public final class SavedQueriesApi implements SavedQueriesOperations, AsyncSaved
 		this.asyncSavedQueriesOperations = asyncSavedQueriesOperations;
 	}
 
-	public QueryResult runQuery(String queryName) {
+	public QueryResult runQuery(String queryName) throws AppGluRestClientException {
 		return savedQueriesOperations.runQuery(queryName);
 	}
 
-	public QueryResult runQuery(String queryName, QueryParams params) {
+	public QueryResult runQuery(String queryName, QueryParams params) throws AppGluRestClientException {
 		return savedQueriesOperations.runQuery(queryName, params);
 	}
 

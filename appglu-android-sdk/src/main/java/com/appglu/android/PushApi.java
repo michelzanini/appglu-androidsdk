@@ -1,5 +1,6 @@
 package com.appglu.android;
 
+import com.appglu.AppGluRestClientException;
 import com.appglu.AsyncCallback;
 import com.appglu.AsyncPushOperations;
 import com.appglu.Device;
@@ -17,16 +18,16 @@ public final class PushApi {
 		this.asyncPushOperations = asyncPushOperations;
 	}
 
-	public void registerDevice(String token) {
+	public void registerDevice(String token) throws AppGluRestClientException {
 		this.registerDevice(token, null);
 	}
 	
-	public void registerDevice(String token, String alias) {
+	public void registerDevice(String token, String alias) throws AppGluRestClientException {
 		Device device = this.createDevice(token, alias);
 		pushOperations.registerDevice(device);
 	}
 
-	public boolean removeDevice(String token) {
+	public boolean removeDevice(String token) throws AppGluRestClientException {
 		return pushOperations.removeDevice(token);
 	}
 	

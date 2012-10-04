@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 import android.os.Handler;
 
 import com.appglu.AsyncCallback;
+import com.appglu.ExceptionWrapper;
 import com.appglu.impl.AsyncExecutor;
 
 public class AsyncTaskExecutor implements AsyncExecutor {
@@ -34,7 +35,7 @@ public class AsyncTaskExecutor implements AsyncExecutor {
 			@Override
 			protected void onException(Exception exception) {
 				super.onException(exception);
-				asyncCallback.onException(exception);
+				asyncCallback.onException(new ExceptionWrapper(exception));
 			}
 
 			@Override

@@ -143,9 +143,8 @@ public final class AnalyticsApi {
 		@Override
 		public void run() {
 			while (true) {
-				Runnable runnable;
 				try {
-					runnable = runnableQueue.take();
+					Runnable runnable = runnableQueue.take();
 					runnable.run();
 				} catch (Throwable e) {
 					logger.error(e);

@@ -2,9 +2,11 @@ package com.appglu.impl;
 
 import java.util.ArrayList;
 
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
 import com.appglu.AppGluHttpNotFoundException;
+import com.appglu.AppGluRestClientException;
 import com.appglu.CrudOperations;
 import com.appglu.ReadAllFilterArguments;
 import com.appglu.Row;
@@ -23,9 +25,13 @@ public final class CrudTemplate implements CrudOperations {
 		this.restOperations = restOperations;
 	}
 	
-	public Object create(String tableName, Row row) {
-		RowBody primaryKey = this.restOperations.postForObject(CRUD_TABLE_URL, new RowBody(row), RowBody.class, tableName);
-		return this.extractPrimaryKeyValue(primaryKey.getRow());
+	public Object create(String tableName, Row row) throws AppGluRestClientException {
+		try {
+			RowBody primaryKey = this.restOperations.postForObject(CRUD_TABLE_URL, new RowBody(row), RowBody.class, tableName);
+			return this.extractPrimaryKeyValue(primaryKey.getRow());
+		} catch (RestClientException e) {
+			throw new AppGluRestClientException(e.getMessage(), e);
+		}
 	}
 
 	private Object extractPrimaryKeyValue(Row primaryKey) {
@@ -38,31 +44,37 @@ public final class CrudTemplate implements CrudOperations {
 		return primaryKey.get(keySet.get(0));
 	}
 	
-	public Row read(String tableName, Object id) {
+	public Row read(String tableName, Object id) throws AppGluRestClientException {
 		return this.read(tableName, id, false);
 	}
 	
-	public Row read(String tableName, Object id, boolean expandRelationships) {
+	public Row read(String tableName, Object id, boolean expandRelationships) throws AppGluRestClientException {
 		try {
 			String url = CRUD_ENTITY_URL + ("?expand_relationships=" + expandRelationships);
 			RowBody rowBody = this.restOperations.getForObject(url, RowBody.class, tableName, id);
 			return rowBody.getRow();
 		} catch (AppGluHttpNotFoundException e) {
 			return null;
+		} catch (RestClientException e) {
+			throw new AppGluRestClientException(e.getMessage(), e);
 		}
 	}
 	
-	public Rows readAll(String tableName) {
+	public Rows readAll(String tableName) throws AppGluRestClientException {
 		return this.readAll(tableName, false);
 	}
 	
-	public Rows readAll(String tableName, boolean expandRelationships) {
+	public Rows readAll(String tableName, boolean expandRelationships) throws AppGluRestClientException {
 		return this.readAll(tableName, expandRelationships, new ReadAllFilterArguments());
 	}
 	
-	public Rows readAll(String tableName, boolean expandRelationships, ReadAllFilterArguments arguments) {
-		String readAllUrl = this.buildReadAllUrl(expandRelationships, arguments);
-		return this.restOperations.getForObject(readAllUrl, Rows.class, tableName);
+	public Rows readAll(String tableName, boolean expandRelationships, ReadAllFilterArguments arguments) throws AppGluRestClientException {
+		try {
+			String readAllUrl = this.buildReadAllUrl(expandRelationships, arguments);
+			return this.restOperations.getForObject(readAllUrl, Rows.class, tableName);
+		} catch (RestClientException e) {
+			throw new AppGluRestClientException(e.getMessage(), e);
+		}
 	}
 	
 	private String buildReadAllUrl(boolean expandRelationships, ReadAllFilterArguments arguments) {
@@ -100,21 +112,25 @@ public final class CrudTemplate implements CrudOperations {
 		return url.toString();
 	}
 
-	public boolean update(String tableName, Object id, Row row) {
+	public boolean update(String tableName, Object id, Row row) throws AppGluRestClientException {
 		try {
 			this.restOperations.put(CRUD_ENTITY_URL, new RowBody(row), tableName, id);
 			return true;
 		} catch (AppGluHttpNotFoundException e) {
 			return false;
+		} catch (RestClientException e) {
+			throw new AppGluRestClientException(e.getMessage(), e);
 		}
 	}
 
-	public boolean delete(String tableName, Object id) {
+	public boolean delete(String tableName, Object id) throws AppGluRestClientException {
 		try {
 			this.restOperations.delete(CRUD_ENTITY_URL, tableName, id);
 			return true;
 		} catch (AppGluHttpNotFoundException e) {
 			return false;
+		} catch (RestClientException e) {
+			throw new AppGluRestClientException(e.getMessage(), e);
 		}
 	}
 
