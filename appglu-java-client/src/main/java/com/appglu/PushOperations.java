@@ -2,10 +2,10 @@ package com.appglu;
 
 public interface PushOperations {
 	
-	void registerDevice(Device device);
+	void registerDevice(Device device) throws AppGluRestClientException;
 	
-	Device readDevice(String token);
+	Device readDevice(String token) throws AppGluRestClientException;
 	
-	boolean removeDevice(String token);
+	boolean removeDevice(String token) throws AppGluRestClientException;
 
 }

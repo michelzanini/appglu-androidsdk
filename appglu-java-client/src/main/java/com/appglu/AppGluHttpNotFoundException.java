@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class AppGluHttpNotFoundException extends AppGluHttpClientException {
 	
 	public AppGluHttpNotFoundException(Error error) {
-		super(HttpStatus.NOT_FOUND, error);
+		super(HttpStatus.NOT_FOUND.value(), error);
 	}
 
 }

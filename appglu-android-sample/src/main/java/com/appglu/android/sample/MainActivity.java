@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.appglu.AnalyticsSessionEvent;
 import com.appglu.AsyncCallback;
+import com.appglu.ExceptionWrapper;
 import com.appglu.QueryResult;
 import com.appglu.Rows;
 import com.appglu.android.AppGlu;
@@ -72,8 +73,8 @@ public class MainActivity extends Activity {
 			AppGlu.analyticsApi().logEvent(event);
 		}
 		
-		public void onException(Exception exception) {
-			Toast.makeText(MainActivity.this, exception.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+		public void onException(ExceptionWrapper exceptionWrapper) {
+			Toast.makeText(MainActivity.this, exceptionWrapper.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 		}
 		
 		public void onNoInternetConnection() {
@@ -105,8 +106,8 @@ public class MainActivity extends Activity {
 			AppGlu.analyticsApi().logEvent(event);
 		}
 		
-		public void onException(Exception exception) {
-			Toast.makeText(MainActivity.this, exception.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+		public void onException(ExceptionWrapper exceptionWrapper) {
+			Toast.makeText(MainActivity.this, exceptionWrapper.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 		}
 		
 		public void onNoInternetConnection() {

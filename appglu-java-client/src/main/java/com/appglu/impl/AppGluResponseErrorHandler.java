@@ -9,9 +9,9 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
 import com.appglu.AppGluHttpClientException;
-import com.appglu.AppGluHttpException;
-import com.appglu.AppGluHttpServerException;
 import com.appglu.AppGluHttpNotFoundException;
+import com.appglu.AppGluHttpServerException;
+import com.appglu.AppGluHttpStatusCodeException;
 import com.appglu.Error;
 import com.appglu.ErrorResponse;
 
@@ -34,11 +34,11 @@ public class AppGluResponseErrorHandler extends DefaultResponseErrorHandler {
 		
 		switch (statusCode.series()) {
 			case CLIENT_ERROR:
-				throw new AppGluHttpClientException(statusCode, error);
+				throw new AppGluHttpClientException(statusCode.value(), error);
 			case SERVER_ERROR:
-				throw new AppGluHttpServerException(statusCode, error);
+				throw new AppGluHttpServerException(statusCode.value(), error);
 			default:
-				throw new AppGluHttpException(statusCode, error);
+				throw new AppGluHttpStatusCodeException(statusCode.value(), error);
 		}
 	}
 

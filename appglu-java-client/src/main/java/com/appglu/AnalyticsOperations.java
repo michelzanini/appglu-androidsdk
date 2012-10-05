@@ -4,8 +4,8 @@ import java.util.List;
 
 public interface AnalyticsOperations {
 	
-	void uploadSession(AnalyticsSession session);
+	void uploadSession(AnalyticsSession session) throws AppGluRestClientException;
 	
-	void uploadSessions(List<AnalyticsSession> sessions);
+	void uploadSessions(List<AnalyticsSession> sessions) throws AppGluRestClientException;
 
 }

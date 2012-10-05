@@ -1,5 +1,6 @@
 package com.appglu.android;
 
+import com.appglu.AppGluRestClientException;
 import com.appglu.AsyncCallback;
 import com.appglu.AsyncCrudOperations;
 import com.appglu.CrudOperations;
@@ -18,35 +19,35 @@ public final class CrudApi implements CrudOperations, AsyncCrudOperations {
 		this.asyncCrudOperations = asyncCrudOperations;
 	}
 
-	public Object create(String tableName, Row row) {
+	public Object create(String tableName, Row row) throws AppGluRestClientException {
 		return crudOperations.create(tableName, row);
 	}
 
-	public Row read(String tableName, Object id) {
+	public Row read(String tableName, Object id) throws AppGluRestClientException {
 		return crudOperations.read(tableName, id);
 	}
 
-	public Row read(String tableName, Object id, boolean expandRelationships) {
+	public Row read(String tableName, Object id, boolean expandRelationships) throws AppGluRestClientException {
 		return crudOperations.read(tableName, id, expandRelationships);
 	}
 
-	public Rows readAll(String tableName) {
+	public Rows readAll(String tableName) throws AppGluRestClientException {
 		return crudOperations.readAll(tableName);
 	}
 
-	public Rows readAll(String tableName, boolean expandRelationships) {
+	public Rows readAll(String tableName, boolean expandRelationships) throws AppGluRestClientException {
 		return crudOperations.readAll(tableName, expandRelationships);
 	}
 
-	public Rows readAll(String tableName, boolean expandRelationships, ReadAllFilterArguments argumetns) {
+	public Rows readAll(String tableName, boolean expandRelationships, ReadAllFilterArguments argumetns) throws AppGluRestClientException {
 		return crudOperations.readAll(tableName, expandRelationships, argumetns);
 	}
 
-	public boolean update(String tableName, Object id, Row row) {
+	public boolean update(String tableName, Object id, Row row) throws AppGluRestClientException {
 		return crudOperations.update(tableName, id, row);
 	}
 
-	public boolean delete(String tableName, Object id) {
+	public boolean delete(String tableName, Object id) throws AppGluRestClientException {
 		return crudOperations.delete(tableName, id);
 	}
 

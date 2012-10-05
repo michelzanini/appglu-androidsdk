@@ -8,7 +8,7 @@ public abstract class AsyncCallback<Result> {
 	
 	public abstract void onResult(Result result);
 	
-	public void onException(Exception exception) {
+	public void onException(ExceptionWrapper exceptionWrapper) {
 		
 	}
 	

@@ -1,11 +1,9 @@
 package com.appglu;
 
-import org.springframework.http.HttpStatus;
-
 @SuppressWarnings("serial")
-public class AppGluHttpServerException extends AppGluHttpException {
+public class AppGluHttpServerException extends AppGluHttpStatusCodeException {
 	
-	public AppGluHttpServerException(HttpStatus statusCode, Error error) {
+	public AppGluHttpServerException(int statusCode, Error error) {
 		super(statusCode, error);
 	}
 
