@@ -18,6 +18,7 @@ public final class PushApi {
 	public PushApi(PushOperations pushOperations, AsyncPushOperations asyncPushOperations, DeviceInformation deviceInformation) {
 		this.pushOperations = pushOperations;
 		this.asyncPushOperations = asyncPushOperations;
+		this.deviceInformation = deviceInformation;
 	}
 
 	public void registerDevice(String token) throws AppGluRestClientException {
