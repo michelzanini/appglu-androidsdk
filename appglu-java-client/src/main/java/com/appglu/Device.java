@@ -11,6 +11,8 @@ public class Device implements Serializable {
 	private String alias;
 	
 	private DevicePlatform platform;
+	
+	private String appIdentifier;
 
 	public String getToken() {
 		return token;
@@ -36,6 +38,14 @@ public class Device implements Serializable {
 		this.platform = platform;
 	}
 	
+	public String getAppIdentifier() {
+		return appIdentifier;
+	}
+
+	public void setAppIdentifier(String appIdentifier) {
+		this.appIdentifier = appIdentifier;
+	}
+	
 	public boolean isIos() {
 		return DevicePlatform.IOS.equals(platform);
 	}
@@ -46,7 +56,7 @@ public class Device implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Device [" + token + ", " + platform + "]";
+		return "Device [" + token + ", " + platform + ", " + appIdentifier + "]";
 	}
 
 	@Override

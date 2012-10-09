@@ -12,8 +12,10 @@ public final class PushApi {
 	private PushOperations pushOperations;
 	
 	private AsyncPushOperations asyncPushOperations;
+	
+	private DeviceInformation deviceInformation;
 
-	public PushApi(PushOperations pushOperations, AsyncPushOperations asyncPushOperations) {
+	public PushApi(PushOperations pushOperations, AsyncPushOperations asyncPushOperations, DeviceInformation deviceInformation) {
 		this.pushOperations = pushOperations;
 		this.asyncPushOperations = asyncPushOperations;
 	}
@@ -49,6 +51,7 @@ public final class PushApi {
 		device.setToken(token);
 		device.setAlias(alias);
 		device.setPlatform(DevicePlatform.ANDROID);
+		device.setAppIdentifier(deviceInformation.getAppIdentifier());
 		return device;
 	}
 
