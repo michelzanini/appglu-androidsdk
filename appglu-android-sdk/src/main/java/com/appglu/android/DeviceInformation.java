@@ -18,6 +18,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
+import com.appglu.DevicePlatform;
 import com.appglu.android.util.AppGluUtils;
 
 public class DeviceInformation {
@@ -115,7 +116,7 @@ public class DeviceInformation {
 	}
 
 	protected void setDeviceInfo(Context context) {
-		this.deviceOS = "Android";
+		this.deviceOS = DevicePlatform.ANDROID.toString();
 		this.deviceOSVersion = Build.VERSION.RELEASE;
 		this.deviceModel = Build.MODEL;
 		this.deviceManufacturer = Build.MANUFACTURER;

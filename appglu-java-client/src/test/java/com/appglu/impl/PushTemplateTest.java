@@ -32,6 +32,7 @@ public class PushTemplateTest extends AbstractAppGluApiTest {
 		device.setToken("f3f71c5a-0a98-48f7-9acd-d38d714d76ad");
 		device.setAlias("alias");
 		device.setPlatform(DevicePlatform.ANDROID);
+		device.setAppIdentifier("com.appglu");
 		return device;
 	}
 	
@@ -39,6 +40,7 @@ public class PushTemplateTest extends AbstractAppGluApiTest {
 		Assert.assertEquals("f3f71c5a-0a98-48f7-9acd-d38d714d76ad", device.getToken());
 		Assert.assertEquals("alias", device.getAlias());
 		Assert.assertEquals(DevicePlatform.ANDROID, device.getPlatform());
+		Assert.assertEquals("com.appglu", device.getAppIdentifier());
 	}
 	
 	@Test

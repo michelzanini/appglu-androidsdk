@@ -17,7 +17,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.appglu.DevicePlatform;
 
-@JsonPropertyOrder({"token", "alias", "platform"})
+@JsonPropertyOrder({"token", "alias", "platform", "appIdentifier"})
 public abstract class DeviceMixin {
 
 	@JsonProperty("token")
@@ -30,6 +30,9 @@ public abstract class DeviceMixin {
 	@JsonSerialize(using=DevicePlatformSerializer.class)
 	@JsonDeserialize(using=DevicePlatformDeserializer.class)
 	DevicePlatform platform;
+	
+	@JsonProperty("appIdentifier")
+	String appIdentifier;
 	
 	@JsonIgnore
 	abstract boolean isIos();

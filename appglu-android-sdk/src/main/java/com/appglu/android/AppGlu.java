@@ -110,7 +110,7 @@ public final class AppGlu {
 	
 	protected PushApi getPushApi() {
 		if (this.pushApi == null) {
-			this.pushApi = new PushApi(this.getAppGluTemplate().pushOperations(), this.getAppGluTemplate().asyncPushOperations());
+			this.pushApi = new PushApi(this.getAppGluTemplate().pushOperations(), this.getAppGluTemplate().asyncPushOperations(), this.deviceInformation);
 		}
 		return this.pushApi;
 	}
