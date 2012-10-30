@@ -334,8 +334,14 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 		row.put("bigInteger", new BigInteger("9223372036854775807123"));
 		row.put("string", string);
 		
-		Date date = DateUtils.parseDate("2010-01-15T12:10:00+0000");
-		row.put("datetime", date);
+		Date datetime = DateUtils.parseDate("2010-01-15T12:10:00+0000");
+		row.putDatetime("datetime", datetime);
+		
+		Date time = DateUtils.parseDate("1970-01-01T12:10:00+0000");
+		row.putTime("time", time);
+		
+		Date date = DateUtils.parseDate("2010-01-15T00:00:00+0000");
+		row.putDate("date", date);
 		
 		Object id = crudOperations.create("data_types", row);
 		Assert.assertEquals(8, id);

@@ -1,15 +1,17 @@
 {
    "row":{
-      "short":1,
       "integer":10,
-      "byte":2,
-      "string":"a very long string for test",
-      "byteArray":"YSB2ZXJ5IGxvbmcgc3RyaW5nIGZvciB0ZXN0",
       "bigInteger":9223372036854775807123,
-      "boolean":true,
-      "datetime":"2010-01-15T12:10:00+0000",
-      "long":21474836475,
       "double":7.5,
-      "float":1.5
+      "long":21474836475,
+      "date":"2010-01-15",
+      "float":1.5,
+      "short":1,
+      "time":"12:10:00",
+      "byte":2,
+      "byteArray":"YSB2ZXJ5IGxvbmcgc3RyaW5nIGZvciB0ZXN0",
+      "string":"a very long string for test",
+      "boolean":true,
+      "datetime":"2010-01-15T12:10:00+0000"
    }
 }

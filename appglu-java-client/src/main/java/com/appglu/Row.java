@@ -190,5 +190,24 @@ public class Row extends HashMap<String, Object> {
 		}
 		this.put(key, entries);
 	}
+	
+	public void put(String key, Date date) {
+		this.putDatetime(key, date);
+	}
+	
+	public void putDatetime(String key, Date date) {
+		String value = DateUtils.formatDatetime(date);
+		this.put(key, value);
+	}
+	
+	public void putDate(String key, Date date) {
+		String value = DateUtils.formatDate(date);
+		this.put(key, value);
+	}
+
+	public void putTime(String key, Date date) {
+		String value = DateUtils.formatTime(date);
+		this.put(key, value);
+	}
 
 }
