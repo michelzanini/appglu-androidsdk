@@ -13,11 +13,11 @@ public abstract class DateUtils {
 	
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	
-	public static final String TIME_FORMAT = "'T'HH:mm:ssZ";
+	public static final String TIME_FORMAT = "HH:mm:ss";
 	
 	private final static String DATE_REGEX = "\\d{4}-\\d{2}-\\d{2}";
 	
-	private final static String TIME_REGEX = "T\\d{2}:\\d{2}:\\d{2}[\\+-]\\d{4}";
+	private final static String TIME_REGEX = "\\d{2}:\\d{2}:\\d{2}";
 	
 	private static Pattern dateRegex;
 	
@@ -47,6 +47,16 @@ public abstract class DateUtils {
 	
 	public static String formatDatetime(Date date) {
 		DateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT);
+		return dateFormat.format(date);
+	}
+	
+	public static String formatDate(Date date) {
+		DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+		return dateFormat.format(date);
+	}
+	
+	public static String formatTime(Date date) {
+		DateFormat dateFormat = new SimpleDateFormat(TIME_FORMAT);
 		return dateFormat.format(date);
 	}
 
