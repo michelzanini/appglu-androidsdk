@@ -2,7 +2,7 @@ package com.appglu;
 
 import java.io.Serializable;
 
-import org.springframework.util.StringUtils;
+import com.appglu.impl.util.StringUtils;
 
 public class ReadAllFilterArguments implements Serializable {
 	
@@ -47,15 +47,15 @@ public class ReadAllFilterArguments implements Serializable {
 	}
 	
 	public boolean hasFilterColumn() {
-		return StringUtils.hasText(getFilterColumn());
+		return StringUtils.isNotEmpty(getFilterColumn());
 	}
 	
 	public boolean hasFilterQuery() {
-		return StringUtils.hasText(getFilterQuery());
+		return StringUtils.isNotEmpty(getFilterQuery());
 	}
 	
 	public boolean hasSortColumn() {
-		return StringUtils.hasText(getSortColumn());
+		return StringUtils.isNotEmpty(getSortColumn());
 	}
 	
 	public boolean hasSortDirection() {

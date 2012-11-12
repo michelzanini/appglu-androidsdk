@@ -18,4 +18,8 @@ public interface AsyncCrudOperations {
 	
 	void deleteInBackground(String tableName, Object id, AsyncCallback<Boolean> deleteCallback);
 	
+	<T> void readInBackground(Class<T> clazz, Object id, AsyncCallback<T> objectCallback) throws AppGluRestClientException;
+	
+	<T> void readInBackground(Class<T> clazz, Object id, RowMapper<T> rowMapper, AsyncCallback<T> objectCallback) throws AppGluRestClientException;
+	
 }

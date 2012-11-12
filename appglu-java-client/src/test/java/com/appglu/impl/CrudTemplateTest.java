@@ -25,6 +25,8 @@ import com.appglu.ReadAllFilterArguments;
 import com.appglu.Row;
 import com.appglu.Rows;
 import com.appglu.SortDirection;
+import com.appglu.impl.objects.TestObjectAnnotations;
+import com.appglu.impl.objects.TestObjectDataTypes;
 import com.appglu.impl.util.DateUtils;
 
 public class CrudTemplateTest extends AbstractAppGluApiTest {
@@ -348,5 +350,46 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 		
 		mockServer.verify();
 	}
+	
+	@Test
+	public void readObjectDataTypes() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/test_object_data_types/1?expand_relationships=false"))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withSuccess().body(compactedJson("data/crud_read_object_data_types")).headers(responseHeaders));
+		
+		TestObjectDataTypes object = crudOperations.read(TestObjectDataTypes.class, 1);
+		
+		String string = new String("a very long string for test");
+		
+		Assert.assertEquals(new Boolean(true), object.aBoolean);
+		Assert.assertEquals(new Short((short) 1), object.aShort);
+		Assert.assertEquals(new Byte((byte) 2), object.aByte);
+		Assert.assertEquals(string, new String(object.aByteArray));
+		Assert.assertEquals(new Float(1.5f), object.aFloat);
+		Assert.assertEquals(new Double(7.5d), object.aDouble);
+		Assert.assertEquals(new Integer(10), object.aInteger);
+		Assert.assertEquals(new Long(21474836475L), object.aLong);
+		Assert.assertEquals(new BigInteger("9223372036854775807123"), object.aBigInteger);
+		Assert.assertEquals(string, object.aString);
+		
+		Assert.assertEquals("2010-01-15T12:10:00+0000", DateUtils.formatDatetime(object.aDatetime));
+		Assert.assertEquals("1970-01-01T12:10:00+0000", DateUtils.formatDatetime(object.aTime));
+		Assert.assertEquals("2010-01-15T00:00:00+0000", DateUtils.formatDatetime(object.aDate));	
+	}
+	
+	@Test
+	public void readObjectAnnotations() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/OBJECT_ANNOTATIONS/1?expand_relationships=false"))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withSuccess().body(compactedJson("data/crud_read_object_annotations")).headers(responseHeaders));
+		
+		TestObjectAnnotations object = crudOperations.read(TestObjectAnnotations.class, 1);
+
+		Assert.assertNull(object.age);
+		Assert.assertEquals("First", object.firstName);
+		Assert.assertEquals("Last", object.lastName);
+		Assert.assertEquals("description", object.description);
+	}
+	
 
 }

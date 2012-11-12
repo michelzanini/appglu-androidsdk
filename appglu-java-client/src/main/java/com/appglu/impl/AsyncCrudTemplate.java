@@ -2,11 +2,13 @@ package com.appglu.impl;
 
 import java.util.concurrent.Callable;
 
+import com.appglu.AppGluRestClientException;
 import com.appglu.AsyncCallback;
 import com.appglu.AsyncCrudOperations;
 import com.appglu.CrudOperations;
 import com.appglu.ReadAllFilterArguments;
 import com.appglu.Row;
+import com.appglu.RowMapper;
 import com.appglu.Rows;
 
 public final class AsyncCrudTemplate implements AsyncCrudOperations {
@@ -80,6 +82,22 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		asyncExecutor.execute(deleteCallback, new Callable<Boolean>() {
 			public Boolean call() {
 				return crudOperations.delete(tableName, id);
+			}
+		});
+	}
+
+	public <T> void readInBackground(final Class<T> clazz, final Object id, AsyncCallback<T> objectCallback) throws AppGluRestClientException {
+		asyncExecutor.execute(objectCallback, new Callable<T>() {
+			public T call() {
+				return crudOperations.read(clazz, id);
+			}
+		});
+	}
+
+	public <T> void readInBackground(final Class<T> clazz, final Object id, final RowMapper<T> rowMapper, AsyncCallback<T> objectCallback) throws AppGluRestClientException {
+		asyncExecutor.execute(objectCallback, new Callable<T>() {
+			public T call() {
+				return crudOperations.read(clazz, id, rowMapper);
 			}
 		});
 	}

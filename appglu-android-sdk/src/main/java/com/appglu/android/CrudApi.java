@@ -6,6 +6,7 @@ import com.appglu.AsyncCrudOperations;
 import com.appglu.CrudOperations;
 import com.appglu.ReadAllFilterArguments;
 import com.appglu.Row;
+import com.appglu.RowMapper;
 import com.appglu.Rows;
 
 public final class CrudApi implements CrudOperations, AsyncCrudOperations {
@@ -39,8 +40,8 @@ public final class CrudApi implements CrudOperations, AsyncCrudOperations {
 		return crudOperations.readAll(tableName, expandRelationships);
 	}
 
-	public Rows readAll(String tableName, boolean expandRelationships, ReadAllFilterArguments argumetns) throws AppGluRestClientException {
-		return crudOperations.readAll(tableName, expandRelationships, argumetns);
+	public Rows readAll(String tableName, boolean expandRelationships, ReadAllFilterArguments arguments) throws AppGluRestClientException {
+		return crudOperations.readAll(tableName, expandRelationships, arguments);
 	}
 
 	public boolean update(String tableName, Object id, Row row) throws AppGluRestClientException {
@@ -49,6 +50,14 @@ public final class CrudApi implements CrudOperations, AsyncCrudOperations {
 
 	public boolean delete(String tableName, Object id) throws AppGluRestClientException {
 		return crudOperations.delete(tableName, id);
+	}
+	
+	public <T> T read(Class<T> clazz, Object id) throws AppGluRestClientException {
+		return crudOperations.read(clazz, id);
+	}
+
+	public <T> T read(Class<T> clazz, Object id, RowMapper<T> rowMapper) throws AppGluRestClientException {
+		return crudOperations.read(clazz, id, rowMapper);
 	}
 
 	public void createInBackground(String tableName, Row row, AsyncCallback<Object> primaryKeyCallback) {
@@ -82,5 +91,13 @@ public final class CrudApi implements CrudOperations, AsyncCrudOperations {
 	public void deleteInBackground(String tableName, Object id, AsyncCallback<Boolean> deleteCallback) {
 		asyncCrudOperations.deleteInBackground(tableName, id, deleteCallback);
 	}
-	
+
+	public <T> void readInBackground(Class<T> clazz, Object id, AsyncCallback<T> objectCallback) throws AppGluRestClientException {
+		asyncCrudOperations.readInBackground(clazz, id, objectCallback);
+	}
+
+	public <T> void readInBackground(Class<T> clazz, Object id, RowMapper<T> rowMapper, AsyncCallback<T> objectCallback) throws AppGluRestClientException {
+		asyncCrudOperations.readInBackground(clazz, id, rowMapper, objectCallback);
+	}
+
 }

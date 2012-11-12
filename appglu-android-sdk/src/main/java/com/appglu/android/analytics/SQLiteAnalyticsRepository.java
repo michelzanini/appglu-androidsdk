@@ -15,7 +15,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.appglu.AnalyticsSession;
 import com.appglu.AnalyticsSessionEvent;
-import com.appglu.android.util.AppGluUtils;
+import com.appglu.impl.util.StringUtils;
 
 public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 	
@@ -165,7 +165,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 	}
 
 	public void setSessionParameter(long sessionId, String name, String value) {
-		if (!AppGluUtils.hasText(name)) {
+		if (StringUtils.isEmpty(name)) {
 			throw new AnalyticsRepositoryException("name cannot be null");
 		}
 		
@@ -201,7 +201,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 	}
 
 	public long createEvent(long sessionId, AnalyticsSessionEvent event) {
-		if (event == null || !AppGluUtils.hasText(event.getName())) {
+		if (event == null || StringUtils.isEmpty(event.getName())) {
 			throw new AnalyticsRepositoryException("event or it's name cannot be null");
 		}
 		
@@ -220,7 +220,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 	}
 
 	public void setEventParameter(long eventId, String name, String value) {
-		if (!AppGluUtils.hasText(name)) {
+		if (StringUtils.isEmpty(name)) {
 			throw new AnalyticsRepositoryException("name cannot be null");
 		}
 		

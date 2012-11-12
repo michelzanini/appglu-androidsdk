@@ -20,6 +20,7 @@ import android.util.DisplayMetrics;
 
 import com.appglu.DevicePlatform;
 import com.appglu.android.util.AppGluUtils;
+import com.appglu.impl.util.StringUtils;
 
 public class DeviceInformation {
 	
@@ -127,7 +128,7 @@ public class DeviceInformation {
 		}
 		
 		this.deviceLanguage = Locale.getDefault().getLanguage();
-		if (AppGluUtils.hasText(Locale.getDefault().getCountry())) {
+		if (StringUtils.isNotEmpty(Locale.getDefault().getCountry())) {
 			this.deviceLanguage += "_" + Locale.getDefault().getCountry();
 		}
 	}

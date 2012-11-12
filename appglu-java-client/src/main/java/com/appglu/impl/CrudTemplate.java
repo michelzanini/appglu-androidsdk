@@ -2,6 +2,7 @@ package com.appglu.impl;
 
 import java.util.ArrayList;
 
+import org.springframework.util.ClassUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -10,8 +11,11 @@ import com.appglu.AppGluRestClientException;
 import com.appglu.CrudOperations;
 import com.appglu.ReadAllFilterArguments;
 import com.appglu.Row;
+import com.appglu.RowMapper;
 import com.appglu.Rows;
+import com.appglu.Table;
 import com.appglu.impl.json.RowBody;
+import com.appglu.impl.util.StringUtils;
 
 public final class CrudTemplate implements CrudOperations {
 	
@@ -132,6 +136,31 @@ public final class CrudTemplate implements CrudOperations {
 		} catch (RestClientException e) {
 			throw new AppGluRestClientException(e.getMessage(), e);
 		}
+	}
+	
+	public <T> T read(Class<T> clazz, Object id) {
+		return this.read(clazz, id, new ObjectRowMapper<T>(clazz));
+	}
+
+	public <T> T read(Class<T> clazz, Object id, RowMapper<T> rowMapper) throws AppGluRestClientException {
+		String tableName = this.getTableNameForClass(clazz);
+		
+		Row row = this.read(tableName, id);
+		return rowMapper.mapRow(row);
+	}
+
+	protected <T> String getTableNameForClass(Class<T> clazz) {
+		String className = ClassUtils.getShortName(clazz);
+		String tableName = StringUtils.underscoreName(className);
+		
+		if (clazz.isAnnotationPresent(Table.class)) {
+			Table tableAnnotation = clazz.getAnnotation(Table.class);
+			if (StringUtils.isNotEmpty(tableAnnotation.tableName())) {
+				tableName = tableAnnotation.tableName();
+			}
+		}
+		
+		return tableName;
 	}
 
 }
