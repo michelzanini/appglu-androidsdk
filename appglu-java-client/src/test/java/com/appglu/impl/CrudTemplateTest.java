@@ -25,8 +25,8 @@ import com.appglu.ReadAllFilterArguments;
 import com.appglu.Row;
 import com.appglu.Rows;
 import com.appglu.SortDirection;
-import com.appglu.impl.objects.TestObjectAnnotations;
-import com.appglu.impl.objects.TestObjectDataTypes;
+import com.appglu.impl.test_objects.Annotations;
+import com.appglu.impl.test_objects.DataTypes;
 import com.appglu.impl.util.DateUtils;
 
 public class CrudTemplateTest extends AbstractAppGluApiTest {
@@ -357,7 +357,7 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withSuccess().body(compactedJson("data/crud_read_object_data_types")).headers(responseHeaders));
 		
-		TestObjectDataTypes object = crudOperations.read(TestObjectDataTypes.class, 1);
+		DataTypes object = crudOperations.read(DataTypes.class, 1);
 		
 		String string = new String("a very long string for test");
 		
@@ -383,7 +383,7 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withSuccess().body(compactedJson("data/crud_read_object_annotations")).headers(responseHeaders));
 		
-		TestObjectAnnotations object = crudOperations.read(TestObjectAnnotations.class, 1);
+		Annotations object = crudOperations.read(Annotations.class, 1);
 
 		Assert.assertNull(object.age);
 		Assert.assertEquals("First", object.firstName);

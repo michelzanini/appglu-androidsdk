@@ -1,11 +1,11 @@
-package com.appglu.impl.objects;
+package com.appglu.impl.test_objects;
 
 import com.appglu.Column;
 import com.appglu.Ignore;
 import com.appglu.Table;
 
 @Table (tableName = "OBJECT_ANNOTATIONS")
-public class TestObjectAnnotations {
+public class Annotations {
 	
 	@Ignore
 	public Integer age;

@@ -1,9 +1,9 @@
-package com.appglu.impl.objects;
+package com.appglu.impl.test_objects;
 
 import java.math.BigInteger;
 import java.util.Date;
 
-public class TestObjectDataTypes {
+public class DataTypes {
 	
 	public Boolean aBoolean;
 	
