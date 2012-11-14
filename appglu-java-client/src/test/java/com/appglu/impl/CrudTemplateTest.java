@@ -353,7 +353,7 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 	
 	@Test
 	public void readObjectDataTypes() {
-		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/test_object_data_types/1?expand_relationships=false"))
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/data_types/1?expand_relationships=false"))
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withSuccess().body(compactedJson("data/crud_read_object_data_types")).headers(responseHeaders));
 		
