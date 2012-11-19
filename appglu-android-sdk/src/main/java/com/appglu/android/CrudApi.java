@@ -59,6 +59,14 @@ public final class CrudApi implements CrudOperations, AsyncCrudOperations {
 	public <T> T read(Class<T> clazz, Object id, RowMapper<T> rowMapper) throws AppGluRestClientException {
 		return crudOperations.read(clazz, id, rowMapper);
 	}
+	
+	public <T> boolean delete(Object entity) throws AppGluRestClientException {
+		return crudOperations.delete(entity);
+	}
+
+	public <T> boolean delete(Class<T> clazz, Object id) throws AppGluRestClientException {
+		return crudOperations.delete(clazz, id);
+	}
 
 	public void createInBackground(String tableName, Row row, AsyncCallback<Object> primaryKeyCallback) {
 		asyncCrudOperations.createInBackground(tableName, row, primaryKeyCallback);

@@ -1,13 +1,19 @@
 package com.appglu.impl;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ReflectionUtils.FieldCallback;
+import org.springframework.util.ReflectionUtils.FieldFilter;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
 import com.appglu.AppGluHttpNotFoundException;
 import com.appglu.AppGluRestClientException;
+import com.appglu.Column;
 import com.appglu.CrudOperations;
 import com.appglu.ReadAllFilterArguments;
 import com.appglu.Row;
@@ -148,6 +154,16 @@ public final class CrudTemplate implements CrudOperations {
 		Row row = this.read(tableName, id);
 		return rowMapper.mapRow(row);
 	}
+	
+	public <T> boolean delete(Object entity) throws AppGluRestClientException {
+		Object id = this.extractPrimaryKeyValue(entity);
+		return this.delete(entity.getClass(), id);
+	}
+
+	public <T> boolean delete(Class<T> clazz, Object id) throws AppGluRestClientException {
+		String tableName = this.getTableNameForClass(clazz);
+		return this.delete(tableName, id);
+	}
 
 	protected <T> String getTableNameForClass(Class<T> clazz) {
 		String className = ClassUtils.getShortName(clazz);
@@ -161,6 +177,51 @@ public final class CrudTemplate implements CrudOperations {
 		}
 		
 		return tableName;
+	}
+	
+	protected Object extractPrimaryKeyValue(final Object entity) {
+		final Class<?> clazz = entity.getClass();
+		
+		final List<Object> primaryKeyValues = new ArrayList<Object>();
+		
+		FieldCallback fieldCallback = new FieldCallback() {
+			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+				ReflectionUtils.makeAccessible(field);
+				Object value = ReflectionUtils.getField(field, entity);
+				primaryKeyValues.add(value);
+			}
+		};
+		
+		FieldFilter fieldFilter = new FieldFilter() {
+			public boolean matches(Field field) {
+				if (!clazz.equals(field.getDeclaringClass())) {
+					return false;
+				}
+				
+				if (!ReflectionUtils.COPYABLE_FIELDS.matches(field)) {
+					return false;
+				}
+				
+				if (!field.isAnnotationPresent(Column.class)) {
+					return false;
+				}
+				
+				Column columnAnnotation = clazz.getAnnotation(Column.class);
+				return columnAnnotation.primaryKey();
+			}
+		};
+		
+		ReflectionUtils.doWithFields(clazz, fieldCallback, fieldFilter);
+		
+		if (primaryKeyValues.isEmpty()) {
+			throw new AppGluRestClientException("");
+		}
+		
+		if (primaryKeyValues.size() > 1) {
+			throw new AppGluRestClientException("");
+		}
+		
+		return primaryKeyValues.get(0);
 	}
 
 }

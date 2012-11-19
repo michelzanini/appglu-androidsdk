@@ -22,4 +22,8 @@ public interface CrudOperations {
 	
 	<T> T read(Class<T> clazz, Object id, RowMapper<T> rowMapper) throws AppGluRestClientException;
 	
+	<T> boolean delete(Object entity) throws AppGluRestClientException;
+	
+	<T> boolean delete(Class<T> clazz, Object id) throws AppGluRestClientException;
+	
 }
