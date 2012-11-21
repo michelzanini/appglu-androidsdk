@@ -39,6 +39,8 @@ public final class AppGlu {
 	
 	private AnalyticsApi analyticsApi;
 	
+	private UserApi userApi;
+	
 	protected AppGlu() {
 		
 	}
@@ -69,6 +71,7 @@ public final class AppGlu {
 		this.appGluTemplate = settings.createAppGluTemplate();
 		this.appGluTemplate.setAsyncExecutor(new AsyncTaskExecutor());
 		this.appGluTemplate.setDefaultHeaders(this.deviceInformation.createDefaultHeaders());
+		this.appGluTemplate.setUserSessionPersistence(new SharedPreferencesUserSessionPersistence(this.context));
 		
 		logger.info("AppGlu was initialized");
 	}
@@ -126,6 +129,13 @@ public final class AppGlu {
 		}
 		return this.analyticsApi;
 	}
+	
+	protected UserApi getUserApi() {
+		if (this.userApi == null) {
+			this.userApi = new UserApi(this.getAppGluTemplate().userOperations(), this.getAppGluTemplate().asyncUserOperations());
+		}
+		return this.userApi;
+	}
 
 	//Public Methods
 	
@@ -161,6 +171,10 @@ public final class AppGlu {
 	
 	public static AnalyticsApi analyticsApi() {
 		return getRequiredInstance().getAnalyticsApi();
+	}
+	
+	public static UserApi userApi() {
+		return getRequiredInstance().getUserApi();
 	}
 	
 }

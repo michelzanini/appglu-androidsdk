@@ -28,7 +28,7 @@ public class MemoryUserSessionPersistence implements UserSessionPersistence {
 		}
 	}
 	
-	public void saveAuthenticatedUser( User user) throws UserSessionPersistenceException {
+	public void saveAuthenticatedUser(User user) throws UserSessionPersistenceException {
 		if (user != null) {
 			this.loggedInUser = user;
 		}
