@@ -25,9 +25,13 @@ import com.appglu.AsyncAppGluOperations;
 import com.appglu.AsyncCrudOperations;
 import com.appglu.AsyncPushOperations;
 import com.appglu.AsyncSavedQueriesOperations;
+import com.appglu.AsyncUserOperations;
 import com.appglu.CrudOperations;
 import com.appglu.PushOperations;
 import com.appglu.SavedQueriesOperations;
+import com.appglu.User;
+import com.appglu.UserOperations;
+import com.appglu.UserSessionPersistence;
 import com.appglu.impl.json.AppGluModule;
 import com.appglu.impl.util.DateUtils;
 
@@ -61,11 +65,19 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	
 	private AsyncAnalyticsOperations asyncAnalyticsOperations;
 	
+	private UserTemplate userOperations;
+	
+	private AsyncUserOperations asyncUserOperations;
+	
 	private HttpMessageConverter<Object> jsonMessageConverter;
 	
 	private DefaultHeadersHttpRequestInterceptor defaultHeadersHttpRequestInterceptor;
 	
 	private BasicAuthHttpRequestInterceptor basicAuthHttpRequestInterceptor;
+	
+	private UserSessionRequestInterceptor userSessionRequestInterceptor;
+	
+	private UserSessionPersistence userSessionPersistence;
 	
 	public AppGluTemplate(String baseUrl, String applicationKey, String applicationSecret) {
 		if (!StringUtils.hasText(baseUrl)) {
@@ -74,6 +86,8 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.baseUrl = baseUrl;
 		this.applicationKey = applicationKey;
 		this.applicationSecret = applicationSecret;
+		
+		this.userSessionPersistence = new MemoryUserSessionPersistence();
 
 		this.restTemplate = this.createRestTemplate();
 		this.jsonMessageConverter = this.createJsonMessageConverter();
@@ -110,6 +124,19 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	public Map<String, List<String>> getDefaultHeaders() {
 		this.checkInterceptorsAreInitialized();
 		return defaultHeadersHttpRequestInterceptor.getDefaultHeaders();
+	}
+	
+	public void setUserSessionPersistence(UserSessionPersistence userSessionPersistence) {
+		Assert.notNull(userSessionPersistence, "UserSessionPersistence param cannot be null.");
+		
+		if (this.userSessionPersistence.isUserAuthenticated()) {
+			userSessionPersistence.saveSessionId(this.userSessionPersistence.getSessionId());
+			userSessionPersistence.saveAuthenticatedUser(this.userSessionPersistence.getAuthenticatedUser());
+		}
+		
+		this.userSessionPersistence = userSessionPersistence;
+		this.userOperations.setUserSessionPersistence(this.userSessionPersistence);
+		this.userSessionRequestInterceptor.setUserSessionPersistence(this.userSessionPersistence);
 	}
 	
 	public String getBaseUrl() {
@@ -159,6 +186,15 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.checkAsyncExecutor();
 		return asyncAnalyticsOperations;
 	}
+	
+	public UserOperations userOperations() {
+		return userOperations;
+	}
+	
+	public AsyncUserOperations asyncUserOperations() {
+		this.checkAsyncExecutor();
+		return asyncUserOperations;
+	}
 
 	public RestOperations restOperations() {
 		return getRestTemplate();
@@ -166,6 +202,18 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	
 	public RestTemplate getRestTemplate() {
 		return restTemplate;
+	}
+	
+	public boolean isUserAuthenticated() {
+		return this.userSessionPersistence.isUserAuthenticated();
+	}
+	
+	public String getSessionId() {
+		return this.userSessionPersistence.getSessionId();
+	}
+	
+	public User getAuthenticatedUser() {
+		return this.userSessionPersistence.getAuthenticatedUser();
 	}
 	
 	private HttpMessageConverter<Object> createJsonMessageConverter() {
@@ -198,6 +246,7 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.savedQueriesOperations = new SavedQueriesTemplate(this.restOperations());
 		this.pushOperations = new PushTemplate(this.restOperations());
 		this.analyticsOperations = new AnalyticsTemplate(this.restOperations());
+		this.userOperations = new UserTemplate(this.restOperations(), this.userSessionPersistence);
 	}
 	
 	private void initAsyncApis() {
@@ -205,6 +254,7 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.asyncSavedQueriesOperations = new AsyncSavedQueriesTemplate(this.asyncExecutor, this.savedQueriesOperations);
 		this.asyncPushOperations = new AsyncPushTemplate(this.asyncExecutor, this.pushOperations);
 		this.asyncAnalyticsOperations = new AsyncAnalyticsTemplate(this.asyncExecutor, this.analyticsOperations);
+		this.asyncUserOperations = new AsyncUserTemplate(this.asyncExecutor, this.userOperations);
 	}
 	
 	protected RestTemplate createRestTemplate() {
@@ -223,9 +273,11 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	protected void configureHttpRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
 		this.defaultHeadersHttpRequestInterceptor = new DefaultHeadersHttpRequestInterceptor(this.baseUrl);
 		this.basicAuthHttpRequestInterceptor = new BasicAuthHttpRequestInterceptor(this.applicationKey, this.applicationSecret);
+		this.userSessionRequestInterceptor = new UserSessionRequestInterceptor(this.userSessionPersistence);
 		
 		interceptors.add(this.defaultHeadersHttpRequestInterceptor);
 		interceptors.add(this.basicAuthHttpRequestInterceptor);
+		interceptors.add(this.userSessionRequestInterceptor);
 		
 		if (ANDROID_ENVIRONMENT) {
 			interceptors.add(new GZipHttpRequestInterceptor());

@@ -9,10 +9,13 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
 import com.appglu.AppGluHttpClientException;
+import com.appglu.AppGluHttpInvalidUserSignupException;
 import com.appglu.AppGluHttpNotFoundException;
 import com.appglu.AppGluHttpServerException;
 import com.appglu.AppGluHttpStatusCodeException;
+import com.appglu.AppGluHttpUserUnauthorizedException;
 import com.appglu.Error;
+import com.appglu.ErrorCode;
 import com.appglu.ErrorResponse;
 
 public class AppGluResponseErrorHandler extends DefaultResponseErrorHandler {
@@ -30,6 +33,14 @@ public class AppGluResponseErrorHandler extends DefaultResponseErrorHandler {
 		
 		if (statusCode == HttpStatus.NOT_FOUND) {
 			throw new AppGluHttpNotFoundException(error);
+		}
+		
+		if (error.getCode() == ErrorCode.APP_USER_UNAUTHORIZED) {
+			throw new AppGluHttpUserUnauthorizedException(error);
+		}
+		
+		if (error.getCode() == ErrorCode.APP_USER_USERNAME_ALREADY_USED) {
+			throw new AppGluHttpInvalidUserSignupException(statusCode.value(), error);
 		}
 		
 		switch (statusCode.series()) {

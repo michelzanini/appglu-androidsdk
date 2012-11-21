@@ -10,6 +10,7 @@ import com.appglu.Error;
 import com.appglu.ErrorResponse;
 import com.appglu.QueryResult;
 import com.appglu.Rows;
+import com.appglu.User;
 
 public class AppGluModule extends SimpleModule {
 
@@ -30,6 +31,8 @@ public class AppGluModule extends SimpleModule {
 		context.setMixInAnnotations(AnalyticsSessionsBody.class, AnalyticsSessionsBodyMixin.class);
 		context.setMixInAnnotations(Error.class, ErrorMixin.class);
 		context.setMixInAnnotations(ErrorResponse.class, ErrorResponseMixin.class);
+		context.setMixInAnnotations(User.class, UserMixin.class);
+		context.setMixInAnnotations(UserBody.class, UserBodyMixin.class);
 	}
 
 }

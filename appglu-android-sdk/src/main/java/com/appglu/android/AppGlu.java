@@ -18,7 +18,7 @@ public final class AppGlu {
 	public static final String VERSION = "1.0.0";
 	
 	static final String APPGLU_PREFERENCES_KEY = "com.appglu.android.AppGlu.APPGLU_PREFERENCES_KEY";
-
+	
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
 	
 	private static AppGlu instance;

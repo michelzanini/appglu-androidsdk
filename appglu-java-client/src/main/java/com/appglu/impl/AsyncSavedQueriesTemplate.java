@@ -19,7 +19,6 @@ public final class AsyncSavedQueriesTemplate implements AsyncSavedQueriesOperati
 		this.savedQueriesOperations = savedQueriesOperations;
 	}
 
-	@Override
 	public void runQueryInBackground(final String queryName, AsyncCallback<QueryResult> queryResultCallback) {
 		asyncExecutor.execute(queryResultCallback, new Callable<QueryResult>() {
 			public QueryResult call() {
@@ -28,7 +27,6 @@ public final class AsyncSavedQueriesTemplate implements AsyncSavedQueriesOperati
 		});
 	}
 
-	@Override
 	public void runQueryInBackground(final String queryName, final QueryParams params, AsyncCallback<QueryResult> queryResultCallback) {
 		asyncExecutor.execute(queryResultCallback, new Callable<QueryResult>() {
 			public QueryResult call() {
