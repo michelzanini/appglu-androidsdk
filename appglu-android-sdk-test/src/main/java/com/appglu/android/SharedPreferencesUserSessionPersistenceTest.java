@@ -67,14 +67,14 @@ public class SharedPreferencesUserSessionPersistenceTest extends AndroidTestCase
 		Assert.assertNull(userSessionPersistence.getSessionId());
 		Assert.assertEquals(Long.valueOf(1L), userSessionPersistence.getAuthenticatedUser().getId());
 		Assert.assertEquals("test", userSessionPersistence.getAuthenticatedUser().getUsername());
-		Assert.assertEquals("test", userSessionPersistence.getAuthenticatedUser().getPassword());
+		Assert.assertNull(userSessionPersistence.getAuthenticatedUser().getPassword());
 		
 		this.userSessionPersistence = new SharedPreferencesUserSessionPersistence(getContext());
 		
 		Assert.assertNull(userSessionPersistence.getSessionId());
 		Assert.assertEquals(Long.valueOf(1L), userSessionPersistence.getAuthenticatedUser().getId());
 		Assert.assertEquals("test", userSessionPersistence.getAuthenticatedUser().getUsername());
-		Assert.assertEquals("test", userSessionPersistence.getAuthenticatedUser().getPassword());
+		Assert.assertNull(userSessionPersistence.getAuthenticatedUser().getPassword());
 	}
 	
 }

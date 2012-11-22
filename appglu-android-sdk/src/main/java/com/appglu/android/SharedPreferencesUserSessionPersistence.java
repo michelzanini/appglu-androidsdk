@@ -20,8 +20,6 @@ public class SharedPreferencesUserSessionPersistence implements UserSessionPersi
 	
 	static final String USER_USERNAME_KEY = "com.appglu.android.SharedPreferencesUserSessionPersistence.USER_USERNAME_KEY";
 	
-	static final String USER_PASSWORD_KEY = "com.appglu.android.SharedPreferencesUserSessionPersistence.USER_PASSWORD_KEY";
-	
 	private Context context;
 	
 	private String currentSessionId;
@@ -49,7 +47,10 @@ public class SharedPreferencesUserSessionPersistence implements UserSessionPersi
 		if (sessionId != null) {
 			Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE).edit();
 	    	editor.putString(SESSION_ID_KEY, sessionId);
-	    	editor.commit();
+	    	boolean succeed = editor.commit();
+	    	if (!succeed) {
+	    		throw new UserSessionPersistenceException("Error when writing session id to disk");
+	    	}
 	    	
 	    	this.currentSessionId = sessionId;
 		}
@@ -60,10 +61,13 @@ public class SharedPreferencesUserSessionPersistence implements UserSessionPersi
 			Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE).edit();
 	    	editor.putLong(USER_ID_KEY, user.getId() != null ? user.getId() : 0);
 	    	editor.putString(USER_USERNAME_KEY, user.getUsername());
-	    	editor.putString(USER_PASSWORD_KEY, user.getPassword());
 	    	editor.putBoolean(USER_EXIST_KEY, true);
-	    	editor.commit();
-	    	
+	    	boolean succeed = editor.commit();
+	    	if (!succeed) {
+	    		throw new UserSessionPersistenceException("Error when writing authenticated user to disk");
+	    	}
+
+	    	user.setPassword(null);
 	    	this.loggedInUser = user;
 		}
 	}
@@ -71,7 +75,10 @@ public class SharedPreferencesUserSessionPersistence implements UserSessionPersi
 	public void logout() throws UserSessionPersistenceException {
 		Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE).edit();
 		editor.clear();
-		editor.commit();
+		boolean succeed = editor.commit();
+    	if (!succeed) {
+    		throw new UserSessionPersistenceException("Error when removing authentication from disk");
+    	}
 		
 		this.currentSessionId = null;
 		this.loggedInUser = null;
@@ -96,7 +103,6 @@ public class SharedPreferencesUserSessionPersistence implements UserSessionPersi
 			
 			user.setId(sharedPreferences.getLong(USER_ID_KEY, 0));
 			user.setUsername(sharedPreferences.getString(USER_USERNAME_KEY, null));
-			user.setPassword(sharedPreferences.getString(USER_PASSWORD_KEY, null));
 			
 			this.loggedInUser = user;
 		}

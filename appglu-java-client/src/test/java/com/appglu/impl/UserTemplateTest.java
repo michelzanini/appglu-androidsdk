@@ -55,7 +55,7 @@ public class UserTemplateTest extends AbstractAppGluApiTest {
 		
 		Assert.assertEquals(new Long(1L), appGluTemplate.getAuthenticatedUser().getId());
 		Assert.assertEquals("username", appGluTemplate.getAuthenticatedUser().getUsername());
-		Assert.assertEquals("password", appGluTemplate.getAuthenticatedUser().getPassword());
+		Assert.assertNull(appGluTemplate.getAuthenticatedUser().getPassword());
 		
 		mockServer.verify();
 	}
@@ -109,7 +109,7 @@ public class UserTemplateTest extends AbstractAppGluApiTest {
 		
 		Assert.assertEquals(new Long(1L), appGluTemplate.getAuthenticatedUser().getId());
 		Assert.assertEquals("username", appGluTemplate.getAuthenticatedUser().getUsername());
-		Assert.assertEquals("password", appGluTemplate.getAuthenticatedUser().getPassword());
+		Assert.assertNull(appGluTemplate.getAuthenticatedUser().getPassword());
 		
 		mockServer.verify();
 	}
@@ -147,19 +147,18 @@ public class UserTemplateTest extends AbstractAppGluApiTest {
 		Assert.assertFalse(appGluTemplate.isUserAuthenticated());
 		Assert.assertNull(appGluTemplate.getAuthenticatedUser());
 		
-		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test", "test")));
+		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test")));
 		
 		Assert.assertTrue(appGluTemplate.isUserAuthenticated());
 		Assert.assertNotNull(appGluTemplate.getAuthenticatedUser());
 		
 		Assert.assertEquals("test", appGluTemplate.getAuthenticatedUser().getUsername());
-		Assert.assertEquals("test", appGluTemplate.getAuthenticatedUser().getPassword());
 		
 		userOperations.refreshUserProfile();
 		
 		Assert.assertEquals(new Long(1L), appGluTemplate.getAuthenticatedUser().getId());
 		Assert.assertEquals("username", appGluTemplate.getAuthenticatedUser().getUsername());
-		Assert.assertEquals("password", appGluTemplate.getAuthenticatedUser().getPassword());
+		Assert.assertNull(appGluTemplate.getAuthenticatedUser().getPassword());
 		
 		mockServer.verify();
 	}
@@ -174,7 +173,7 @@ public class UserTemplateTest extends AbstractAppGluApiTest {
 		Assert.assertFalse(appGluTemplate.isUserAuthenticated());
 		Assert.assertNull(appGluTemplate.getAuthenticatedUser());
 		
-		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test", "test")));
+		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test")));
 		
 		Assert.assertTrue(appGluTemplate.isUserAuthenticated());
 		Assert.assertNotNull(appGluTemplate.getAuthenticatedUser());
@@ -200,13 +199,12 @@ public class UserTemplateTest extends AbstractAppGluApiTest {
 		Assert.assertFalse(appGluTemplate.isUserAuthenticated());
 		Assert.assertNull(appGluTemplate.getAuthenticatedUser());
 		
-		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test", "test")));
+		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test")));
 		
 		Assert.assertTrue(appGluTemplate.isUserAuthenticated());
 		Assert.assertNotNull(appGluTemplate.getAuthenticatedUser());
 		
 		Assert.assertEquals("test", appGluTemplate.getAuthenticatedUser().getUsername());
-		Assert.assertEquals("test", appGluTemplate.getAuthenticatedUser().getPassword());
 		
 		boolean succeed = userOperations.logout();
 		Assert.assertTrue(succeed);
@@ -227,7 +225,7 @@ public class UserTemplateTest extends AbstractAppGluApiTest {
 		Assert.assertFalse(appGluTemplate.isUserAuthenticated());
 		Assert.assertNull(appGluTemplate.getAuthenticatedUser());
 		
-		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test", "test")));
+		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test")));
 		
 		Assert.assertTrue(appGluTemplate.isUserAuthenticated());
 		Assert.assertNotNull(appGluTemplate.getAuthenticatedUser());
@@ -244,7 +242,7 @@ public class UserTemplateTest extends AbstractAppGluApiTest {
 		Assert.assertFalse(appGluTemplate.isUserAuthenticated());
 		Assert.assertNull(appGluTemplate.getAuthenticatedUser());
 		
-		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test", "test")));
+		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test")));
 		
 		Assert.assertTrue(appGluTemplate.isUserAuthenticated());
 		Assert.assertNotNull(appGluTemplate.getAuthenticatedUser());
@@ -255,7 +253,6 @@ public class UserTemplateTest extends AbstractAppGluApiTest {
 		Assert.assertNotNull(appGluTemplate.getAuthenticatedUser());
 		
 		Assert.assertEquals("test", appGluTemplate.getAuthenticatedUser().getUsername());
-		Assert.assertEquals("test", appGluTemplate.getAuthenticatedUser().getPassword());
 	}
 	
 	class LoggedInUserSessionPersistence extends MemoryUserSessionPersistence {

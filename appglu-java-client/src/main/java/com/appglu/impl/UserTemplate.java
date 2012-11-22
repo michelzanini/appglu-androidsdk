@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
+import com.appglu.AppGluHttpInternalServerErrorException;
 import com.appglu.AppGluHttpInvalidUserSignupException;
 import com.appglu.AppGluHttpUserUnauthorizedException;
 import com.appglu.AppGluRestClientException;
@@ -41,6 +42,7 @@ public class UserTemplate implements UserOperations {
 	private AuthenticationResult authenticate(String url, UserBody user) {
 		try {
 			ResponseEntity<UserBody> response = this.restOperations.exchange(url, HttpMethod.POST, new HttpEntity<UserBody>(user), UserBody.class);
+			this.saveSessionId(response);
 			this.saveAuthenticatedUser(response);
 			return new AuthenticationResult(true);
 		} catch (RestClientException e) {
@@ -67,7 +69,7 @@ public class UserTemplate implements UserOperations {
 	public void refreshUserProfile() throws AppGluRestClientException {
 		try {
 			ResponseEntity<UserBody> response = this.restOperations.exchange(ME_URL, HttpMethod.GET, null, UserBody.class);
-			this.userSessionPersistence.saveAuthenticatedUser(response.getBody().getUser());
+			this.saveAuthenticatedUser(response);
 		} catch (AppGluHttpUserUnauthorizedException e) {
 			this.userSessionPersistence.logout();
 			throw e;
@@ -89,10 +91,20 @@ public class UserTemplate implements UserOperations {
 		}
 	}
 	
-	private void saveAuthenticatedUser(ResponseEntity<UserBody> response) {
+	private void saveSessionId(ResponseEntity<UserBody> response) {
 		String sessionId = response.getHeaders().getFirst(UserSessionPersistence.X_APPGLU_SESSION_HEADER);
-		User user = response.getBody().getUser();
 		this.userSessionPersistence.saveSessionId(sessionId);
+	}
+	
+	private void saveAuthenticatedUser(ResponseEntity<UserBody> response) {
+		UserBody body = response.getBody();
+		if (body == null) {
+			throw new AppGluHttpInternalServerErrorException();
+		}
+		User user = body.getUser();
+		if (user == null) {
+			throw new AppGluHttpInternalServerErrorException();
+		}
 		this.userSessionPersistence.saveAuthenticatedUser(user);
 	}
 	

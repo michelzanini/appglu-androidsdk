@@ -23,4 +23,8 @@ public class AuthenticationResult {
 		return error;
 	}
 
+	public String toString() {
+		return "AuthenticationResult [succeed=" + succeed + ", error=" + error + "]";
+	}
+
 }
