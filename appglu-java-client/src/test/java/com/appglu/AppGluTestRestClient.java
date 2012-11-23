@@ -19,6 +19,8 @@ public class AppGluTestRestClient {
 	
 	private AnalyticsOperations analyticsOperations = appGluTemplate.analyticsOperations();
 	
+	private UserOperations userOperations = appGluTemplate.userOperations();
+	
 	public static void main(String[] args) {
 		AppGluTestRestClient restClient = new AppGluTestRestClient();
 		restClient.callApiEndpoints();
@@ -26,9 +28,9 @@ public class AppGluTestRestClient {
 	
 	public void callApiEndpoints() {
 		Object id = this.crud_create();
-		this.crud_delete(id);
 		this.crud_update(id);
 		this.crud_read(id);
+		this.crud_delete(id);
 		this.crud_readAll();
 		
 		this.savedQueries_executeQuery();
@@ -38,12 +40,17 @@ public class AppGluTestRestClient {
 		this.push_removeDevice();
 		
 		this.analytics_uploadSession();
+		
+		this.user_signup();
+		this.user_logout();
+		this.user_login();
+		this.user_refreshUserProfile();
 	}
 	
 	private Object crud_create() {
 		Row row = new Row();
-		row.put("username", "username");
-		row.put("password", "password");
+		row.put("username", "username1");
+		row.put("password", "password1");
 		
 		Object id = crudOperations.create("appglu_app_users", row);
 		System.out.println("crud_create: " + id);
@@ -88,6 +95,7 @@ public class AppGluTestRestClient {
 		device.setToken("123-0a98-48f7-9acd-456");
 		device.setAlias("alias");
 		device.setPlatform(DevicePlatform.ANDROID);
+		device.setAppIdentifier("appIdentifier");
 		
 		pushOperations.registerDevice(device);
 		System.out.println("push_registerDevice: executed");
@@ -124,6 +132,26 @@ public class AppGluTestRestClient {
 		
 		analyticsOperations.uploadSession(session);
 		System.out.println("analytics_uploadSession: executed");
+	}
+	
+	private void user_signup() {
+		AuthenticationResult result = userOperations.signup(new User("username", "password"));
+		System.out.println("user_signup: " + result);
+	}
+
+	private void user_logout() {
+		boolean succeed = userOperations.logout();
+		System.out.println("user_logout: " + succeed);
+	}
+	
+	private void user_login() {
+		AuthenticationResult result = userOperations.login("username", "password");
+		System.out.println("user_login: " + result);
+	}
+
+	private void user_refreshUserProfile() {
+		userOperations.refreshUserProfile();
+		System.out.println("user_refreshUserProfile: executed");
 	}
 
 }

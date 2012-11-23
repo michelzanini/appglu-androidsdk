@@ -1,7 +1,5 @@
 package com.appglu;
 
-import org.springframework.http.HttpStatus;
-
 public class ExceptionWrapper {
 
 	private Exception exception;
@@ -19,7 +17,7 @@ public class ExceptionWrapper {
 			AppGluHttpStatusCodeException httpStatusCodeException = this.getHttpStatusCodeException();
 			return httpStatusCodeException.getStatusCode();
 		}
-		return HttpStatus.INTERNAL_SERVER_ERROR.value();
+		return AppGluHttpInternalServerErrorException.STATUS_CODE;
 	}
 	
 	public Error getError() {
@@ -27,7 +25,7 @@ public class ExceptionWrapper {
 			AppGluHttpStatusCodeException httpStatusCodeException = this.getHttpStatusCodeException();
 			return httpStatusCodeException.getError();
 		}
-		return new Error(ErrorCode.GENERIC_SERVER_ERROR, "An unexpected error occurred while processing your request. Please try again later.");
+		return AppGluHttpInternalServerErrorException.GENERIC_SERVER_ERROR;
 	}
 	
 	public ErrorCode getErrorCode() {
