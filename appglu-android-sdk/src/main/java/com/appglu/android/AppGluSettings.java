@@ -1,10 +1,8 @@
 package com.appglu.android;
 
-import com.appglu.AnalyticsOperations;
+import com.appglu.UserSessionPersistence;
 import com.appglu.android.analytics.AnalyticsDispatcher;
 import com.appglu.android.analytics.AnalyticsSessionCallback;
-import com.appglu.android.analytics.ApiAnalyticsDispatcher;
-import com.appglu.android.analytics.LogAnalyticsDispatcher;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.log.LoggerLevel;
 import com.appglu.impl.AppGluTemplate;
@@ -22,6 +20,8 @@ public class AppGluSettings {
 	private AnalyticsDispatcher analyticsDispatcher;
 	
 	private AnalyticsSessionCallback analyticsSessionCallback;
+	
+	private UserSessionPersistence userSessionPersistence;
 	
 	public AppGluSettings(String baseUrl, String applicationKey, String applicationSecret) {
 		this.baseUrl = baseUrl;
@@ -65,23 +65,24 @@ public class AppGluSettings {
 		this.analyticsSessionCallback = analyticsSessionCallback;
 	}
 	
-	protected AppGluTemplate createAppGluTemplate() {
-		return new AppGluTemplate(this.getBaseUrl(), this.getApplicationKey(), this.getApplicationSecret());
+	public void setUserSessionPersistence(UserSessionPersistence userSessionPersistence) {
+		this.userSessionPersistence = userSessionPersistence;
 	}
 
-	protected AnalyticsDispatcher createAnalyticsDispatcher(AnalyticsOperations analyticsOperations) {
-		if (this.analyticsDispatcher == null) {
-			if (this.isUploadAnalyticsSessionsToServer()) {
-				this.analyticsDispatcher = new ApiAnalyticsDispatcher(analyticsOperations);
-			} else {
-				this.analyticsDispatcher = new LogAnalyticsDispatcher();
-			}
-		}
+	protected AnalyticsDispatcher getAnalyticsDispatcher() {
 		return this.analyticsDispatcher;
 	}
 	
 	protected AnalyticsSessionCallback getAnalyticsSessionCallback() {
 		return this.analyticsSessionCallback;
+	}
+	
+	protected UserSessionPersistence getUserSessionPersistence() {
+		return this.userSessionPersistence;
+	}
+	
+	protected AppGluTemplate createAppGluTemplate() {
+		return new AppGluTemplate(this.getBaseUrl(), this.getApplicationKey(), this.getApplicationSecret());
 	}
 	
 }
