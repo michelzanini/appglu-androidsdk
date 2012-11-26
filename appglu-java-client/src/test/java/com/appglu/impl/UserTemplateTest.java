@@ -5,6 +5,11 @@ import static org.springframework.test.web.client.match.RequestMatchers.header;
 import static org.springframework.test.web.client.match.RequestMatchers.method;
 import static org.springframework.test.web.client.match.RequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.ResponseCreators.withStatus;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -187,6 +192,8 @@ public class UserTemplateTest extends AbstractAppGluApiTest {
 		
 		Assert.assertFalse(appGluTemplate.isUserAuthenticated());
 		Assert.assertNull(appGluTemplate.getAuthenticatedUser());
+		
+		mockServer.verify();
 	}
 	
 	@Test
@@ -235,6 +242,8 @@ public class UserTemplateTest extends AbstractAppGluApiTest {
 		
 		Assert.assertFalse(appGluTemplate.isUserAuthenticated());
 		Assert.assertNull(appGluTemplate.getAuthenticatedUser());
+		
+		mockServer.verify();
 	}
 	
 	@Test
@@ -253,6 +262,145 @@ public class UserTemplateTest extends AbstractAppGluApiTest {
 		Assert.assertNotNull(appGluTemplate.getAuthenticatedUser());
 		
 		Assert.assertEquals("test", appGluTemplate.getAuthenticatedUser().getUsername());
+	}
+	
+	@Test
+	@SuppressWarnings("unchecked")
+	public void readData() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/users/me/data"))
+			.andExpect(method(HttpMethod.GET))
+			.andExpect(header(UserSessionPersistence.X_APPGLU_SESSION_HEADER, "sessionId"))
+			.andRespond(withStatus(HttpStatus.OK).body(compactedJson("data/user_data")).headers(responseHeaders));
+		
+		Assert.assertFalse(appGluTemplate.isUserAuthenticated());
+		Assert.assertNull(appGluTemplate.getAuthenticatedUser());
+		
+		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test")));
+		
+		Assert.assertTrue(appGluTemplate.isUserAuthenticated());
+		Assert.assertNotNull(appGluTemplate.getAuthenticatedUser());
+		
+		Map<String, Object> data = userOperations.readData();
+		
+		Assert.assertFalse(data.isEmpty());
+		Assert.assertEquals("valueOne", data.get("entryOne"));
+		
+		Assert.assertTrue(data.get("entryTwo") instanceof Map<?, ?>);
+		Map<String, Object> entryTwo = (Map<String, Object>) data.get("entryTwo");
+		
+		Assert.assertEquals("test", entryTwo.get("data"));
+		Assert.assertEquals("test", entryTwo.get("moreData"));
+		
+		Assert.assertTrue(entryTwo.get("nestedData") instanceof Map<?, ?>);
+		Map<String, Object> nested = (Map<String, Object>) entryTwo.get("nestedData");
+		
+		Assert.assertEquals(1, nested.get("value"));
+		
+		Assert.assertEquals("valueOne", data.get("entryOne"));
+		
+		Assert.assertTrue(data.get("entryThree") instanceof List<?>);
+		List<Object> list = (List<Object>) data.get("entryThree");
+		
+		Assert.assertEquals(1, list.get(0));
+		Assert.assertEquals(2, list.get(1));
+		Assert.assertEquals(3, list.get(2));
+		
+		mockServer.verify();
+	}
+	
+	@Test
+	public void readDataUnauthorized() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/users/me/data"))
+			.andExpect(method(HttpMethod.GET))
+			.andExpect(header(UserSessionPersistence.X_APPGLU_SESSION_HEADER, "sessionId"))
+			.andRespond(withStatus(HttpStatus.UNAUTHORIZED).body(compactedJson("data/user_unauthorized")).headers(responseHeaders));
+		
+		Assert.assertFalse(appGluTemplate.isUserAuthenticated());
+		Assert.assertNull(appGluTemplate.getAuthenticatedUser());
+		
+		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test")));
+		
+		Assert.assertTrue(appGluTemplate.isUserAuthenticated());
+		Assert.assertNotNull(appGluTemplate.getAuthenticatedUser());
+		
+		try {
+			userOperations.readData();
+			Assert.fail("An unauthorized response should throw an AppGluHttpUserUnauthorizedException exception");
+		} catch (AppGluHttpUserUnauthorizedException e) {
+			
+		}
+		
+		Assert.assertFalse(appGluTemplate.isUserAuthenticated());
+		Assert.assertNull(appGluTemplate.getAuthenticatedUser());
+		
+		mockServer.verify();
+	}
+	
+	@Test
+	public void writeData() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/users/me/data"))
+			.andExpect(method(HttpMethod.PUT))
+			.andExpect(content().string(compactedJson("data/user_data")))
+			.andExpect(header(UserSessionPersistence.X_APPGLU_SESSION_HEADER, "sessionId"))
+			.andRespond(withStatus(HttpStatus.OK).headers(responseHeaders));
+		
+		Assert.assertFalse(appGluTemplate.isUserAuthenticated());
+		Assert.assertNull(appGluTemplate.getAuthenticatedUser());
+		
+		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test")));
+		
+		Assert.assertTrue(appGluTemplate.isUserAuthenticated());
+		Assert.assertNotNull(appGluTemplate.getAuthenticatedUser());
+		
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("entryOne", "valueOne");
+		
+		Map<String, Object> entryTwo = new HashMap<String, Object>();
+		entryTwo.put("data", "test");
+		entryTwo.put("moreData", "test");
+		
+		Map<String, Object> nested = new HashMap<String, Object>();
+		nested.put("value", 1);
+		entryTwo.put("nestedData", nested);
+		
+		data.put("entryTwo", entryTwo);
+		data.put("entryThree", new int[] { 1,2,3 } );
+		
+		userOperations.writeData(data);
+		
+		mockServer.verify();
+	}
+	
+	@Test
+	public void writeDataUnauthorized() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/users/me/data"))
+			.andExpect(method(HttpMethod.PUT))
+			.andExpect(content().string(compactedJson("data/user_data_single_entry")))
+			.andExpect(header(UserSessionPersistence.X_APPGLU_SESSION_HEADER, "sessionId"))
+			.andRespond(withStatus(HttpStatus.UNAUTHORIZED).body(compactedJson("data/user_unauthorized")).headers(responseHeaders));
+		
+		Assert.assertFalse(appGluTemplate.isUserAuthenticated());
+		Assert.assertNull(appGluTemplate.getAuthenticatedUser());
+		
+		appGluTemplate.setUserSessionPersistence(new LoggedInUserSessionPersistence("sessionId", new User("test")));
+		
+		Assert.assertTrue(appGluTemplate.isUserAuthenticated());
+		Assert.assertNotNull(appGluTemplate.getAuthenticatedUser());
+		
+		try {
+			HashMap<String, Object> data = new HashMap<String, Object>();
+			data.put("key", "value");
+			
+			userOperations.writeData(data);
+			Assert.fail("An unauthorized response should throw an AppGluHttpUserUnauthorizedException exception");
+		} catch (AppGluHttpUserUnauthorizedException e) {
+			
+		}
+		
+		Assert.assertFalse(appGluTemplate.isUserAuthenticated());
+		Assert.assertNull(appGluTemplate.getAuthenticatedUser());
+		
+		mockServer.verify();
 	}
 	
 	class LoggedInUserSessionPersistence extends MemoryUserSessionPersistence {

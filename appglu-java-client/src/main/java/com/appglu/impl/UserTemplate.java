@@ -1,5 +1,7 @@
 package com.appglu.impl;
 
+import java.util.Map;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,8 @@ public class UserTemplate implements UserOperations {
 	static final String LOGOUT_URL = "/v1/users/logout";
 	
 	static final String ME_URL = "/v1/users/me";
+	
+	static final String DATA_URL = "/v1/users/me/data";
 	
 	private RestOperations restOperations;
 	
@@ -91,6 +95,29 @@ public class UserTemplate implements UserOperations {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> readData() throws AppGluRestClientException {
+		try {
+			return (Map<String, Object>) this.restOperations.getForObject(DATA_URL, Map.class);
+		} catch (AppGluHttpUserUnauthorizedException e) {
+			this.userSessionPersistence.logout();
+			throw e;
+		} catch (RestClientException e) {
+			throw new AppGluRestClientException(e.getMessage(), e);
+		}
+	}
+
+	public void writeData(Map<String, Object> data) throws AppGluRestClientException {
+		try {
+			this.restOperations.exchange(DATA_URL, HttpMethod.PUT, new HttpEntity<Map<String, Object>>(data), null);
+		} catch (AppGluHttpUserUnauthorizedException e) {
+			this.userSessionPersistence.logout();
+			throw e;
+		} catch (RestClientException e) {
+			throw new AppGluRestClientException(e.getMessage(), e);
+		}
+	}
+
 	private void saveSessionId(ResponseEntity<UserBody> response) {
 		String sessionId = response.getHeaders().getFirst(UserSessionPersistence.X_APPGLU_SESSION_HEADER);
 		this.userSessionPersistence.saveSessionId(sessionId);

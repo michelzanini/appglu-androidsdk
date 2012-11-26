@@ -1,5 +1,6 @@
 package com.appglu.impl;
 
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import com.appglu.AsyncCallback;
@@ -48,6 +49,23 @@ public final class AsyncUserTemplate implements AsyncUserOperations {
 		asyncExecutor.execute(logoutCallback, new Callable<Boolean>() {
 			public Boolean call() {
 				return userOperations.logout();
+			}
+		});
+	}
+
+	public void readDataInBackground(AsyncCallback<Map<String, Object>> readDataCallback) {
+		asyncExecutor.execute(readDataCallback, new Callable<Map<String, Object>>() {
+			public Map<String, Object> call() {
+				return userOperations.readData();
+			}
+		});
+	}
+
+	public void writeDataInBackground(final Map<String, Object> data, AsyncCallback<Void> writeDataCallback) {
+		asyncExecutor.execute(writeDataCallback, new Callable<Void>() {
+			public Void call() {
+				userOperations.writeData(data);
+				return null;
 			}
 		});
 	}

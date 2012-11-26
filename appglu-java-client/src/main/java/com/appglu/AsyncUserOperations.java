@@ -1,5 +1,7 @@
 package com.appglu;
 
+import java.util.Map;
+
 public interface AsyncUserOperations {
 	
 	void signupInBackground(User user, AsyncCallback<AuthenticationResult> authenticationResultCallback);
@@ -9,5 +11,9 @@ public interface AsyncUserOperations {
 	void refreshUserProfileInBackground(AsyncCallback<Void> refreshCallback);
 	
 	void logoutInBackground(AsyncCallback<Boolean> logoutCallback);
+	
+	void readDataInBackground(AsyncCallback<Map<String, Object>> readDataCallback);
+	
+	void writeDataInBackground(Map<String, Object> data, AsyncCallback<Void> writeDataCallback);
 
 }

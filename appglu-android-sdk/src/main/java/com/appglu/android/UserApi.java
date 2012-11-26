@@ -1,5 +1,7 @@
 package com.appglu.android;
 
+import java.util.Map;
+
 import com.appglu.AppGluRestClientException;
 import com.appglu.AsyncCallback;
 import com.appglu.AsyncUserOperations;
@@ -34,6 +36,14 @@ public final class UserApi implements UserOperations, AsyncUserOperations {
 		return this.userOperations.logout();
 	}
 	
+	public Map<String, Object> readData() throws AppGluRestClientException {
+		return this.userOperations.readData();
+	}
+	
+	public void writeData(Map<String, Object> data) throws AppGluRestClientException {
+		this.userOperations.writeData(data);
+	}
+	
 	public void signupInBackground(User user, AsyncCallback<AuthenticationResult> authenticationResultCallback) {
 		this.asyncUserOperations.signupInBackground(user, authenticationResultCallback);
 	}
@@ -48,6 +58,14 @@ public final class UserApi implements UserOperations, AsyncUserOperations {
 
 	public void logoutInBackground(AsyncCallback<Boolean> logoutCallback) {
 		this.asyncUserOperations.logoutInBackground(logoutCallback);
+	}
+	
+	public void readDataInBackground(AsyncCallback<Map<String, Object>> readDataCallback) {
+		this.asyncUserOperations.readDataInBackground(readDataCallback);
+	}
+	
+	public void writeDataInBackground(Map<String, Object> data, AsyncCallback<Void> writeDataCallback) {
+		this.asyncUserOperations.writeDataInBackground(data, writeDataCallback);
 	}
 
 }
