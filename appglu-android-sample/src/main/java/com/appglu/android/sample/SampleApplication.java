@@ -28,7 +28,7 @@ public class SampleApplication extends Application {
 	/**
 	 * If device is superior to Gingerbread then enable strict mode to detect any error the SDK may have
 	 */
-	@TargetApi(10)
+	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
 	private void enableStrictMode() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
