@@ -113,7 +113,6 @@ public class AppGluTestRestClient {
 	
 	private void analytics_uploadSession() {
 		AnalyticsSession session = new AnalyticsSession();
-		session.setClientUUID("123");
 		
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("key", "value");

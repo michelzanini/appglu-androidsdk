@@ -133,7 +133,7 @@ public final class AppGlu {
 			AnalyticsRepository analyticsRepository = new SQLiteAnalyticsRepository(analyticsDatabaseHelper);
 			
 			AnalyticsDispatcher analyticsDispatcher = this.createAnalyticsDispatcher();
-			this.analyticsApi = new AnalyticsApi(analyticsDispatcher, analyticsRepository, this.deviceInformation);
+			this.analyticsApi = new AnalyticsApi(analyticsDispatcher, analyticsRepository);
 			this.analyticsApi.setSessionCallback(this.settings.getAnalyticsSessionCallback());
 		}
 		return this.analyticsApi;

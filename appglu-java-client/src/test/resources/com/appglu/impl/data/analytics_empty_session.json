@@ -2,8 +2,7 @@
 	"sessions":[
 		{
 			"startDate":null,
-			"endDate":null,
-			"clientUUID":null
+			"endDate":null
 		}
 	]
 }

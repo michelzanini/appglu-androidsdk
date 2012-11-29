@@ -37,8 +37,8 @@ public final class AnalyticsApi {
 		}
 	};
 	
-	public AnalyticsApi(AnalyticsDispatcher analyticsDispatcher, AnalyticsRepository analyticsRepository, DeviceInformation deviceInformation) {
-		this.analyticsService = new AnalyticsService(analyticsDispatcher, analyticsRepository, deviceInformation);
+	public AnalyticsApi(AnalyticsDispatcher analyticsDispatcher, AnalyticsRepository analyticsRepository) {
+		this.analyticsService = new AnalyticsService(analyticsDispatcher, analyticsRepository);
 		this.analyticsApiThread.start();
 		
 		//on initialization we need to close sessions that may be left open
