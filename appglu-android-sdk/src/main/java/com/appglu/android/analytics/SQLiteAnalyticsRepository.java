@@ -22,19 +22,18 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 	private static final int SESSION_ID_COLUMN = 0;
 	private static final int SESSION_START_DATE_COLUMN = 1;
 	private static final int SESSION_END_DATE_COLUMN = 2;
-	private static final int SESSION_CLIENT_UUID_COLUMN = 3;
 	
-	private static final int EVENT_ID_COLUMN = 4;
-	private static final int EVENT_NAME_COLUMN = 5;
-	private static final int EVENT_DATE_COLUMN = 6;
+	private static final int EVENT_ID_COLUMN = 3;
+	private static final int EVENT_NAME_COLUMN = 4;
+	private static final int EVENT_DATE_COLUMN = 5;
 	
-	private static final int EVENT_PARAM_ID_COLUMN = 7;
-	private static final int EVENT_PARAM_NAME_COLUMN = 8;
-	private static final int EVENT_PARAM_VALUE_COLUMN = 9;
+	private static final int EVENT_PARAM_ID_COLUMN = 6;
+	private static final int EVENT_PARAM_NAME_COLUMN = 7;
+	private static final int EVENT_PARAM_VALUE_COLUMN = 8;
 	
-	private static final int SESSION_PARAM_ID_COLUMN = 10;
-	private static final int SESSION_PARAM_NAME_COLUMN = 11;
-	private static final int SESSION_PARAM_VALUE_COLUMN = 12;
+	private static final int SESSION_PARAM_ID_COLUMN = 9;
+	private static final int SESSION_PARAM_NAME_COLUMN = 10;
+	private static final int SESSION_PARAM_VALUE_COLUMN = 11;
 	
 	private AnalyticsDatabaseHelper analyticsDatabaseHelper;
 
@@ -245,7 +244,6 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 		ContentValues values = new ContentValues();
 		
 		values.put("start_date", session.getStartDate().getTime());
-		values.put("client_uuid", session.getClientUUID());
 		
 		long sessionId = database.insertOrThrow("sessions", null, values);
 		
@@ -354,7 +352,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 	private String sessionSelectStatement(String whereClause) {
 		StringBuilder builder = new StringBuilder();
 		
-		builder.append("select s.id, s.start_date, s.end_date, s.client_uuid, e.id, e.name, e.date, ep.id, ep.name, ep.value, p.id, p.name, p.value ");
+		builder.append("select s.id, s.start_date, s.end_date, e.id, e.name, e.date, ep.id, ep.name, ep.value, p.id, p.name, p.value ");
 		builder.append("from sessions s ");
 		builder.append("left outer join session_parameters p on s.id = p.session_id ");
 		builder.append("left outer join session_events e on s.id = e.session_id ");
@@ -448,8 +446,6 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 		if (!cursor.isNull(SESSION_END_DATE_COLUMN)) {
 			session.setEndDate(new Date(cursor.getLong(SESSION_END_DATE_COLUMN)));
 		}
-		
-		session.setClientUUID(cursor.getString(SESSION_CLIENT_UUID_COLUMN));
 		
 		return session;
 	}

@@ -49,9 +49,9 @@ public abstract class SQLiteTest extends AndroidTestCase {
 		database.beginTransaction();
 		
 		try {
-			database.execSQL("insert into sessions (id, start_date, end_date, client_uuid) values (1, " + lastTimestamp + ", null, '123')");
-			database.execSQL("insert into sessions (id, start_date, end_date, client_uuid) values (2, " + lastTimestamp + ", " + lastTimestamp + ", '12345')");
-			database.execSQL("insert into sessions (id, start_date, end_date, client_uuid) values (3, " + lastTimestamp + ", null, '123')");
+			database.execSQL("insert into sessions (id, start_date, end_date) values (1, " + lastTimestamp + ", null)");
+			database.execSQL("insert into sessions (id, start_date, end_date) values (2, " + lastTimestamp + ", " + lastTimestamp + ")");
+			database.execSQL("insert into sessions (id, start_date, end_date) values (3, " + lastTimestamp + ", null)");
 			database.execSQL("insert into session_parameters (id, session_id, name, value) values (1, 1, 'name1', 'value1')");
 			database.execSQL("insert into session_parameters (id, session_id, name, value) values (2, 1, 'name2', 'value2')");
 			database.execSQL("insert into session_parameters (id, session_id, name, value) values (3, 1, 'name3', 'value3')");
@@ -117,19 +117,19 @@ public abstract class SQLiteTest extends AndroidTestCase {
 		return parameters;
 	}
 	
-	protected void assertOpenSession(AnalyticsSession session, Long startDate, String clientUUID) {
-		this.assertSession(session, startDate, null, clientUUID);
+	protected void assertOpenSession(AnalyticsSession session, Long startDate) {
+		this.assertSession(session, startDate, null);
 	}
 	
-	protected void assertOpenSession(AnalyticsSession session, String clientUUID) {
-		this.assertSession(session, this.lastTimestamp, null, clientUUID);
+	protected void assertOpenSession(AnalyticsSession session) {
+		this.assertSession(session, this.lastTimestamp, null);
 	}
 	
-	protected void assertClosedSession(AnalyticsSession session, String clientUUID) {
-		this.assertSession(session, this.lastTimestamp, this.lastTimestamp, clientUUID);
+	protected void assertClosedSession(AnalyticsSession session) {
+		this.assertSession(session, this.lastTimestamp, this.lastTimestamp);
 	}
 	
-	protected void assertSession(AnalyticsSession session, Long startDate, Long endDate, String clientUUID) {
+	protected void assertSession(AnalyticsSession session, Long startDate, Long endDate) {
 		Assert.assertNotNull(session);
 		
 		if (startDate == null) {
@@ -145,8 +145,6 @@ public abstract class SQLiteTest extends AndroidTestCase {
 			Assert.assertNotNull(session.getEndDate());
 			Assert.assertEquals(endDate, Long.valueOf((session.getEndDate().getTime())));
 		}
-		
-		Assert.assertEquals(clientUUID, session.getClientUUID());
 	}
 	
 	protected void assertSessionParameters(AnalyticsSession session, Map<String, String> parameters) {

@@ -1,5 +1,7 @@
 package com.appglu;
 
+import java.util.Map;
+
 public interface UserOperations {
 
 	AuthenticationResult signup(User user) throws AppGluRestClientException;
@@ -9,5 +11,9 @@ public interface UserOperations {
 	void refreshUserProfile() throws AppGluRestClientException;
 	
 	boolean logout() throws AppGluRestClientException;
+	
+	Map<String, Object> readData() throws AppGluRestClientException;
+	
+	void writeData(Map<String, Object> data) throws AppGluRestClientException;
 	
 }

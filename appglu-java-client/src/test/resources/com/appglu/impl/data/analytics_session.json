@@ -3,7 +3,6 @@
 		{
 			"startDate":"2010-01-15T12:10:00+0000",
 			"endDate":"2010-01-15T12:10:00+0000",
-			"clientUUID":"123",
 			"parameters":{
 				"session2ParameterName":"session2ParameterValue",
 				"session1ParameterName":"session1ParameterValue"

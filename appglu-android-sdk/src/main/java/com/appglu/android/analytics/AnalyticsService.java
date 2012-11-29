@@ -7,7 +7,6 @@ import java.util.Map;
 import com.appglu.AnalyticsSession;
 import com.appglu.AnalyticsSessionEvent;
 import com.appglu.android.AppGlu;
-import com.appglu.android.DeviceInformation;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 
@@ -19,14 +18,11 @@ public class AnalyticsService {
 	
 	private AnalyticsRepository analyticsRepository;
 	
-	private DeviceInformation deviceInformation;
-	
 	private AnalyticsSessionCallback sessionCallback;
 	
-	public AnalyticsService(AnalyticsDispatcher analyticsDispatcher, AnalyticsRepository analyticsRepository, DeviceInformation deviceInformation) {
+	public AnalyticsService(AnalyticsDispatcher analyticsDispatcher, AnalyticsRepository analyticsRepository) {
 		this.analyticsDispatcher = analyticsDispatcher;
 		this.analyticsRepository = analyticsRepository;
-		this.deviceInformation = deviceInformation;
 	}
 	
 	public void setSessionCallback(AnalyticsSessionCallback sessionCallback) {
@@ -40,19 +36,7 @@ public class AnalyticsService {
 		}
 		
 		AnalyticsSession session = new AnalyticsSession();
-		
 		session.setStartDate(new Date());
-		session.setClientUUID(this.deviceInformation.getDeviceUUID());
-		
-		session.addParameter("appglu.client_device", this.deviceInformation.getDeviceModel());
-		session.addParameter("appglu.client_device_manufacturer", this.deviceInformation.getDeviceManufacturer());
-		session.addParameter("appglu.client_device_resolution", this.deviceInformation.getDeviceResolution());
-		session.addParameter("appglu.client_device_language", this.deviceInformation.getDeviceLanguage());
-		session.addParameter("appglu.client_os", this.deviceInformation.getDeviceOS());
-		session.addParameter("appglu.client_os_version", this.deviceInformation.getDeviceOSVersion());
-		session.addParameter("appglu.app_name", this.deviceInformation.getAppName());
-		session.addParameter("appglu.app_version", this.deviceInformation.getAppVersion());
-		session.addParameter("appglu.app_identifier", this.deviceInformation.getAppIdentifier());
 		
 		if (sessionCallback != null) {
 			sessionCallback.onStartSession(session);
