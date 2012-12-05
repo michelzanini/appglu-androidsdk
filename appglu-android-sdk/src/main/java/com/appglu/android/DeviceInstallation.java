@@ -13,17 +13,15 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
 import com.appglu.DevicePlatform;
 import com.appglu.android.util.AppGluUtils;
 
-public class DeviceInformation {
+public class DeviceInstallation {
 	
-	static final String UUID_KEY = "com.appglu.android.DeviceInformation.UUID_KEY";
+	static final String UUID_KEY = "com.appglu.android.DeviceInstallation.UUID_KEY";
 	
 	private Context context;
 	
@@ -47,7 +45,7 @@ public class DeviceInformation {
 	
 	private String deviceLanguage;
 	
-	public DeviceInformation(Context context) {
+	public DeviceInstallation(Context context) {
 		AppGluUtils.assertNotNull(context, "Context cannot be null");
 		this.context = context.getApplicationContext();
 		
@@ -96,12 +94,6 @@ public class DeviceInformation {
 		return deviceLanguage;
 	}
 
-	public boolean hasInternetConnection() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-	    return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-	}
-
 	protected void setDeviceUUID(Context context) {
 		SharedPreferences sharedPreferences = context.getSharedPreferences(AppGlu.APPGLU_PREFERENCES_KEY, Context.MODE_PRIVATE);
 		String uuid = sharedPreferences.getString(UUID_KEY, null);
@@ -130,6 +122,12 @@ public class DeviceInformation {
 		if (AppGluUtils.hasText(Locale.getDefault().getCountry())) {
 			this.deviceLanguage += "_" + Locale.getDefault().getCountry();
 		}
+		
+		AppGluUtils.replaceSemicolon(this.deviceOS);
+		AppGluUtils.replaceSemicolon(this.deviceOSVersion);
+		AppGluUtils.replaceSemicolon(this.deviceModel);
+		AppGluUtils.replaceSemicolon(this.deviceManufacturer);
+		AppGluUtils.replaceSemicolon(this.deviceLanguage);
 	}
 
 	protected void setAppInfo(Context context) {
@@ -147,6 +145,10 @@ public class DeviceInformation {
 			this.appVersion = "";
 			this.appIdentifier = "";
 		}
+		
+		AppGluUtils.replaceSemicolon(this.appName);
+		AppGluUtils.replaceSemicolon(this.appVersion);
+		AppGluUtils.replaceSemicolon(this.appIdentifier);
 	}
 	
 	protected Map<String, List<String>> createDefaultHeaders() {
@@ -176,7 +178,7 @@ public class DeviceInformation {
 
 	@Override
 	public String toString() {
-		return "DeviceInformation [context=" + context + ", deviceUUID="
+		return "DeviceInstallation [context=" + context + ", deviceUUID="
 				+ deviceUUID + ", deviceOS=" + deviceOS + ", deviceOSVersion="
 				+ deviceOSVersion + ", appName=" + appName + ", appVersion="
 				+ appVersion + ", appIdentifier=" + appIdentifier

@@ -7,18 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
-
-import com.appglu.AnalyticsSession;
-import com.appglu.AnalyticsSessionEvent;
-import com.appglu.android.DeviceInformation;
-
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
+import com.appglu.AnalyticsSession;
+import com.appglu.AnalyticsSessionEvent;
+
 public abstract class SQLiteTest extends AndroidTestCase {
-	
-	protected DeviceInformation deviceInformation;
 	
 	protected AnalyticsDatabaseHelper analyticsDatabaseHelper;
 	
@@ -27,14 +23,6 @@ public abstract class SQLiteTest extends AndroidTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		
-		// always say the device has Internet connection since we do not need to make HTTP calls
-		this.deviceInformation = new DeviceInformation(getContext()) {
-			@Override
-			public boolean hasInternetConnection() {
-				return true;
-			}
-		};
 		
 		this.analyticsDatabaseHelper = new AnalyticsDatabaseHelper(getContext());
 		this.analyticsDatabaseHelper.onUpgrade(analyticsDatabaseHelper.getWritableDatabase(), AnalyticsDatabaseHelper.DATABASE_VERSION, AnalyticsDatabaseHelper.DATABASE_VERSION);
