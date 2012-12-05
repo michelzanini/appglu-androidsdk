@@ -2,9 +2,13 @@ package com.appglu.android;
 
 import android.content.Context;
 
+import com.appglu.User;
+import com.appglu.UserSessionPersistence;
 import com.appglu.android.analytics.AnalyticsDatabaseHelper;
 import com.appglu.android.analytics.AnalyticsDispatcher;
 import com.appglu.android.analytics.AnalyticsRepository;
+import com.appglu.android.analytics.ApiAnalyticsDispatcher;
+import com.appglu.android.analytics.LogAnalyticsDispatcher;
 import com.appglu.android.analytics.SQLiteAnalyticsRepository;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
@@ -18,7 +22,7 @@ public final class AppGlu {
 	public static final String VERSION = "1.0.0";
 	
 	static final String APPGLU_PREFERENCES_KEY = "com.appglu.android.AppGlu.APPGLU_PREFERENCES_KEY";
-
+	
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
 	
 	private static AppGlu instance;
@@ -38,6 +42,8 @@ public final class AppGlu {
 	private PushApi pushApi;
 	
 	private AnalyticsApi analyticsApi;
+	
+	private UserApi userApi;
 	
 	protected AppGlu() {
 		
@@ -69,6 +75,12 @@ public final class AppGlu {
 		this.appGluTemplate = settings.createAppGluTemplate();
 		this.appGluTemplate.setAsyncExecutor(new AsyncTaskExecutor());
 		this.appGluTemplate.setDefaultHeaders(this.deviceInformation.createDefaultHeaders());
+		
+		UserSessionPersistence userSessionPersistence = this.settings.getUserSessionPersistence();
+		if (userSessionPersistence == null) {
+			userSessionPersistence = new SharedPreferencesUserSessionPersistence(this.context);
+		}
+		this.appGluTemplate.setUserSessionPersistence(userSessionPersistence);
 		
 		logger.info("AppGlu was initialized");
 	}
@@ -120,11 +132,30 @@ public final class AppGlu {
 			AnalyticsDatabaseHelper analyticsDatabaseHelper = new AnalyticsDatabaseHelper(this.context);
 			AnalyticsRepository analyticsRepository = new SQLiteAnalyticsRepository(analyticsDatabaseHelper);
 			
-			AnalyticsDispatcher analyticsDispatcher = this.settings.createAnalyticsDispatcher(this.getAppGluTemplate().analyticsOperations());
-			this.analyticsApi = new AnalyticsApi(analyticsDispatcher, analyticsRepository, this.deviceInformation);
+			AnalyticsDispatcher analyticsDispatcher = this.createAnalyticsDispatcher();
+			this.analyticsApi = new AnalyticsApi(analyticsDispatcher, analyticsRepository);
 			this.analyticsApi.setSessionCallback(this.settings.getAnalyticsSessionCallback());
 		}
 		return this.analyticsApi;
+	}
+	
+	protected AnalyticsDispatcher createAnalyticsDispatcher() {
+		AnalyticsDispatcher analyticsDispatcher = this.settings.getAnalyticsDispatcher();
+		if (analyticsDispatcher != null) {
+			return analyticsDispatcher;
+		}
+		if (this.settings.isUploadAnalyticsSessionsToServer()) {
+			return new ApiAnalyticsDispatcher(this.getAppGluTemplate().analyticsOperations());
+		} else {
+			return new LogAnalyticsDispatcher();
+		}
+	}
+	
+	protected UserApi getUserApi() {
+		if (this.userApi == null) {
+			this.userApi = new UserApi(this.getAppGluTemplate().userOperations(), this.getAppGluTemplate().asyncUserOperations());
+		}
+		return this.userApi;
 	}
 
 	//Public Methods
@@ -137,6 +168,14 @@ public final class AppGlu {
 	
 	public static boolean hasInternetConnection() {
 		return deviceInformation().hasInternetConnection();
+	}
+	
+	public static boolean isUserAuthenticated() {
+		return getRequiredInstance().getAppGluTemplate().isUserAuthenticated();
+	}
+	
+	public static User getAuthenticatedUser() {
+		return getRequiredInstance().getAppGluTemplate().getAuthenticatedUser();
 	}
 	
 	public static AppGluSettings settings() {
@@ -161,6 +200,10 @@ public final class AppGlu {
 	
 	public static AnalyticsApi analyticsApi() {
 		return getRequiredInstance().getAnalyticsApi();
+	}
+	
+	public static UserApi userApi() {
+		return getRequiredInstance().getUserApi();
 	}
 	
 }

@@ -7,6 +7,6 @@ import com.appglu.Error;
 public abstract class ErrorResponseMixin {
 	
 	@JsonProperty("error")
-	private Error error;
+	Error error;
 
 }

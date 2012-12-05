@@ -36,7 +36,7 @@ public class SQLiteAnalyticsRepositoryTest extends SQLiteTest {
 		Assert.assertEquals(1, closedSessions.size());
 		
 		AnalyticsSession sessionTwo = closedSessions.get(0);
-		this.assertClosedSession(sessionTwo, "12345");
+		this.assertClosedSession(sessionTwo);
 		this.assertSessionParameters(sessionTwo, null);
 		
 		List<AnalyticsSessionEvent> expectedEvents = events(event("event2", null), event("event3", parameters456()));
@@ -45,7 +45,7 @@ public class SQLiteAnalyticsRepositoryTest extends SQLiteTest {
 	
 	public void testGetSessionById() {
 		AnalyticsSession sessionOne = this.analyticsRepository.getSessionById(1L);
-		this.assertOpenSession(sessionOne, "123");
+		this.assertOpenSession(sessionOne);
 		
 		this.assertSessionParameters(sessionOne, parameters123());
 		
@@ -79,14 +79,13 @@ public class SQLiteAnalyticsRepositoryTest extends SQLiteTest {
 		long timestamp = now.getTime();
 		
 		session.setStartDate(now);
-		session.setClientUUID(this.deviceInformation.getDeviceUUID());
 		
 		this.analyticsRepository.createSession(session);
 		
 		Assert.assertEquals(4, this.countTable("sessions"));
 		
 		AnalyticsSession sessionFour = this.analyticsRepository.getSessionById(4L);
-		this.assertOpenSession(sessionFour, timestamp, sessionFour.getClientUUID());
+		this.assertOpenSession(sessionFour, timestamp);
 		this.assertSessionParameters(sessionFour, null);
 		this.assertSessionEvents(sessionFour, null);
 	}
@@ -100,7 +99,6 @@ public class SQLiteAnalyticsRepositoryTest extends SQLiteTest {
 		long timestamp = now.getTime();
 		
 		session.setStartDate(now);
-		session.setClientUUID(this.deviceInformation.getDeviceUUID());
 		
 		List<AnalyticsSessionEvent> events = events(event("eventOne", parameters456()), event("eventTwo", parameters123()), event("eventThree", parameters123()));
 		
@@ -112,7 +110,7 @@ public class SQLiteAnalyticsRepositoryTest extends SQLiteTest {
 		Assert.assertEquals(4, this.countTable("sessions"));
 		
 		AnalyticsSession sessionFour = this.analyticsRepository.getSessionById(4L);
-		this.assertOpenSession(sessionFour, timestamp, sessionFour.getClientUUID());
+		this.assertOpenSession(sessionFour, timestamp);
 		this.assertSessionParameters(sessionFour, parameters123());
 		this.assertSessionEvents(sessionFour, events);
 	}
@@ -125,13 +123,13 @@ public class SQLiteAnalyticsRepositoryTest extends SQLiteTest {
 		Assert.assertEquals(3, closedSessions.size());
 		
 		AnalyticsSession sessionOne = this.analyticsRepository.getSessionById(1L);
-		this.assertSession(sessionOne, this.lastTimestamp, this.lastTimestamp, "123");
+		this.assertSession(sessionOne, this.lastTimestamp, this.lastTimestamp);
 		
 		AnalyticsSession sessionTwo = this.analyticsRepository.getSessionById(2L);
-		this.assertSession(sessionTwo, this.lastTimestamp, this.lastTimestamp, "12345");
+		this.assertSession(sessionTwo, this.lastTimestamp, this.lastTimestamp);
 		
 		AnalyticsSession sessionThree = this.analyticsRepository.getSessionById(3L);
-		this.assertSession(sessionThree, this.lastTimestamp, this.lastTimestamp, "123");
+		this.assertSession(sessionThree, this.lastTimestamp, this.lastTimestamp);
 	}
 	
 	public void testCloseSessions() {
@@ -145,13 +143,13 @@ public class SQLiteAnalyticsRepositoryTest extends SQLiteTest {
 		Assert.assertEquals(3, closedSessions.size());
 		
 		AnalyticsSession sessionOne = this.analyticsRepository.getSessionById(1L);
-		this.assertSession(sessionOne, this.lastTimestamp, timestamp, "123");
+		this.assertSession(sessionOne, this.lastTimestamp, timestamp);
 		
 		AnalyticsSession sessionTwo = this.analyticsRepository.getSessionById(2L);
-		this.assertSession(sessionTwo, this.lastTimestamp, this.lastTimestamp, "12345");
+		this.assertSession(sessionTwo, this.lastTimestamp, this.lastTimestamp);
 		
 		AnalyticsSession sessionThree = this.analyticsRepository.getSessionById(3L);
-		this.assertSession(sessionThree, this.lastTimestamp, timestamp, "123");
+		this.assertSession(sessionThree, this.lastTimestamp, timestamp);
 	}
 	
 	public void testSetSessionParameter() {

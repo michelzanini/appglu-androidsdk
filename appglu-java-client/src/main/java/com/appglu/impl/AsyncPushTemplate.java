@@ -18,7 +18,6 @@ public final class AsyncPushTemplate implements AsyncPushOperations {
 		this.pushOperations = pushOperations;
 	}
 
-	@Override
 	public void registerDeviceInBackground(final Device device, AsyncCallback<Void> registerCallback) {
 		asyncExecutor.execute(registerCallback, new Callable<Void>() {
 			public Void call() {
@@ -28,7 +27,6 @@ public final class AsyncPushTemplate implements AsyncPushOperations {
 		});
 	}
 
-	@Override
 	public void readDeviceInBackground(final String token, AsyncCallback<Device> readCallback) {
 		asyncExecutor.execute(readCallback, new Callable<Device>() {
 			public Device call() {
@@ -37,7 +35,6 @@ public final class AsyncPushTemplate implements AsyncPushOperations {
 		});
 	}
 
-	@Override
 	public void removeDeviceInBackground(final String token, AsyncCallback<Boolean> removeCallback) {
 		asyncExecutor.execute(removeCallback, new Callable<Boolean>() {
 			public Boolean call() {

@@ -154,6 +154,7 @@ public class DeviceInformation {
 		Map<String, List<String>> httpHeaders = new HashMap<String, List<String>>();
 		
 		httpHeaders.put("User-Agent", Arrays.asList(this.createUserAgentHeader()));
+		httpHeaders.put("X-AppGlu-Client-Id", Arrays.asList(this.getDeviceUUID()));
 		httpHeaders.put("X-AppGlu-Client-App", Arrays.asList(this.createClientAppHeader()));
 		httpHeaders.put("X-AppGlu-Client-Device", Arrays.asList(this.createClientDeviceHeader()));
 		

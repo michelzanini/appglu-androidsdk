@@ -16,7 +16,7 @@ import com.appglu.QueryResult;
 import com.appglu.Row;
 import com.appglu.SavedQueriesOperations;
 
-public class SavedQueriesTest extends AbstractAppGluApiTest {
+public class SavedQueriesTemplateTest extends AbstractAppGluApiTest {
 	
 	private SavedQueriesOperations savedQueriesOperations;
 	

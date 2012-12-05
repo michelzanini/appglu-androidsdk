@@ -34,7 +34,7 @@ public class AnalyticsServiceTest extends SQLiteTest {
 		};
 		
 		this.analyticsRepository = new SQLiteAnalyticsRepository(this.analyticsDatabaseHelper);
-		this.analyticsService = new AnalyticsService(this.testAnalyticsDispatcher, this.analyticsRepository, this.deviceInformation);
+		this.analyticsService = new AnalyticsService(this.testAnalyticsDispatcher, this.analyticsRepository);
 	}
 	
 	public void testStartSessionIfNedeed() {

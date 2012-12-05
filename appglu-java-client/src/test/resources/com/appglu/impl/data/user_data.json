@@ -1,0 +1,11 @@
+{
+	"entryThree":[1,2,3],
+	"entryTwo":{
+		"nestedData":{
+			"value":1
+		},
+		"moreData":"test",
+		"data":"test"
+	},
+	"entryOne":"valueOne"
+}

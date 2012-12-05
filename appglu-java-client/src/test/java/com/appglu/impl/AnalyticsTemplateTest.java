@@ -40,7 +40,6 @@ public class AnalyticsTemplateTest extends AbstractAppGluApiTest {
 		
 		session.setStartDate(date);
 		session.setEndDate(date);
-		session.setClientUUID("123");
 		
 		Map<String, String> sessionParameters = new HashMap<String, String>();
 		
