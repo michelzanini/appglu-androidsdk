@@ -52,5 +52,12 @@ public class StringUtils {
 	public static boolean isEmpty(CharSequence str) {
 		return !isNotEmpty(str);
 	}
+	
+	public static String replaceSemicolon(String string) {
+		if (string == null) {
+			return "";
+		}
+		return string.replace(';', ':');
+	}
 
 }

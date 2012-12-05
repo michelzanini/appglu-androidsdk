@@ -13,8 +13,6 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
@@ -22,9 +20,9 @@ import com.appglu.DevicePlatform;
 import com.appglu.android.util.AppGluUtils;
 import com.appglu.impl.util.StringUtils;
 
-public class DeviceInformation {
+public class DeviceInstallation {
 	
-	static final String UUID_KEY = "com.appglu.android.DeviceInformation.UUID_KEY";
+	static final String UUID_KEY = "com.appglu.android.DeviceInstallation.UUID_KEY";
 	
 	private Context context;
 	
@@ -48,13 +46,14 @@ public class DeviceInformation {
 	
 	private String deviceLanguage;
 	
-	public DeviceInformation(Context context) {
+	public DeviceInstallation(Context context) {
 		AppGluUtils.assertNotNull(context, "Context cannot be null");
 		this.context = context.getApplicationContext();
 		
 		this.setDeviceUUID(context);
 		this.setDeviceInfo(context);
 		this.setAppInfo(context);
+		this.replaceSemicolonForHeaders();
 	}
 
 	public String getDeviceUUID() {
@@ -95,12 +94,6 @@ public class DeviceInformation {
 	
 	public String getDeviceLanguage() {
 		return deviceLanguage;
-	}
-
-	public boolean hasInternetConnection() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-	    return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 	}
 
 	protected void setDeviceUUID(Context context) {
@@ -150,6 +143,17 @@ public class DeviceInformation {
 		}
 	}
 	
+	protected void replaceSemicolonForHeaders() {
+		this.deviceOS = StringUtils.replaceSemicolon(this.deviceOS);
+		this.deviceOSVersion = StringUtils.replaceSemicolon(this.deviceOSVersion);
+		this.deviceModel = StringUtils.replaceSemicolon(this.deviceModel);
+		this.deviceManufacturer = StringUtils.replaceSemicolon(this.deviceManufacturer);
+		this.deviceLanguage = StringUtils.replaceSemicolon(this.deviceLanguage);
+		this.appName = StringUtils.replaceSemicolon(this.appName);
+		this.appVersion = StringUtils.replaceSemicolon(this.appVersion);
+		this.appIdentifier = StringUtils.replaceSemicolon(this.appIdentifier);
+	}
+	
 	protected Map<String, List<String>> createDefaultHeaders() {
 		Map<String, List<String>> httpHeaders = new HashMap<String, List<String>>();
 		
@@ -177,7 +181,7 @@ public class DeviceInformation {
 
 	@Override
 	public String toString() {
-		return "DeviceInformation [context=" + context + ", deviceUUID="
+		return "DeviceInstallation [context=" + context + ", deviceUUID="
 				+ deviceUUID + ", deviceOS=" + deviceOS + ", deviceOSVersion="
 				+ deviceOSVersion + ", appName=" + appName + ", appVersion="
 				+ appVersion + ", appIdentifier=" + appIdentifier

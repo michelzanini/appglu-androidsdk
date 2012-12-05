@@ -33,7 +33,7 @@ public final class AppGlu {
 	
 	private AppGluSettings settings;
 	
-	private DeviceInformation deviceInformation;
+	private DeviceInstallation deviceInstallation;
 	
 	private CrudApi crudApi;
 	
@@ -70,11 +70,11 @@ public final class AppGlu {
 		this.context = context.getApplicationContext();
 		
 		this.settings = settings;
-		this.deviceInformation = new DeviceInformation(this.context);
+		this.deviceInstallation = new DeviceInstallation(this.context);
 		
 		this.appGluTemplate = settings.createAppGluTemplate();
 		this.appGluTemplate.setAsyncExecutor(new AsyncTaskExecutor());
-		this.appGluTemplate.setDefaultHeaders(this.deviceInformation.createDefaultHeaders());
+		this.appGluTemplate.setDefaultHeaders(this.deviceInstallation.createDefaultHeaders());
 		
 		UserSessionPersistence userSessionPersistence = this.settings.getUserSessionPersistence();
 		if (userSessionPersistence == null) {
@@ -99,11 +99,11 @@ public final class AppGlu {
 		return settings;
 	}
 	
-	protected DeviceInformation getDeviceInformation() {
-		if (this.deviceInformation == null) {
+	protected DeviceInstallation getDeviceInstallation() {
+		if (this.deviceInstallation == null) {
 			throw new AppGluNotInitializedException();
 		}
-		return deviceInformation;
+		return deviceInstallation;
 	}
 	
 	protected CrudApi getCrudApi() {
@@ -122,7 +122,7 @@ public final class AppGlu {
 	
 	protected PushApi getPushApi() {
 		if (this.pushApi == null) {
-			this.pushApi = new PushApi(this.getAppGluTemplate().pushOperations(), this.getAppGluTemplate().asyncPushOperations(), this.deviceInformation);
+			this.pushApi = new PushApi(this.getAppGluTemplate().pushOperations(), this.getAppGluTemplate().asyncPushOperations(), this.deviceInstallation);
 		}
 		return this.pushApi;
 	}
@@ -157,6 +157,10 @@ public final class AppGlu {
 		}
 		return this.userApi;
 	}
+	
+	protected boolean checkInternetConnection() {
+		return AppGluUtils.hasInternetConnection(context);
+	}
 
 	//Public Methods
 	
@@ -167,7 +171,7 @@ public final class AppGlu {
 	}
 	
 	public static boolean hasInternetConnection() {
-		return deviceInformation().hasInternetConnection();
+		return getRequiredInstance().checkInternetConnection();
 	}
 	
 	public static boolean isUserAuthenticated() {
@@ -182,8 +186,8 @@ public final class AppGlu {
 		return getRequiredInstance().getSettings();
 	}
 	
-	public static DeviceInformation deviceInformation() {
-		return getRequiredInstance().getDeviceInformation();
+	public static DeviceInstallation deviceInstallation() {
+		return getRequiredInstance().getDeviceInstallation();
 	}
 	
 	public static CrudApi crudApi() {
