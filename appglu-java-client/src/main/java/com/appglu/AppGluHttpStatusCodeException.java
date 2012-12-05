@@ -8,7 +8,7 @@ public class AppGluHttpStatusCodeException extends AppGluRestClientException {
 	private final Error error;
 	
 	public AppGluHttpStatusCodeException(int statusCode, Error error) {
-		super(null);
+		super("");
 		this.statusCode = statusCode;
 		this.error = error;
 	}

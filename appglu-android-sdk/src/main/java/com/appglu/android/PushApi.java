@@ -13,12 +13,12 @@ public final class PushApi {
 	
 	private AsyncPushOperations asyncPushOperations;
 	
-	private DeviceInformation deviceInformation;
+	private DeviceInstallation deviceInstallation;
 
-	public PushApi(PushOperations pushOperations, AsyncPushOperations asyncPushOperations, DeviceInformation deviceInformation) {
+	public PushApi(PushOperations pushOperations, AsyncPushOperations asyncPushOperations, DeviceInstallation deviceInstallation) {
 		this.pushOperations = pushOperations;
 		this.asyncPushOperations = asyncPushOperations;
-		this.deviceInformation = deviceInformation;
+		this.deviceInstallation = deviceInstallation;
 	}
 
 	public void registerDevice(String token) throws AppGluRestClientException {
@@ -52,7 +52,7 @@ public final class PushApi {
 		device.setToken(token);
 		device.setAlias(alias);
 		device.setPlatform(DevicePlatform.ANDROID);
-		device.setAppIdentifier(deviceInformation.getAppIdentifier());
+		device.setAppIdentifier(deviceInstallation.getAppIdentifier());
 		return device;
 	}
 
