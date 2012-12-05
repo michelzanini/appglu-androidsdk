@@ -11,10 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.util.StringUtils;
-
 import com.appglu.impl.util.Base64;
 import com.appglu.impl.util.DateUtils;
+import com.appglu.impl.util.StringUtils;
 
 public class Row extends HashMap<String, Object> {
 	
@@ -105,7 +104,7 @@ public class Row extends HashMap<String, Object> {
 		if (string == null) {
 			return null;
 		}
-		if (!StringUtils.hasText(string)) {
+		if (StringUtils.isEmpty(string)) {
 			return new byte[0];
 		}
 		try {
@@ -117,7 +116,7 @@ public class Row extends HashMap<String, Object> {
 
 	public Date getDate(String columnName) {
 		String string = this.getString(columnName);
-		if (!StringUtils.hasText(string)) {
+		if (StringUtils.isEmpty(string)) {
 			return null;
 		}
 		try {

@@ -18,6 +18,7 @@ import android.util.DisplayMetrics;
 
 import com.appglu.DevicePlatform;
 import com.appglu.android.util.AppGluUtils;
+import com.appglu.impl.util.StringUtils;
 
 public class DeviceInstallation {
 	
@@ -120,7 +121,7 @@ public class DeviceInstallation {
 		}
 		
 		this.deviceLanguage = Locale.getDefault().getLanguage();
-		if (AppGluUtils.hasText(Locale.getDefault().getCountry())) {
+		if (StringUtils.isNotEmpty(Locale.getDefault().getCountry())) {
 			this.deviceLanguage += "_" + Locale.getDefault().getCountry();
 		}
 	}
@@ -143,14 +144,14 @@ public class DeviceInstallation {
 	}
 	
 	protected void replaceSemicolonForHeaders() {
-		this.deviceOS = AppGluUtils.replaceSemicolon(this.deviceOS);
-		this.deviceOSVersion = AppGluUtils.replaceSemicolon(this.deviceOSVersion);
-		this.deviceModel = AppGluUtils.replaceSemicolon(this.deviceModel);
-		this.deviceManufacturer = AppGluUtils.replaceSemicolon(this.deviceManufacturer);
-		this.deviceLanguage = AppGluUtils.replaceSemicolon(this.deviceLanguage);
-		this.appName = AppGluUtils.replaceSemicolon(this.appName);
-		this.appVersion = AppGluUtils.replaceSemicolon(this.appVersion);
-		this.appIdentifier = AppGluUtils.replaceSemicolon(this.appIdentifier);
+		this.deviceOS = StringUtils.replaceSemicolon(this.deviceOS);
+		this.deviceOSVersion = StringUtils.replaceSemicolon(this.deviceOSVersion);
+		this.deviceModel = StringUtils.replaceSemicolon(this.deviceModel);
+		this.deviceManufacturer = StringUtils.replaceSemicolon(this.deviceManufacturer);
+		this.deviceLanguage = StringUtils.replaceSemicolon(this.deviceLanguage);
+		this.appName = StringUtils.replaceSemicolon(this.appName);
+		this.appVersion = StringUtils.replaceSemicolon(this.appVersion);
+		this.appIdentifier = StringUtils.replaceSemicolon(this.appIdentifier);
 	}
 	
 	protected Map<String, List<String>> createDefaultHeaders() {

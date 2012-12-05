@@ -11,4 +11,8 @@ public class AppGluRestClientException extends RuntimeException {
 		super(msg, ex);
 	}
 	
+	public AppGluRestClientException(Throwable ex) {
+		super(ex);
+	}
+	
 }

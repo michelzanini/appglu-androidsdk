@@ -13,7 +13,6 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
@@ -34,6 +33,7 @@ import com.appglu.UserOperations;
 import com.appglu.UserSessionPersistence;
 import com.appglu.impl.json.AppGluModule;
 import com.appglu.impl.util.DateUtils;
+import com.appglu.impl.util.StringUtils;
 
 public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	
@@ -80,7 +80,7 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	private UserSessionPersistence userSessionPersistence;
 	
 	public AppGluTemplate(String baseUrl, String applicationKey, String applicationSecret) {
-		if (!StringUtils.hasText(baseUrl)) {
+		if (StringUtils.isEmpty(baseUrl)) {
 			throw new IllegalArgumentException("Base URL cannot be empty");
 		}
 		this.baseUrl = baseUrl;
