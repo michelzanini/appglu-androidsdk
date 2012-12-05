@@ -52,6 +52,7 @@ public class DeviceInstallation {
 		this.setDeviceUUID(context);
 		this.setDeviceInfo(context);
 		this.setAppInfo(context);
+		this.replaceSemicolonForHeaders();
 	}
 
 	public String getDeviceUUID() {
@@ -122,12 +123,6 @@ public class DeviceInstallation {
 		if (AppGluUtils.hasText(Locale.getDefault().getCountry())) {
 			this.deviceLanguage += "_" + Locale.getDefault().getCountry();
 		}
-		
-		AppGluUtils.replaceSemicolon(this.deviceOS);
-		AppGluUtils.replaceSemicolon(this.deviceOSVersion);
-		AppGluUtils.replaceSemicolon(this.deviceModel);
-		AppGluUtils.replaceSemicolon(this.deviceManufacturer);
-		AppGluUtils.replaceSemicolon(this.deviceLanguage);
 	}
 
 	protected void setAppInfo(Context context) {
@@ -145,10 +140,17 @@ public class DeviceInstallation {
 			this.appVersion = "";
 			this.appIdentifier = "";
 		}
-		
-		AppGluUtils.replaceSemicolon(this.appName);
-		AppGluUtils.replaceSemicolon(this.appVersion);
-		AppGluUtils.replaceSemicolon(this.appIdentifier);
+	}
+	
+	protected void replaceSemicolonForHeaders() {
+		this.deviceOS = AppGluUtils.replaceSemicolon(this.deviceOS);
+		this.deviceOSVersion = AppGluUtils.replaceSemicolon(this.deviceOSVersion);
+		this.deviceModel = AppGluUtils.replaceSemicolon(this.deviceModel);
+		this.deviceManufacturer = AppGluUtils.replaceSemicolon(this.deviceManufacturer);
+		this.deviceLanguage = AppGluUtils.replaceSemicolon(this.deviceLanguage);
+		this.appName = AppGluUtils.replaceSemicolon(this.appName);
+		this.appVersion = AppGluUtils.replaceSemicolon(this.appVersion);
+		this.appIdentifier = AppGluUtils.replaceSemicolon(this.appIdentifier);
 	}
 	
 	protected Map<String, List<String>> createDefaultHeaders() {

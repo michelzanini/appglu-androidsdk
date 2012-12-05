@@ -38,7 +38,7 @@ public abstract class AppGluUtils {
 	}
 	
 	public static String replaceSemicolon(String string) {
-		if (!hasText(string)) {
+		if (string == null) {
 			return "";
 		}
 		return string.replace(';', ':');
