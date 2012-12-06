@@ -24,10 +24,12 @@ import com.appglu.AsyncAppGluOperations;
 import com.appglu.AsyncCrudOperations;
 import com.appglu.AsyncPushOperations;
 import com.appglu.AsyncSavedQueriesOperations;
+import com.appglu.AsyncSyncOperations;
 import com.appglu.AsyncUserOperations;
 import com.appglu.CrudOperations;
 import com.appglu.PushOperations;
 import com.appglu.SavedQueriesOperations;
+import com.appglu.SyncOperations;
 import com.appglu.User;
 import com.appglu.UserOperations;
 import com.appglu.UserSessionPersistence;
@@ -68,6 +70,10 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	private UserTemplate userOperations;
 	
 	private AsyncUserOperations asyncUserOperations;
+	
+	private SyncOperations syncOperations;
+	
+	private AsyncSyncOperations asyncSyncOperations;
 	
 	private HttpMessageConverter<Object> jsonMessageConverter;
 	
@@ -195,6 +201,15 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.checkAsyncExecutor();
 		return asyncUserOperations;
 	}
+	
+	public SyncOperations syncOperations() {
+		return syncOperations;
+	}
+	
+	public AsyncSyncOperations asyncSyncOperations() {
+		this.checkAsyncExecutor();
+		return asyncSyncOperations;
+	}
 
 	public RestOperations restOperations() {
 		return getRestTemplate();
@@ -247,6 +262,7 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.pushOperations = new PushTemplate(this.restOperations());
 		this.analyticsOperations = new AnalyticsTemplate(this.restOperations());
 		this.userOperations = new UserTemplate(this.restOperations(), this.userSessionPersistence);
+		this.syncOperations = new SyncTemplate(this.restOperations());
 	}
 	
 	private void initAsyncApis() {
@@ -255,6 +271,7 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.asyncPushOperations = new AsyncPushTemplate(this.asyncExecutor, this.pushOperations);
 		this.asyncAnalyticsOperations = new AsyncAnalyticsTemplate(this.asyncExecutor, this.analyticsOperations);
 		this.asyncUserOperations = new AsyncUserTemplate(this.asyncExecutor, this.userOperations);
+		this.asyncSyncOperations = new AsyncSyncTemplate(this.asyncExecutor, this.syncOperations);
 	}
 	
 	protected RestTemplate createRestTemplate() {

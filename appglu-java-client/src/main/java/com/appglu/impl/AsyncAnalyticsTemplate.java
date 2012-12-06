@@ -1,5 +1,6 @@
 package com.appglu.impl;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -35,6 +36,10 @@ public final class AsyncAnalyticsTemplate implements AsyncAnalyticsOperations {
 				return null;
 			}
 		});
+	}
+	
+	public void uploadSessionsInBackground(AsyncCallback<Void> callback, AnalyticsSession... sessions) {
+		this.uploadSessionsInBackground(Arrays.asList(sessions), callback);
 	}
 
 }

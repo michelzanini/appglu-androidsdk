@@ -12,6 +12,10 @@ public interface AppGluOperations {
 	
 	AnalyticsOperations analyticsOperations();
 	
+	UserOperations userOperations();
+	
+	SyncOperations syncOperations();
+	
 	RestOperations restOperations();
 
 }

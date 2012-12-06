@@ -9,7 +9,7 @@ import com.appglu.impl.AppGluTemplate;
 
 public class AppGluTestRestClient {
 	
-	private AppGluTemplate appGluTemplate = new AppGluTemplate("https://dashboard.appglu.com", "2856G3EX7p1042m", "YE79wRR2e81RW977AT563UP25o2ctd");
+	private AppGluOperations appGluTemplate = new AppGluTemplate("http://192.168.40.78:8080/appglu", "173691782634", "zQO9GtlCNJjC87hQXvGcKrMyVkOHLK7f9LAaKeXSew");
 	
 	private CrudOperations crudOperations = appGluTemplate.crudOperations();
 	
@@ -21,11 +21,24 @@ public class AppGluTestRestClient {
 	
 	private UserOperations userOperations = appGluTemplate.userOperations();
 	
+	private SyncOperations syncOperations = appGluTemplate.syncOperations();
+	
 	public static void main(String[] args) {
 		AppGluTestRestClient restClient = new AppGluTestRestClient();
-		restClient.callApiEndpoints();
+		//restClient.callApiEndpoints();
+		
+		restClient.sync_changesForTables();
 	}
 	
+	private void sync_changesForTables() {
+		VersionedTable loggedTable = new VersionedTable("logged_table");
+		VersionedTable otherTable = new VersionedTable("other_table");
+		
+		List<VersionedTableChanges> changes = this.syncOperations.changesForTables(loggedTable, otherTable);
+		
+		System.out.println(changes);
+	}
+
 	public void callApiEndpoints() {
 		Object id = this.crud_create();
 		this.crud_update(id);

@@ -1,6 +1,7 @@
 package com.appglu.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.web.client.RestClientException;
@@ -33,6 +34,10 @@ public final class AnalyticsTemplate implements AnalyticsOperations {
 		} catch (RestClientException e) {
 			throw new AppGluRestClientException(e.getMessage(), e);
 		}
+	}
+	
+	public void uploadSessions(AnalyticsSession... sessions) throws AppGluRestClientException {
+		this.uploadSessions(Arrays.asList(sessions));
 	}
 
 }

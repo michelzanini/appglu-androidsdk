@@ -18,7 +18,7 @@ import com.appglu.UserOperations;
 import com.appglu.UserSessionPersistence;
 import com.appglu.impl.json.UserBody;
 
-public class UserTemplate implements UserOperations {
+public final class UserTemplate implements UserOperations {
 	
 	static final String SIGN_UP_URL = "/v1/users";
 	
