@@ -2,7 +2,7 @@ package com.appglu;
 
 import java.util.List;
 
-public class VersionedTableChanges extends VersionedTable {
+public class VersionedTableChanges {
 	
 	private String tableName;
 	
