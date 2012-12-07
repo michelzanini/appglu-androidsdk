@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.springframework.android</groupId>
             <artifactId>spring-android-rest-template</artifactId>
-            <version>1.0.0.RELEASE</version>
+            <version>1.0.1.RELEASE</version>
         </dependency>
         
         <dependency>
@@ -42,6 +42,7 @@
 			<groupId>com.google.android</groupId>
 			<artifactId>support-v4</artifactId>
 			<version>r7</version>
+			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
         
