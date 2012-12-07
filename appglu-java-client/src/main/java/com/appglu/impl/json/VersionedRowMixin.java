@@ -10,7 +10,7 @@ import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
-import com.appglu.AppgluSyncOperation;
+import com.appglu.SyncOperation;
 
 public abstract class VersionedRowMixin {
 	
@@ -19,15 +19,15 @@ public abstract class VersionedRowMixin {
 	
 	@JsonProperty("appglu_sync_operation")
 	@JsonDeserialize(using=AppgluSyncOperationDeserializer.class)
-	AppgluSyncOperation appgluSyncOperation;
+	SyncOperation appgluSyncOperation;
 	
 	@JsonAnySetter
 	abstract void addRowProperty(String key, Object value);
 	
-	private static class AppgluSyncOperationDeserializer extends JsonDeserializer<AppgluSyncOperation> {
+	private static class AppgluSyncOperationDeserializer extends JsonDeserializer<SyncOperation> {
 		@Override
-		public AppgluSyncOperation deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-			return AppgluSyncOperation.getAppgluSyncOperation(jp.getText());
+		public SyncOperation deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+			return SyncOperation.getSyncOperation(jp.getText());
 		}
 	}
 

@@ -1,13 +1,13 @@
 package com.appglu;
 
-public enum AppgluSyncOperation {
+public enum SyncOperation {
 	
 	INSERT,
 	DELETE,
 	UPDATE;
 
-	public static AppgluSyncOperation getAppgluSyncOperation(String type) {
-		for (AppgluSyncOperation operation : values()) {
+	public static SyncOperation getSyncOperation(String type) {
+		for (SyncOperation operation : values()) {
 			if (operation.toString().equalsIgnoreCase(type)) {
 				return operation;
 			}

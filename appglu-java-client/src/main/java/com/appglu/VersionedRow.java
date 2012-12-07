@@ -6,7 +6,7 @@ public class VersionedRow {
 	
 	private long appgluKey;
 	
-	private AppgluSyncOperation appgluSyncOperation;
+	private SyncOperation appgluSyncOperation;
 
 	public Row getRow() {
 		return row;
@@ -16,7 +16,7 @@ public class VersionedRow {
 		return appgluKey;
 	}
 
-	public AppgluSyncOperation getAppgluSyncOperation() {
+	public SyncOperation getAppgluSyncOperation() {
 		return appgluSyncOperation;
 	}
 
@@ -28,7 +28,7 @@ public class VersionedRow {
 		this.appgluKey = appgluKey;
 	}
 
-	public void setAppgluSyncOperation(AppgluSyncOperation appgluSyncOperation) {
+	public void setAppgluSyncOperation(SyncOperation appgluSyncOperation) {
 		this.appgluSyncOperation = appgluSyncOperation;
 	}
 	
