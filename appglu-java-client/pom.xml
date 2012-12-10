@@ -9,23 +9,22 @@
 	
 	<dependencies>
 	
-		<!-- Using Spring 3.1.1 explicitly here because the latest Spring Android 1.0.0 is based on version 3.1.1 -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>3.1.1.RELEASE</version>
+			<version>3.1.2.RELEASE</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.9</version>
+			<version>1.9.11</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.2.1</version>
+			<version>4.2.2</version>
 			<optional>true</optional>
 		</dependency>
 		

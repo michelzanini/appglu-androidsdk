@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
 import com.appglu.AppGluHttpClientException;
@@ -53,13 +52,9 @@ public class AppGluResponseErrorHandler extends DefaultResponseErrorHandler {
 		}
 	}
 
-	private Error readErrorFromResponse(ClientHttpResponse response) {
-		try {
-			ErrorResponse errorResponse = (ErrorResponse) jsonMessageConverter.read(ErrorResponse.class, response);
-			return errorResponse.getError();
-		} catch (IOException e) {
-			throw new HttpMessageNotReadableException("Could not parse error response", e);
-		}
+	private Error readErrorFromResponse(ClientHttpResponse response) throws IOException {
+		ErrorResponse errorResponse = (ErrorResponse) jsonMessageConverter.read(ErrorResponse.class, response);
+		return errorResponse.getError();
 	}
 
 }
