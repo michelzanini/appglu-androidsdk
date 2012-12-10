@@ -15,6 +15,8 @@ import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
+import com.appglu.AppGluHttpClientException;
+import com.appglu.ErrorCode;
 import com.appglu.SyncOperation;
 import com.appglu.SyncOperations;
 import com.appglu.VersionedRow;
@@ -106,6 +108,23 @@ public class SyncTemplateTest extends AbstractAppGluApiTest {
 		Assert.assertNotNull(otherTable);
 		Assert.assertEquals("other_table", otherTable.getTableName());
 		Assert.assertEquals(1, otherTable.getVersion());
+		
+		mockServer.verify();
+	}
+	
+	@Test
+	public void versionsForTablesEmptyTablesParameter() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/sync/versions/"))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withStatus(HttpStatus.BAD_REQUEST).body(compactedJson("data/error_table_not_found")).headers(responseHeaders));
+		
+		try {
+			this.syncOperations.versionsForTables("");
+			Assert.fail("Should have caused a exception");
+		} catch (AppGluHttpClientException ex) {
+			Assert.assertEquals(ErrorCode.TABLE_DOES_NOT_EXISTS, ex.getError().getCode());
+			Assert.assertEquals("Table {table} was not found.", ex.getError().getMessage());
+		}
 		
 		mockServer.verify();
 	}
