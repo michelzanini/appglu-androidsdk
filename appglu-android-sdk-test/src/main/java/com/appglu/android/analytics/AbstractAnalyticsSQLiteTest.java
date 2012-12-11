@@ -14,7 +14,7 @@ import android.test.AndroidTestCase;
 import com.appglu.AnalyticsSession;
 import com.appglu.AnalyticsSessionEvent;
 
-public abstract class SQLiteTest extends AndroidTestCase {
+public abstract class AbstractAnalyticsSQLiteTest extends AndroidTestCase {
 	
 	protected AnalyticsDatabaseHelper analyticsDatabaseHelper;
 	

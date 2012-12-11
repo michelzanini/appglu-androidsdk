@@ -1,5 +1,6 @@
 package com.appglu;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VersionedTableChanges {
@@ -8,7 +9,20 @@ public class VersionedTableChanges {
 	
 	private long version;
 	
-	private List<VersionedRow> changes;
+	private List<VersionedRow> changes = new ArrayList<VersionedRow>();
+	
+	public VersionedTableChanges() {
+		
+	}
+	
+	public VersionedTableChanges(String tableName) {
+		this.tableName = tableName;
+	}
+
+	public VersionedTableChanges(String tableName, long version) {
+		this.tableName = tableName;
+		this.version = version;
+	}
 
 	public String getTableName() {
 		return tableName;
