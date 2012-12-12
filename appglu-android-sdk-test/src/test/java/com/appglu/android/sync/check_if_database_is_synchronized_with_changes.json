@@ -1,0 +1,16 @@
+{
+	"tables":[
+		{
+			"tableName": "appglu_storage_files",
+			"version": 4
+		},
+		{
+			"tableName": "logged_table",
+			"version": 9
+		},
+      	{
+			"tableName": "other_table",
+			"version": 3
+		}
+	]
+}

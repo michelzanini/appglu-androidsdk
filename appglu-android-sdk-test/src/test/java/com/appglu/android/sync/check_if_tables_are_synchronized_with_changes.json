@@ -1,0 +1,12 @@
+{
+	"tables":[
+		{
+			"tableName": "logged_table",
+			"version": 9
+		},
+      	{
+			"tableName": "other_table",
+			"version": 3
+		}
+	]
+}
