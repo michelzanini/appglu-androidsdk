@@ -1,20 +1,20 @@
 package com.appglu;
 
-public class VersionedTable {
+public class TableVersion {
 	
 	private String tableName;
 	
 	private long version;
 	
-	public VersionedTable() {
+	public TableVersion() {
 		
 	}
 	
-	public VersionedTable(String tableName) {
+	public TableVersion(String tableName) {
 		this.tableName = tableName;
 	}
 
-	public VersionedTable(String tableName, long version) {
+	public TableVersion(String tableName, long version) {
 		this.tableName = tableName;
 		this.version = version;
 	}
@@ -37,7 +37,7 @@ public class VersionedTable {
 
 	@Override
 	public String toString() {
-		return "VersionedTable [tableName=" + tableName + ", version=" + version + "]";
+		return "TableVersion [tableName=" + tableName + ", version=" + version + "]";
 	}
 
 }

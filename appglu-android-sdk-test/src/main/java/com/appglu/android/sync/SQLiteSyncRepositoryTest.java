@@ -3,8 +3,8 @@ package com.appglu.android.sync;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.appglu.VersionedTable;
-import com.appglu.VersionedTableChanges;
+import com.appglu.TableVersion;
+import com.appglu.TableChanges;
 
 public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 	
@@ -16,21 +16,32 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 		this.syncRepository = new SQLiteSyncRepository(this.syncDatabaseHelper);
 	}
 	
-	public void testListTables() {
-		List<VersionedTable> tables = this.syncRepository.listTables();
-		this.assertTableVersions(tables, 0, 1, 2);
+	public void testVersionsForAllTables() {
+		List<TableVersion> tableVersions = this.syncRepository.versionsForAllTables();
+		this.assertTableVersions(tableVersions, 0, 1, 2);
+	}
+	
+	public void testVersionsForTables() {
+		List<String> tables = new ArrayList<String>();
+		
+		tables.add("appglu_storage_files");
+		tables.add("logged_table");
+		tables.add("other_table");
+		
+		List<TableVersion> tableVersions = this.syncRepository.versionsForTables(tables);
+		this.assertTableVersions(tableVersions, 0, 1, 2);
 	}
 
-	public void testUpdateLocalTableVersions() {
-		List<VersionedTableChanges> tables = new ArrayList<VersionedTableChanges>();
+	public void testSaveTableVersions() {
+		List<TableChanges> tables = new ArrayList<TableChanges>();
 		
-		tables.add(new VersionedTableChanges("appglu_storage_files", 5));
-		tables.add(new VersionedTableChanges("logged_table", 4));
-		tables.add(new VersionedTableChanges("other_table", 10));
+		tables.add(new TableChanges("appglu_storage_files", 5));
+		tables.add(new TableChanges("logged_table", 4));
+		tables.add(new TableChanges("other_table", 10));
 		
-		this.syncRepository.updateLocalTableVersions(tables);
+		this.syncRepository.saveTableVersions(tables);
 		
-		List<VersionedTable> updatedTables = this.syncRepository.listTables();
+		List<TableVersion> updatedTables = this.syncRepository.versionsForAllTables();
 		this.assertTableVersions(updatedTables, 5, 4, 10);
 	}
 

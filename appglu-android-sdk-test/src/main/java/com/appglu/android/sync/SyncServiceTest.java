@@ -1,9 +1,10 @@
 package com.appglu.android.sync;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.appglu.SyncOperations;
-import com.appglu.VersionedTable;
+import com.appglu.TableVersion;
 
 public class SyncServiceTest extends AbstractSyncSQLiteTest {
 
@@ -21,11 +22,23 @@ public class SyncServiceTest extends AbstractSyncSQLiteTest {
 		this.syncService = new SyncService(syncOperations, this.syncRepository);
 	}
 	
-	public void testSynchronizeLocalDatabase() {
-		this.syncService.synchronizeLocalDatabase();
+	public void testSyncDatabase() {
+		this.syncService.syncDatabase();
 		
-		List<VersionedTable> updatedTables = this.syncRepository.listTables();
+		List<TableVersion> updatedTables = this.syncRepository.versionsForAllTables();
 		this.assertTableVersions(updatedTables, 2, 3, 4);
+	}
+	
+	public void testSyncTables() {
+		List<String> tables = new ArrayList<String>();
+		
+		tables.add("logged_table");
+		tables.add("other_table");
+		
+		this.syncService.syncTables(tables);
+		
+		List<TableVersion> updatedTables = this.syncRepository.versionsForAllTables();
+		this.assertTableVersions(updatedTables, 0, 3, 4);
 	}
 	
 }

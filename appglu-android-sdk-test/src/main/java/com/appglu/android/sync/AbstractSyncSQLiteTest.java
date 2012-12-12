@@ -4,7 +4,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import com.appglu.VersionedTable;
+import com.appglu.TableVersion;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
@@ -38,9 +38,9 @@ public abstract class AbstractSyncSQLiteTest extends AndroidTestCase {
 		database.beginTransaction();
 		
 		try {
-			database.execSQL("delete from appglu_versioned_tables");
-			database.execSQL("insert into appglu_versioned_tables (table_name, version) values ('logged_table', 1)");
-			database.execSQL("insert into appglu_versioned_tables (table_name, version) values ('other_table', 2)");
+			database.execSQL("delete from appglu_table_versions");
+			database.execSQL("insert into appglu_table_versions (table_name, version) values ('logged_table', 1)");
+			database.execSQL("insert into appglu_table_versions (table_name, version) values ('other_table', 2)");
 			
 			database.setTransactionSuccessful();
 		} finally {
@@ -49,7 +49,7 @@ public abstract class AbstractSyncSQLiteTest extends AndroidTestCase {
 		}
 	}
 	
-	protected void assertTableVersions(List<VersionedTable> tables, int storageVersion, int loggedVersion, int otherVersion) {
+	protected void assertTableVersions(List<TableVersion> tables, int storageVersion, int loggedVersion, int otherVersion) {
 		Assert.assertNotNull(tables);
 		Assert.assertEquals(3, tables.size());
 		

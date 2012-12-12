@@ -2,9 +2,9 @@ package com.appglu.android.sync;
 
 import java.util.List;
 
-import com.appglu.VersionedRow;
-import com.appglu.VersionedTable;
-import com.appglu.VersionedTableChanges;
+import com.appglu.RowChanges;
+import com.appglu.TableVersion;
+import com.appglu.TableChanges;
 
 public interface SyncRepository {
 	
@@ -14,10 +14,12 @@ public interface SyncRepository {
 	
 	public void endTransaction();
 	
-	public List<VersionedTable> listTables();
+	public List<TableVersion> versionsForAllTables();
 	
-	public void updateLocalTableVersions(List<VersionedTableChanges> tables);
+	public List<TableVersion> versionsForTables(List<String> tables);
+	
+	public void saveTableVersions(List<TableChanges> tables);
 
-	public void processChangesToTable(String tableName, VersionedRow row);
+	public void applyRowChangesToTable(String tableName, RowChanges row);
 
 }

@@ -4,14 +4,14 @@ import java.util.List;
 
 public interface AsyncSyncOperations {
 	
-	void changesForTablesInBackground(AsyncCallback<List<VersionedTableChanges>> callback, VersionedTable... tables);
+	void changesForTablesInBackground(AsyncCallback<List<TableChanges>> callback, TableVersion... tables);
 	
-	void changesForTablesInBackground(List<VersionedTable> tables, AsyncCallback<List<VersionedTableChanges>> callback);
+	void changesForTablesInBackground(List<TableVersion> tables, AsyncCallback<List<TableChanges>> callback);
 	
-	void changesForTableInBackground(String tableName, long version, AsyncCallback<VersionedTableChanges> callback);
+	void changesForTableInBackground(String tableName, long version, AsyncCallback<TableChanges> callback);
 	
-	void versionsForTablesInBackground(AsyncCallback<List<VersionedTable>> callback, String... tables);
+	void versionsForTablesInBackground(AsyncCallback<List<TableVersion>> callback, String... tables);
 	
-	void versionsForTablesInBackground(List<String> tables, AsyncCallback<List<VersionedTable>> callback);
+	void versionsForTablesInBackground(List<String> tables, AsyncCallback<List<TableVersion>> callback);
 
 }

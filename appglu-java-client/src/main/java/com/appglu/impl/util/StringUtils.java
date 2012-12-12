@@ -1,5 +1,10 @@
 package com.appglu.impl.util;
 
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.springframework.util.CollectionUtils;
+
 public class StringUtils {
 	
 	public static String underscoreName(String name) {
@@ -18,6 +23,13 @@ public class StringUtils {
 			}
 		}
 		return result.toString();
+	}
+	
+	public static String replaceSemicolon(String string) {
+		if (string == null) {
+			return "";
+		}
+		return string.replace(';', ':');
 	}
 	
 	public static boolean hasLength(CharSequence str) {
@@ -53,11 +65,19 @@ public class StringUtils {
 		return !isNotEmpty(str);
 	}
 	
-	public static String replaceSemicolon(String string) {
-		if (string == null) {
+	public static String collectionToDelimitedString(Collection<?> coll, String delim, String prefix, String suffix) {
+		if (CollectionUtils.isEmpty(coll)) {
 			return "";
 		}
-		return string.replace(';', ':');
+		StringBuilder sb = new StringBuilder();
+		Iterator<?> it = coll.iterator();
+		while (it.hasNext()) {
+			sb.append(prefix).append(it.next()).append(suffix);
+			if (it.hasNext()) {
+				sb.append(delim);
+			}
+		}
+		return sb.toString();
 	}
 
 }

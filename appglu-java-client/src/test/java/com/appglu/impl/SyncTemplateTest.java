@@ -19,9 +19,9 @@ import com.appglu.AppGluHttpClientException;
 import com.appglu.ErrorCode;
 import com.appglu.SyncOperation;
 import com.appglu.SyncOperations;
-import com.appglu.VersionedRow;
-import com.appglu.VersionedTable;
-import com.appglu.VersionedTableChanges;
+import com.appglu.RowChanges;
+import com.appglu.TableVersion;
+import com.appglu.TableChanges;
 
 public class SyncTemplateTest extends AbstractAppGluApiTest {
 	
@@ -41,27 +41,27 @@ public class SyncTemplateTest extends AbstractAppGluApiTest {
 			.andExpect(content().string(compactedJson("data/sync_changes_for_tables_request")))
 			.andRespond(withStatus(HttpStatus.OK).body(compactedJson("data/sync_changes_for_tables_response")).headers(responseHeaders));
 		
-		VersionedTable loggedTable = new VersionedTable("logged_table");
-		VersionedTable otherTable = new VersionedTable("other_table", 1);
+		TableVersion loggedTable = new TableVersion("logged_table");
+		TableVersion otherTable = new TableVersion("other_table", 1);
 		
-		List<VersionedTableChanges> changes = this.syncOperations.changesForTables(loggedTable, otherTable);
+		List<TableChanges> changes = this.syncOperations.changesForTables(loggedTable, otherTable);
 		
 		Assert.assertNotNull(changes);
 		Assert.assertEquals(2, changes.size());
 		
-		VersionedTableChanges loggedTableChanges = changes.get(0);
+		TableChanges loggedTableChanges = changes.get(0);
 		this.assertTable(loggedTableChanges, "logged_table", 9, 2);
 		
-		VersionedRow firstRow = loggedTableChanges.getChanges().get(0);
+		RowChanges firstRow = loggedTableChanges.getChanges().get(0);
 		this.assertRow(firstRow, 2, 1, "row1", 1, SyncOperation.INSERT);
 		
-		VersionedRow secondRow = loggedTableChanges.getChanges().get(1);
+		RowChanges secondRow = loggedTableChanges.getChanges().get(1);
 		this.assertRow(secondRow, 2, 2, "row2", 2, SyncOperation.UPDATE);
 		
-		VersionedTableChanges otherTableChanges = changes.get(1);
+		TableChanges otherTableChanges = changes.get(1);
 		this.assertTable(otherTableChanges, "other_table", 1, 1);
 		
-		VersionedRow firstRowOtherTable = otherTableChanges.getChanges().get(0);
+		RowChanges firstRowOtherTable = otherTableChanges.getChanges().get(0);
 		this.assertRow(firstRowOtherTable, 2, 1, "row1", 6, SyncOperation.DELETE);
 		
 		mockServer.verify();
@@ -73,14 +73,14 @@ public class SyncTemplateTest extends AbstractAppGluApiTest {
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withStatus(HttpStatus.OK).body(compactedJson("data/sync_changes_for_table_response")).headers(responseHeaders));
 		
-		VersionedTableChanges loggedTableChanges = this.syncOperations.changesForTable("logged_table", 2);
+		TableChanges loggedTableChanges = this.syncOperations.changesForTable("logged_table", 2);
 		
 		this.assertTable(loggedTableChanges, "logged_table", 9, 2);
 		
-		VersionedRow firstRow = loggedTableChanges.getChanges().get(0);
+		RowChanges firstRow = loggedTableChanges.getChanges().get(0);
 		this.assertRow(firstRow, 2, 1, "row1", 1, SyncOperation.INSERT);
 		
-		VersionedRow secondRow = loggedTableChanges.getChanges().get(1);
+		RowChanges secondRow = loggedTableChanges.getChanges().get(1);
 		this.assertRow(secondRow, 2, 2, "row2", 2, SyncOperation.UPDATE);
 		
 		mockServer.verify();
@@ -92,18 +92,18 @@ public class SyncTemplateTest extends AbstractAppGluApiTest {
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withStatus(HttpStatus.OK).body(compactedJson("data/sync_versions_for_tables_response")).headers(responseHeaders));
 		
-		List<VersionedTable> versions = this.syncOperations.versionsForTables("logged_table", "other_table");
+		List<TableVersion> versions = this.syncOperations.versionsForTables("logged_table", "other_table");
 		
 		Assert.assertNotNull(versions);
 		Assert.assertEquals(2, versions.size());
 		
-		VersionedTable loggedTable = versions.get(0);
+		TableVersion loggedTable = versions.get(0);
 		
 		Assert.assertNotNull(loggedTable);
 		Assert.assertEquals("logged_table", loggedTable.getTableName());
 		Assert.assertEquals(9, loggedTable.getVersion());
 		
-		VersionedTable otherTable = versions.get(1);
+		TableVersion otherTable = versions.get(1);
 		
 		Assert.assertNotNull(otherTable);
 		Assert.assertEquals("other_table", otherTable.getTableName());
@@ -129,14 +129,14 @@ public class SyncTemplateTest extends AbstractAppGluApiTest {
 		mockServer.verify();
 	}
 
-	private void assertTable(VersionedTableChanges changes, String name, int version, int changesSize) {
+	private void assertTable(TableChanges changes, String name, int version, int changesSize) {
 		Assert.assertNotNull(changes);
 		Assert.assertEquals(name, changes.getTableName());
 		Assert.assertEquals(version, changes.getVersion());
 		Assert.assertEquals(changesSize, changes.getChanges().size());
 	}
 
-	private void assertRow(VersionedRow row, int numberOfProperties, int id, String name, int appgluKey, SyncOperation operation) {
+	private void assertRow(RowChanges row, int numberOfProperties, int id, String name, int appgluKey, SyncOperation operation) {
 		Assert.assertNotNull(row);
 		Assert.assertEquals(numberOfProperties, row.getRow().size());
 		

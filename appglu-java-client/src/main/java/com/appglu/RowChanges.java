@@ -1,6 +1,6 @@
 package com.appglu;
 
-public class VersionedRow {
+public class RowChanges {
 	
 	private Row row = new Row();
 	
@@ -38,7 +38,7 @@ public class VersionedRow {
 
 	@Override
 	public String toString() {
-		return "VersionedRow [appgluKey=" + appgluKey + ", appgluSyncOperation=" + appgluSyncOperation + "]";
+		return "RowChanges [appgluKey=" + appgluKey + ", appgluSyncOperation=" + appgluSyncOperation + "]";
 	}
 
 }

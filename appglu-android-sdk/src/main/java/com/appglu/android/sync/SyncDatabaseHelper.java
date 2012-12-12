@@ -37,7 +37,7 @@ public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	
 	public void onCreateSyncDatabase(SQLiteDatabase db) {
 		db.execSQL("CREATE TABLE appglu_storage_files (id INTEGER PRIMARY KEY NOT NULL, key VARCHAR, name VARCHAR, content_type VARCHAR, title VARCHAR, size INTEGER, last_modified NUMERIC, url VARCHAR, directory_id INTEGER);");
-		db.execSQL("CREATE TABLE appglu_versioned_tables (table_name VARCHAR PRIMARY KEY NOT NULL, version INTEGER NOT NULL DEFAULT 0);");
+		db.execSQL("CREATE TABLE appglu_table_versions (table_name VARCHAR PRIMARY KEY NOT NULL, version INTEGER NOT NULL DEFAULT 0);");
 		db.execSQL("CREATE INDEX appglu_storage_files_url ON appglu_storage_files (url);");
 	}
 	

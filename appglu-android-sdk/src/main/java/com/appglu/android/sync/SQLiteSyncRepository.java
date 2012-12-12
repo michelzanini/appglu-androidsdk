@@ -8,11 +8,15 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.appglu.VersionedRow;
-import com.appglu.VersionedTable;
-import com.appglu.VersionedTableChanges;
+import com.appglu.RowChanges;
+import com.appglu.TableVersion;
+import com.appglu.TableChanges;
+import com.appglu.impl.util.StringUtils;
 
 public class SQLiteSyncRepository implements SyncRepository {
+	
+	private static final int TABLE_NAME_COLUMN = 0;
+	private static final int VERSION_COLUMN = 1;
 	
 	private SyncDatabaseHelper syncDatabaseHelper;
 	
@@ -43,27 +47,45 @@ public class SQLiteSyncRepository implements SyncRepository {
 		database.close();
 	}
 
-	public List<VersionedTable> listTables() {
-		List<VersionedTable> tables = new ArrayList<VersionedTable>();
+	public List<TableVersion> versionsForAllTables() {
+		StringBuilder sql = new StringBuilder();
+		
+		sql.append("SELECT m.name, t.version FROM sqlite_master m ");
+		sql.append("LEFT OUTER JOIN appglu_table_versions t ON m.name = t.table_name ");
+		sql.append("WHERE m.type = 'table' and m.name not in ('appglu_table_versions', 'android_metadata', 'sqlite_sequence') ORDER BY m.name;");
+		
+		return this.queryForTableVersions(sql.toString(), new String[0]);
+	}
+
+	public List<TableVersion> versionsForTables(List<String> tables) {
+		String tablesParameter = StringUtils.collectionToDelimitedString(tables, ",", "'", "'");
+		
+		StringBuilder sql = new StringBuilder();
+		
+		sql.append("SELECT m.name, t.version FROM sqlite_master m ");
+		sql.append("LEFT OUTER JOIN appglu_table_versions t ON m.name = t.table_name ");
+		sql.append("WHERE m.type = 'table' and m.name in (");
+		sql.append(tablesParameter);
+		sql.append(") ORDER BY m.name;");
+		
+		return this.queryForTableVersions(sql.toString(), new String[0]);
+	}
+	
+	private List<TableVersion> queryForTableVersions(String sql, String[] selectionArgs) {
+		List<TableVersion> tables = new ArrayList<TableVersion>();
 		
 		SQLiteDatabase database = this.getReadableDatabase();
 		Cursor cursor = null;
 		
 		try {
-			StringBuilder sql = new StringBuilder();
-			
-			sql.append("SELECT m.name, t.version FROM sqlite_master m ");
-			sql.append("LEFT OUTER JOIN appglu_versioned_tables t ON m.name = t.table_name ");
-			sql.append("WHERE m.type = 'table' and m.name not in ('appglu_versioned_tables', 'android_metadata', 'sqlite_sequence') ORDER BY m.name;");
-			
-			cursor = database.rawQuery(sql.toString(), new String[0]);
+			cursor = database.rawQuery(sql, selectionArgs);
 		    cursor.moveToFirst();
 		    
 		    for (int i = 0; i < cursor.getCount(); i++) {
-		    	VersionedTable table = new VersionedTable();
+		    	TableVersion table = new TableVersion();
 		    	
-		    	table.setTableName(cursor.getString(0));
-		    	table.setVersion(cursor.getLong(1));
+		    	table.setTableName(cursor.getString(TABLE_NAME_COLUMN));
+		    	table.setVersion(cursor.getLong(VERSION_COLUMN));
 		    	
 		    	tables.add(table);
 		    	
@@ -81,23 +103,23 @@ public class SQLiteSyncRepository implements SyncRepository {
 		return tables;
 	}
 	
-	public void updateLocalTableVersions(List<VersionedTableChanges> tables) {
+	public void saveTableVersions(List<TableChanges> tables) {
 		SQLiteDatabase database = this.getWritableDatabase();
 	    try {
-	    	for (VersionedTableChanges versionedTable : tables) {
+	    	for (TableChanges table : tables) {
 	    		ContentValues values = new ContentValues();
 	    		
-	    		values.put("table_name", versionedTable.getTableName());
-		    	values.put("version", versionedTable.getVersion());
+	    		values.put("table_name", table.getTableName());
+		    	values.put("version", table.getVersion());
 				
-				database.replaceOrThrow("appglu_versioned_tables", null, values);
+				database.replaceOrThrow("appglu_table_versions", null, values);
 			}
 		} catch (SQLException e) {
 			throw new SyncRepositoryException(e);
 		}
 	}
 
-	public void processChangesToTable(String tableName, VersionedRow row) {
+	public void applyRowChangesToTable(String tableName, RowChanges row) {
 		
 	}
 	

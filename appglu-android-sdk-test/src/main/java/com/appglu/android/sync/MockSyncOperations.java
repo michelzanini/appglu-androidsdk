@@ -5,23 +5,23 @@ import java.util.List;
 
 import com.appglu.AppGluRestClientException;
 import com.appglu.SyncOperations;
-import com.appglu.VersionedTable;
-import com.appglu.VersionedTableChanges;
+import com.appglu.TableVersion;
+import com.appglu.TableChanges;
 
 public class MockSyncOperations implements SyncOperations {
 
-	public List<VersionedTableChanges> changesForTables(VersionedTable... tables) throws AppGluRestClientException {
+	public List<TableChanges> changesForTables(TableVersion... tables) throws AppGluRestClientException {
 		return null;
 	}
 
-	public List<VersionedTableChanges> changesForTables(List<VersionedTable> tables) throws AppGluRestClientException {
-		List<VersionedTableChanges> tableList = new ArrayList<VersionedTableChanges>();
+	public List<TableChanges> changesForTables(List<TableVersion> tables) throws AppGluRestClientException {
+		List<TableChanges> tableList = new ArrayList<TableChanges>();
 		
-		for (VersionedTable versionedTable : tables) {
-			VersionedTableChanges changes = new VersionedTableChanges();
+		for (TableVersion table : tables) {
+			TableChanges changes = new TableChanges();
 			
-			changes.setTableName(versionedTable.getTableName());
-			changes.setVersion(versionedTable.getVersion() + 2);
+			changes.setTableName(table.getTableName());
+			changes.setVersion(table.getVersion() + 2);
 			
 			tableList.add(changes);
 		}
@@ -29,15 +29,15 @@ public class MockSyncOperations implements SyncOperations {
 		return tableList;
 	}
 
-	public VersionedTableChanges changesForTable(String tableName, long version) throws AppGluRestClientException {
+	public TableChanges changesForTable(String tableName, long version) throws AppGluRestClientException {
 		return null;
 	}
 
-	public List<VersionedTable> versionsForTables(String... tables) throws AppGluRestClientException {
+	public List<TableVersion> versionsForTables(String... tables) throws AppGluRestClientException {
 		return null;
 	}
 
-	public List<VersionedTable> versionsForTables(List<String> tables) throws AppGluRestClientException {
+	public List<TableVersion> versionsForTables(List<String> tables) throws AppGluRestClientException {
 		return null;
 	}
 

@@ -1,11 +1,12 @@
 package com.appglu.android.sync;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.appglu.SyncOperations;
-import com.appglu.VersionedRow;
-import com.appglu.VersionedTable;
-import com.appglu.VersionedTableChanges;
+import com.appglu.RowChanges;
+import com.appglu.TableVersion;
+import com.appglu.TableChanges;
 
 public class SyncService {
 	
@@ -18,33 +19,54 @@ public class SyncService {
 		this.syncRepository = syncRepository;
 	}
 
-	public void synchronizeLocalDatabase() {
-		List<VersionedTable> versionedTables = this.syncRepository.listTables();
-		List<VersionedTableChanges> changes = this.syncOperations.changesForTables(versionedTables);
+	public void syncDatabase() {
+		List<TableVersion> tableVersions = this.syncRepository.versionsForAllTables();
+		this.fetchAndApplyChangesForTables(tableVersions);
+	}
+	
+	public void syncTables(String... tables) {
+		this.syncTables(Arrays.asList(tables));
+	}
+	
+	public void syncTables(List<String> tables) {
+		List<TableVersion> tableVersions = this.syncRepository.versionsForTables(tables);
+		this.fetchAndApplyChangesForTables(tableVersions);
+	}
+	
+	private void fetchAndApplyChangesForTables(List<TableVersion> tableVersions) {
+		if (tableVersions.isEmpty()) {
+			return;
+		}
 		
-		this.applyChanges(changes);
+		List<TableChanges> tableChanges = this.syncOperations.changesForTables(tableVersions);
+		
+		if (tableChanges.isEmpty()) {
+			return;
+		}
+		
+		this.applyChangesWithTransaction(tableChanges);
 	}
 
-	private void applyChanges(List<VersionedTableChanges> changes) {
+	private void applyChangesWithTransaction(List<TableChanges> changes) {
 		this.syncRepository.beginTransaction();
 		try {
-			this.processChangesToLocalDatabase(changes);
-			this.syncRepository.updateLocalTableVersions(changes);
+			this.applyChangesToDatabase(changes);
+			this.syncRepository.saveTableVersions(changes);
 			this.syncRepository.setTransactionSuccessful();
 		} finally {
 			this.syncRepository.endTransaction();
 		}
 	}
 
-	private void processChangesToLocalDatabase(List<VersionedTableChanges> changes) {
-		for (VersionedTableChanges tableChanges : changes) {
-			this.processChangesToTable(tableChanges);
+	private void applyChangesToDatabase(List<TableChanges> changes) {
+		for (TableChanges tableChanges : changes) {
+			this.applyChangesToTable(tableChanges);
 		}
 	}
 
-	private void processChangesToTable(VersionedTableChanges tableChanges) {
-		for (VersionedRow row : tableChanges.getChanges()) {
-			this.syncRepository.processChangesToTable(tableChanges.getTableName(), row);
+	private void applyChangesToTable(TableChanges tableChanges) {
+		for (RowChanges row : tableChanges.getChanges()) {
+			this.syncRepository.applyRowChangesToTable(tableChanges.getTableName(), row);
 		}
 	}
 

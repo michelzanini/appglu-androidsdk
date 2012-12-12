@@ -1,15 +1,22 @@
 package com.appglu.impl.json;
 
+import java.util.List;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
-@JsonPropertyOrder({"tableName", "version"})
-public abstract class VersionedTableMixin {
+import com.appglu.RowChanges;
+
+@JsonPropertyOrder({"tableName", "version", "changes"})
+public abstract class TableChangesMixin {
 	
 	@JsonProperty("tableName")
 	String tableName;
 	
 	@JsonProperty("version")
 	long version;
+	
+	@JsonProperty("changes")
+	List<RowChanges> changes;
 
 }

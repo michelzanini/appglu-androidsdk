@@ -160,20 +160,20 @@ public class AppGluTestRestClient {
 	}
 
 	private void sync_changesForTables() {
-		VersionedTable loggedTable = new VersionedTable("logged_table");
-		VersionedTable otherTable = new VersionedTable("other_table");
+		TableVersion loggedTable = new TableVersion("logged_table");
+		TableVersion otherTable = new TableVersion("other_table");
 		
-		List<VersionedTableChanges> changes = this.syncOperations.changesForTables(loggedTable, otherTable);
+		List<TableChanges> changes = this.syncOperations.changesForTables(loggedTable, otherTable);
 		System.out.println("sync_changesForTables: " + changes);
 	}
 	
 	private void sync_changesForTable() {
-		VersionedTableChanges changes = this.syncOperations.changesForTable("logged_table", 2);
+		TableChanges changes = this.syncOperations.changesForTable("logged_table", 2);
 		System.out.println("sync_changesForTable: " + changes);
 	}
 
 	private void sync_versionsForTables() {
-		List<VersionedTable> versions = this.syncOperations.versionsForTables("logged_table", "other_table");
+		List<TableVersion> versions = this.syncOperations.versionsForTables("logged_table", "other_table");
 		System.out.println("sync_versionsForTables: " + versions);
 	}
 

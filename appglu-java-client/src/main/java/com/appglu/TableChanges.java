@@ -3,23 +3,23 @@ package com.appglu;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VersionedTableChanges {
+public class TableChanges {
 	
 	private String tableName;
 	
 	private long version;
 	
-	private List<VersionedRow> changes = new ArrayList<VersionedRow>();
+	private List<RowChanges> changes = new ArrayList<RowChanges>();
 	
-	public VersionedTableChanges() {
+	public TableChanges() {
 		
 	}
 	
-	public VersionedTableChanges(String tableName) {
+	public TableChanges(String tableName) {
 		this.tableName = tableName;
 	}
 
-	public VersionedTableChanges(String tableName, long version) {
+	public TableChanges(String tableName, long version) {
 		this.tableName = tableName;
 		this.version = version;
 	}
@@ -40,17 +40,17 @@ public class VersionedTableChanges {
 		this.version = version;
 	}
 	
-	public List<VersionedRow> getChanges() {
+	public List<RowChanges> getChanges() {
 		return changes;
 	}
 	
-	public void setChanges(List<VersionedRow> changes) {
+	public void setChanges(List<RowChanges> changes) {
 		this.changes = changes;
 	}
 
 	@Override
 	public String toString() {
-		return "VersionedTableChanges [tableName=" + tableName + ", version=" + version + "]";
+		return "TableChanges [tableName=" + tableName + ", version=" + version + "]";
 	}
 	
 }

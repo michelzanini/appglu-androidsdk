@@ -7,8 +7,8 @@ import java.util.concurrent.Callable;
 import com.appglu.AsyncCallback;
 import com.appglu.AsyncSyncOperations;
 import com.appglu.SyncOperations;
-import com.appglu.VersionedTable;
-import com.appglu.VersionedTableChanges;
+import com.appglu.TableVersion;
+import com.appglu.TableChanges;
 
 public final class AsyncSyncTemplate implements AsyncSyncOperations {
 	
@@ -21,33 +21,33 @@ public final class AsyncSyncTemplate implements AsyncSyncOperations {
 		this.syncOperations = syncOperations;
 	}
 
-	public void changesForTablesInBackground(AsyncCallback<List<VersionedTableChanges>> callback, VersionedTable... tables) {
+	public void changesForTablesInBackground(AsyncCallback<List<TableChanges>> callback, TableVersion... tables) {
 		this.changesForTablesInBackground(Arrays.asList(tables), callback);
 	}
 
-	public void changesForTablesInBackground(final List<VersionedTable> tables, AsyncCallback<List<VersionedTableChanges>> callback) {
-		asyncExecutor.execute(callback, new Callable<List<VersionedTableChanges>>() {
-			public List<VersionedTableChanges> call() {
+	public void changesForTablesInBackground(final List<TableVersion> tables, AsyncCallback<List<TableChanges>> callback) {
+		asyncExecutor.execute(callback, new Callable<List<TableChanges>>() {
+			public List<TableChanges> call() {
 				return syncOperations.changesForTables(tables);
 			}
 		});
 	}
 
-	public void changesForTableInBackground(final String tableName, final long version, AsyncCallback<VersionedTableChanges> callback) {
-		asyncExecutor.execute(callback, new Callable<VersionedTableChanges>() {
-			public VersionedTableChanges call() {
+	public void changesForTableInBackground(final String tableName, final long version, AsyncCallback<TableChanges> callback) {
+		asyncExecutor.execute(callback, new Callable<TableChanges>() {
+			public TableChanges call() {
 				return syncOperations.changesForTable(tableName, version);
 			}
 		});
 	}
 
-	public void versionsForTablesInBackground(AsyncCallback<List<VersionedTable>> callback, String... tables) {
+	public void versionsForTablesInBackground(AsyncCallback<List<TableVersion>> callback, String... tables) {
 		this.versionsForTablesInBackground(Arrays.asList(tables), callback);
 	}
 
-	public void versionsForTablesInBackground(final List<String> tables, AsyncCallback<List<VersionedTable>> callback) {
-		asyncExecutor.execute(callback, new Callable<List<VersionedTable>>() {
-			public List<VersionedTable> call() {
+	public void versionsForTablesInBackground(final List<String> tables, AsyncCallback<List<TableVersion>> callback) {
+		asyncExecutor.execute(callback, new Callable<List<TableVersion>>() {
+			public List<TableVersion> call() {
 				return syncOperations.versionsForTables(tables);
 			}
 		});

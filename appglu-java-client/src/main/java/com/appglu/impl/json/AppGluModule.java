@@ -11,9 +11,9 @@ import com.appglu.ErrorResponse;
 import com.appglu.QueryResult;
 import com.appglu.Rows;
 import com.appglu.User;
-import com.appglu.VersionedRow;
-import com.appglu.VersionedTable;
-import com.appglu.VersionedTableChanges;
+import com.appglu.RowChanges;
+import com.appglu.TableVersion;
+import com.appglu.TableChanges;
 
 public class AppGluModule extends SimpleModule {
 
@@ -36,11 +36,11 @@ public class AppGluModule extends SimpleModule {
 		context.setMixInAnnotations(ErrorResponse.class, ErrorResponseMixin.class);
 		context.setMixInAnnotations(User.class, UserMixin.class);
 		context.setMixInAnnotations(UserBody.class, UserBodyMixin.class);
-		context.setMixInAnnotations(VersionedRow.class, VersionedRowMixin.class);
-		context.setMixInAnnotations(VersionedTableBody.class, VersionedTableBodyMixin.class);
-		context.setMixInAnnotations(VersionedTableChangesBody.class, VersionedTableChangesBodyMixin.class);
-		context.setMixInAnnotations(VersionedTableChanges.class, VersionedTableChangesMixin.class);
-		context.setMixInAnnotations(VersionedTable.class, VersionedTableMixin.class);
+		context.setMixInAnnotations(RowChanges.class, RowChangesMixin.class);
+		context.setMixInAnnotations(TableVersionBody.class, TableVersionBodyMixin.class);
+		context.setMixInAnnotations(TableChangesBody.class, TableChangesBodyMixin.class);
+		context.setMixInAnnotations(TableChanges.class, TableChangesMixin.class);
+		context.setMixInAnnotations(TableVersion.class, TableVersionMixin.class);
 	}
 
 }

@@ -12,7 +12,7 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.appglu.SyncOperation;
 
-public abstract class VersionedRowMixin {
+public abstract class RowChangesMixin {
 	
 	@JsonProperty("appglu_key")
 	long appgluKey;
