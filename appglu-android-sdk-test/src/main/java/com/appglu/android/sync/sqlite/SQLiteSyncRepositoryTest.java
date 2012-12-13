@@ -1,10 +1,13 @@
-package com.appglu.android.sync;
+package com.appglu.android.sync.sqlite;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import com.appglu.TableVersion;
 import com.appglu.TableChanges;
+import com.appglu.android.sync.sqlite.SQLiteSyncRepository;
 
 public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 	
@@ -43,6 +46,27 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 		
 		List<TableVersion> updatedTables = this.syncRepository.versionsForAllTables();
 		this.assertTableVersions(updatedTables, 5, 4, 10);
+	}
+	
+	public void testColumnsForTable() {
+		TableColumns tableColumns = this.syncRepository.columnsForTable("logged_table");
+		
+		Assert.assertEquals(2, tableColumns.size());
+		Assert.assertEquals("id", tableColumns.getPrimaryKeyName());
+		
+		Column idColumn = tableColumns.get("id");
+		
+		Assert.assertEquals("id", idColumn.getName());
+		Assert.assertEquals("integer", idColumn.getType());
+		Assert.assertEquals(false, idColumn.isNullable());
+		Assert.assertEquals(true, idColumn.isPrimaryKey());
+	
+		Column nameColumn = tableColumns.get("name");
+		
+		Assert.assertEquals("name", nameColumn.getName());
+		Assert.assertEquals("varchar", nameColumn.getType());
+		Assert.assertEquals(true, nameColumn.isNullable());
+		Assert.assertEquals(false, nameColumn.isPrimaryKey());
 	}
 
 }

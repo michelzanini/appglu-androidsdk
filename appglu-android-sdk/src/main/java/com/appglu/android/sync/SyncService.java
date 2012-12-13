@@ -7,11 +7,17 @@ import java.util.List;
 import java.util.Map;
 
 import com.appglu.RowChanges;
+import com.appglu.SyncOperation;
 import com.appglu.SyncOperations;
 import com.appglu.TableChanges;
 import com.appglu.TableVersion;
+import com.appglu.android.AppGlu;
+import com.appglu.android.log.Logger;
+import com.appglu.android.log.LoggerFactory;
 
 public class SyncService {
+	
+	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
 	
 	private SyncOperations syncOperations;
 	
@@ -84,10 +90,18 @@ public class SyncService {
 			return;
 		}
 		
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Fetching remote changes for tables " + tableVersions);
+		}
+		
 		List<TableChanges> tableChanges = this.syncOperations.changesForTables(tableVersions);
 		
 		if (tableChanges.isEmpty()) {
 			return;
+		}
+		
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Applying remote changes in tables " + tableChanges);
 		}
 		
 		this.applyChangesWithTransaction(tableChanges);
@@ -111,8 +125,26 @@ public class SyncService {
 	}
 
 	private void applyChangesToTable(TableChanges tableChanges) {
-		for (RowChanges row : tableChanges.getChanges()) {
-			this.syncRepository.applyRowChangesToTable(tableChanges.getTableName(), row);
+		String tableName = tableChanges.getTableName();
+
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Applying row changes in table " + tableName);
+		}
+		
+		for (RowChanges rowChanges : tableChanges.getChanges()) {
+			SyncOperation syncOperation = rowChanges.getAppgluSyncOperation();
+			
+			if (syncOperation == SyncOperation.INSERT) {
+				this.syncRepository.insertRowInTable(tableName, rowChanges);
+			}
+			
+			if (syncOperation == SyncOperation.UPDATE) {
+				this.syncRepository.updateRowInTable(tableName, rowChanges);
+			}
+			
+			if (syncOperation == SyncOperation.DELETE) {
+				this.syncRepository.deleteRowInTable(tableName, rowChanges);
+			}
 		}
 	}
 

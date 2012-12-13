@@ -1,10 +1,11 @@
-package com.appglu.android.sync;
+package com.appglu.android.sync.sqlite;
 
 import java.util.List;
 
 import junit.framework.Assert;
 
 import com.appglu.TableVersion;
+import com.appglu.android.sync.sqlite.SyncDatabaseHelper;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
@@ -38,6 +39,8 @@ public abstract class AbstractSyncSQLiteTest extends AndroidTestCase {
 		database.beginTransaction();
 		
 		try {
+			database.execSQL("delete from logged_table");
+			database.execSQL("delete from other_table");
 			database.execSQL("delete from appglu_table_versions");
 			database.execSQL("insert into appglu_table_versions (table_name, version) values ('logged_table', 1)");
 			database.execSQL("insert into appglu_table_versions (table_name, version) values ('other_table', 2)");

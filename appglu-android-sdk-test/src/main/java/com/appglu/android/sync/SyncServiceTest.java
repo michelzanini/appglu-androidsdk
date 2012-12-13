@@ -6,6 +6,8 @@ import java.util.List;
 import junit.framework.Assert;
 
 import com.appglu.TableVersion;
+import com.appglu.android.sync.sqlite.AbstractSyncSQLiteTest;
+import com.appglu.android.sync.sqlite.SQLiteSyncRepository;
 
 public class SyncServiceTest extends AbstractSyncSQLiteTest {
 
