@@ -37,7 +37,7 @@ public class TableVersion {
 
 	@Override
 	public String toString() {
-		return "TableVersion [tableName=" + tableName + ", version=" + version + "]";
+		return "[tableName=" + tableName + ", version=" + version + "]";
 	}
 
 }

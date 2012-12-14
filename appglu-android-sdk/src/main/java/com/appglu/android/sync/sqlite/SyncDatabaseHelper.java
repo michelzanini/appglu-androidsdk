@@ -13,16 +13,25 @@ public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	private static final int MAX_SYNC_DATABASE_VERSION_IN_INTEGER = (1 << MAX_SYNC_DATABASE_VERSION_IN_BITS) - 1;
 	
 	private static final int SYNC_DATABASE_VERSION = 1;
+	
+	private boolean enableForeignKeys;
 
 	public SyncDatabaseHelper(Context context, String name, int version) {
+		this(context, name, version, false);
+	}
+	
+	public SyncDatabaseHelper(Context context, String name, int version, boolean enableForeignKeys) {
 		super(context, name, null, joinVersionNumbers(SYNC_DATABASE_VERSION, version));
+		this.enableForeignKeys = enableForeignKeys;
 	}
 
+	@Override
 	public final void onCreate(SQLiteDatabase db) {
 		this.onCreateSyncDatabase(db);
 		this.onCreateAppDatabase(db);
 	}
 
+	@Override
 	public final void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		int syncOldVersion = this.extractSyncDatabaseVersion(oldVersion);
 		int syncNewVersion = this.extractSyncDatabaseVersion(newVersion);
@@ -33,6 +42,14 @@ public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 		int appNewVersion = this.extractAppDatabaseVersion(newVersion);
 		
 		this.onUpgradeAppDatabase(db, appOldVersion, appNewVersion);
+	}
+	
+	@Override
+	public void onOpen(SQLiteDatabase db) {
+	    super.onOpen(db);
+	    if (!db.isReadOnly() && this.enableForeignKeys) {
+	        db.execSQL("PRAGMA foreign_keys=ON;");
+	    }
 	}
 	
 	public void onCreateSyncDatabase(SQLiteDatabase db) {

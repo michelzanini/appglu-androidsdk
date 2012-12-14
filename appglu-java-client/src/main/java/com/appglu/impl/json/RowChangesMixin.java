@@ -15,11 +15,11 @@ import com.appglu.SyncOperation;
 public abstract class RowChangesMixin {
 	
 	@JsonProperty("appglu_key")
-	long appgluKey;
+	long syncKey;
 	
 	@JsonProperty("appglu_sync_operation")
 	@JsonDeserialize(using=AppgluSyncOperationDeserializer.class)
-	SyncOperation appgluSyncOperation;
+	SyncOperation syncOperation;
 	
 	@JsonAnySetter
 	abstract void addRowProperty(String key, Object value);

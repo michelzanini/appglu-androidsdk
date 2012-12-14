@@ -52,7 +52,10 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 		TableColumns tableColumns = this.syncRepository.columnsForTable("logged_table");
 		
 		Assert.assertEquals(2, tableColumns.size());
-		Assert.assertEquals("id", tableColumns.getPrimaryKeyName());
+		
+		Assert.assertTrue(tableColumns.hasSinglePrimaryKey());
+		Assert.assertFalse(tableColumns.hasComposePrimaryKey());
+		Assert.assertEquals("id", tableColumns.getSinglePrimaryKeyName());
 		
 		Column idColumn = tableColumns.get("id");
 		
@@ -67,6 +70,18 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 		Assert.assertEquals("varchar", nameColumn.getType());
 		Assert.assertEquals(true, nameColumn.isNullable());
 		Assert.assertEquals(false, nameColumn.isPrimaryKey());
+	}
+	
+	public void testColumnsForTable_NoPrimaryKey() {
+		TableColumns tableColumns = this.syncRepository.columnsForTable("no_primary_key");
+		Assert.assertFalse(tableColumns.hasSinglePrimaryKey());
+		Assert.assertFalse(tableColumns.hasComposePrimaryKey());
+	}
+	
+	public void testColumnsForTable_ComposePrimaryKey() {
+		TableColumns tableColumns = this.syncRepository.columnsForTable("compose_primary_key");
+		Assert.assertFalse(tableColumns.hasSinglePrimaryKey());
+		Assert.assertTrue(tableColumns.hasComposePrimaryKey());
 	}
 
 }

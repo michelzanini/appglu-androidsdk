@@ -21,8 +21,7 @@ public abstract class AbstractSyncSQLiteTest extends AndroidTestCase {
 		this.syncDatabaseHelper = new SyncDatabaseHelper(getContext(), "sync_test_cases.sqlite", 1) {
 
 			public void onCreateAppDatabase(SQLiteDatabase db) {
-				db.execSQL("CREATE TABLE logged_table (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR);");
-				db.execSQL("CREATE TABLE other_table (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR);");
+				
 			}
 
 			public void onUpgradeAppDatabase(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -39,8 +38,16 @@ public abstract class AbstractSyncSQLiteTest extends AndroidTestCase {
 		database.beginTransaction();
 		
 		try {
-			database.execSQL("delete from logged_table");
-			database.execSQL("delete from other_table");
+			database.execSQL("DROP TABLE IF EXISTS logged_table");
+			database.execSQL("DROP TABLE IF EXISTS other_table");
+			database.execSQL("DROP TABLE IF EXISTS no_primary_key");
+			database.execSQL("DROP TABLE IF EXISTS compose_primary_key");
+			
+			database.execSQL("CREATE TABLE logged_table (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR);");
+			database.execSQL("CREATE TABLE other_table (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR);");
+			database.execSQL("CREATE TABLE no_primary_key (id INTEGER, name VARCHAR);");
+			database.execSQL("CREATE TABLE compose_primary_key (id INTEGER, name VARCHAR, PRIMARY KEY(id, name));");
+			
 			database.execSQL("delete from appglu_table_versions");
 			database.execSQL("insert into appglu_table_versions (table_name, version) values ('logged_table', 1)");
 			database.execSQL("insert into appglu_table_versions (table_name, version) values ('other_table', 2)");
@@ -54,16 +61,30 @@ public abstract class AbstractSyncSQLiteTest extends AndroidTestCase {
 	
 	protected void assertTableVersions(List<TableVersion> tables, int storageVersion, int loggedVersion, int otherVersion) {
 		Assert.assertNotNull(tables);
-		Assert.assertEquals(3, tables.size());
+		Assert.assertTrue(tables.size() >= 3);
 		
-		Assert.assertEquals("appglu_storage_files", tables.get(0).getTableName());
-		Assert.assertEquals(storageVersion, tables.get(0).getVersion());
+		boolean foundStorageTable = false;
+		boolean foundLoggedTable = false;
+		boolean foundOtherTable = false;
 		
-		Assert.assertEquals("logged_table", tables.get(1).getTableName());
-		Assert.assertEquals(loggedVersion, tables.get(1).getVersion());
+		for (TableVersion tableVersion : tables) {
+			if ("appglu_storage_files".equals(tableVersion.getTableName())) {
+				Assert.assertEquals(storageVersion, tableVersion.getVersion());
+				foundStorageTable = true;
+			}
+			if ("logged_table".equals(tableVersion.getTableName())) {
+				Assert.assertEquals(loggedVersion, tableVersion.getVersion());
+				foundLoggedTable = true;
+			}
+			if ("other_table".equals(tableVersion.getTableName())) {
+				Assert.assertEquals(otherVersion, tableVersion.getVersion());
+				foundOtherTable = true;
+			}
+		}
 		
-		Assert.assertEquals("other_table", tables.get(2).getTableName());
-		Assert.assertEquals(otherVersion, tables.get(2).getVersion());
+		Assert.assertTrue(foundStorageTable);
+		Assert.assertTrue(foundLoggedTable);
+		Assert.assertTrue(foundOtherTable);
 	}
 	
 }

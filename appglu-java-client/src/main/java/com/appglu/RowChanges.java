@@ -4,32 +4,32 @@ public class RowChanges {
 	
 	private Row row = new Row();
 	
-	private long appgluKey;
+	private long syncKey;
 	
-	private SyncOperation appgluSyncOperation;
+	private SyncOperation syncOperation;
 
 	public Row getRow() {
 		return row;
 	}
 
-	public long getAppgluKey() {
-		return appgluKey;
+	public long getSyncKey() {
+		return syncKey;
 	}
 
-	public SyncOperation getAppgluSyncOperation() {
-		return appgluSyncOperation;
+	public SyncOperation getSyncOperation() {
+		return syncOperation;
 	}
 
 	public void setRow(Row row) {
 		this.row = row;
 	}
 
-	public void setAppgluKey(long appgluKey) {
-		this.appgluKey = appgluKey;
+	public void setSyncKey(long appgluKey) {
+		this.syncKey = appgluKey;
 	}
 
-	public void setAppgluSyncOperation(SyncOperation appgluSyncOperation) {
-		this.appgluSyncOperation = appgluSyncOperation;
+	public void setSyncOperation(SyncOperation appgluSyncOperation) {
+		this.syncOperation = appgluSyncOperation;
 	}
 	
 	public void addRowProperty(String key, Object value) {
@@ -38,7 +38,7 @@ public class RowChanges {
 
 	@Override
 	public String toString() {
-		return "RowChanges [appgluKey=" + appgluKey + ", appgluSyncOperation=" + appgluSyncOperation + "]";
+		return "RowChanges [syncKey=" + syncKey + ", syncOperation=" + syncOperation + "]";
 	}
 
 }

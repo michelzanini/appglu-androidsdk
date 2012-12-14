@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.appglu.Row;
 import com.appglu.RowChanges;
+import com.appglu.SyncOperation;
 import com.appglu.TableChanges;
 import com.appglu.TableVersion;
 import com.appglu.android.AppGlu;
@@ -21,7 +22,7 @@ import com.appglu.impl.util.StringUtils;
 
 public class SQLiteSyncRepository implements SyncRepository {
 	
-	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
+	private Logger logger = LoggerFactory.getLogger(AppGlu.SYNC_LOG_TAG);
 	
 	private static final int TABLE_NAME_INDEX = 0;
 	private static final int VERSION_INDEX = 1;
@@ -133,10 +134,11 @@ public class SQLiteSyncRepository implements SyncRepository {
 		}
 	}
 	
-	public void insertRowInTable(String tableName, RowChanges rowChanges) {
+	public void executeSyncOperation(String tableName, RowChanges rowChanges) {
 		Row row = rowChanges.getRow();
 		
 		if (row.isEmpty()) {
+			logger.warn("Ignoring changes to table " + tableName + " because they are empty");
 			return;
 		}
 		
@@ -144,7 +146,8 @@ public class SQLiteSyncRepository implements SyncRepository {
 	    try {
 	    	TableColumns columns = this.columnsForTable(tableName, database);
 	    	
-	    	if (!columns.hasPrimaryKey()) {
+	    	if (!columns.hasSinglePrimaryKey()) {
+	    		logger.warn("Ignoring changes to table " + tableName + " because it should have one and only one column as primary key");
 	    		return;
 	    	}
 	    	
@@ -152,89 +155,41 @@ public class SQLiteSyncRepository implements SyncRepository {
     		ContentValues values = contentValuesRowMapper.mapRow(row);
     		
     		if (values.size() == 0) {
+    			logger.warn("Ignoring changes to table " + tableName + " because there is no matching column to sync");
     			return;
     		}
     		
-    		if (this.logger.isDebugEnabled()) {
-				logger.debug("Insert statement[(" + values + ")]");
-			}
-	    		
-			database.insertOrThrow(tableName, null, values);
-		} catch (SQLException e) {
-			throw new SyncRepositoryException(e);
-		}
-	}
-
-	public void updateRowInTable(String tableName, RowChanges rowChanges) {
-		Row row = rowChanges.getRow();
-		
-		if (row.isEmpty()) {
-			return;
-		}
-		
-		SQLiteDatabase database = this.getWritableDatabase();
-	    try {
-	    	TableColumns columns = this.columnsForTable(tableName, database);
-	    	
-	    	if (!columns.hasPrimaryKey()) {
-	    		return;
-	    	}
-	    	
-	    	ContentValuesRowMapper contentValuesRowMapper = new ContentValuesRowMapper(columns);
-    		ContentValues values = contentValuesRowMapper.mapRow(row);
-    		
-    		if (values.size() == 0) {
-    			return;
-    		}
-    		
-			String whereClause = columns.getPrimaryKeyName() + " = ?";
+    		String primaryKeyName = columns.getSinglePrimaryKeyName();
+			Object primaryKeyValue = values.get(primaryKeyName);
 			
-			Object primaryKey = values.get(columns.getPrimaryKeyName());
-			String whereArg = String.valueOf( primaryKey );
+			String whereClause = primaryKeyName + " = ?";
+			String whereArg = String.valueOf( primaryKeyValue );
 			
-			if (this.logger.isDebugEnabled()) {
-				logger.debug("Update statement[(" + values + ") where " + columns.getPrimaryKeyName() + " = '" + whereArg + "']");
+			SyncOperation syncOperation = rowChanges.getSyncOperation();
+			
+			if (syncOperation == SyncOperation.INSERT) {
+				if (this.logger.isDebugEnabled()) {
+					logger.debug("insert into " + tableName + " values " + "(" + values + ")");
+				}
+					
+				database.insertOrThrow(tableName, null, values);
 			}
 			
-			database.update(tableName, values, whereClause, new String[] { whereArg });
-			
-		} catch (SQLException e) {
-			throw new SyncRepositoryException(e);
-		}
-	}
-
-	public void deleteRowInTable(String tableName, RowChanges rowChanges) {
-		Row row = rowChanges.getRow();
-		
-		if (row.isEmpty()) {
-			return;
-		}
-		
-		SQLiteDatabase database = this.getWritableDatabase();
-	    try {
-	    	TableColumns columns = this.columnsForTable(tableName, database);
-	    	
-	    	if (!columns.hasPrimaryKey()) {
-	    		return;
-	    	}
-	    	
-	    	ContentValuesRowMapper contentValuesRowMapper = new ContentValuesRowMapper(columns);
-    		ContentValues values = contentValuesRowMapper.mapRow(row);
-    		
-    		if (values.size() == 0) {
-    			return;
-    		}
-	    	
-			String whereClause = columns.getPrimaryKeyName() + " = ?";
-			
-			Object primaryKey = values.get(columns.getPrimaryKeyName());
-			String whereArg = String.valueOf( primaryKey );
-			
-			if (this.logger.isDebugEnabled()) {
-				logger.debug("Delete statement[where " + columns.getPrimaryKeyName() + " = '" + whereArg + "']");
+			if (syncOperation == SyncOperation.UPDATE) {
+				if (this.logger.isDebugEnabled()) {
+					logger.debug("update " + tableName + " set values (" + values + ") where " + primaryKeyName + " = '" + whereArg + "'");
+				}
+				
+				database.update(tableName, values, whereClause, new String[] { whereArg });
 			}
 			
-			database.delete(tableName, whereClause, new String[] { whereArg });
+			if (syncOperation == SyncOperation.DELETE) {
+				if (this.logger.isDebugEnabled()) {
+					logger.debug("delete from " + tableName + " where " + primaryKeyName + " = '" + whereArg + "'");
+				}
+				
+				database.delete(tableName, whereClause, new String[] { whereArg });
+			}
 			
 		} catch (SQLException e) {
 			throw new SyncRepositoryException(e);
@@ -259,8 +214,6 @@ public class SQLiteSyncRepository implements SyncRepository {
 			cursor = database.rawQuery("PRAGMA table_info (" + tableName + ")", new String[0]);
 		    cursor.moveToFirst();
 		    
-		    boolean hasComposePrimaryKey = false;
-		    
 		    for (int i = 0; i < cursor.getCount(); i++) {
 		    	Column column = new Column();
 		    	
@@ -272,13 +225,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 		    	tableColumns.put(column.getName(), column);
 		    	
 		    	if (column.isPrimaryKey()) {
-		    		if (tableColumns.hasPrimaryKey()) {
-		    			hasComposePrimaryKey = true;
-		    			tableColumns.setPrimaryKeyName(null);
-		    		}
-		    		if (!hasComposePrimaryKey) {
-		    			tableColumns.setPrimaryKeyName(column.getName());
-		    		}
+		    		tableColumns.addPrimaryKey(column.getName());
 		    	}
 		    	
 		    	cursor.moveToNext();

@@ -142,8 +142,8 @@ public class SyncTemplateTest extends AbstractAppGluApiTest {
 		
 		Assert.assertEquals(new Integer(id), row.getRow().getInt("id"));
 		Assert.assertEquals(name, row.getRow().getString("name"));
-		Assert.assertEquals(appgluKey, row.getAppgluKey());
-		Assert.assertEquals(operation, row.getAppgluSyncOperation());
+		Assert.assertEquals(appgluKey, row.getSyncKey());
+		Assert.assertEquals(operation, row.getSyncOperation());
 	}
 	
 }

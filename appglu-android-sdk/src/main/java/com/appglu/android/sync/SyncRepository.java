@@ -20,10 +20,6 @@ public interface SyncRepository {
 	
 	public void saveTableVersions(List<TableChanges> tables);
 	
-	public void insertRowInTable(String tableName, RowChanges rowChanges);
-
-	public void updateRowInTable(String tableName, RowChanges rowChanges);
-
-	public void deleteRowInTable(String tableName, RowChanges rowChanges);
+	public void executeSyncOperation(String tableName, RowChanges rowChanges);
 
 }

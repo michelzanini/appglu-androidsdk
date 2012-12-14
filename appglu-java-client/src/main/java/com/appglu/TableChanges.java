@@ -50,7 +50,7 @@ public class TableChanges {
 
 	@Override
 	public String toString() {
-		return "TableChanges [tableName=" + tableName + ", version=" + version + "]";
+		return "[tableName=" + tableName + ", version=" + version + "]";
 	}
 	
 }
