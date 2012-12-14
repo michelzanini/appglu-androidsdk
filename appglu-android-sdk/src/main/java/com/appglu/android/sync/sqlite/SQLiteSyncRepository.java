@@ -159,35 +159,35 @@ public class SQLiteSyncRepository implements SyncRepository {
     			return;
     		}
     		
-    		String primaryKeyName = columns.getSinglePrimaryKeyName();
+			String primaryKeyName = columns.getSinglePrimaryKeyName();
 			Object primaryKeyValue = values.get(primaryKeyName);
-			
+
 			String whereClause = primaryKeyName + " = ?";
-			String whereArg = String.valueOf( primaryKeyValue );
-			
+			String whereArg = String.valueOf(primaryKeyValue);
+
 			SyncOperation syncOperation = rowChanges.getSyncOperation();
-			
+
 			if (syncOperation == SyncOperation.INSERT) {
 				if (this.logger.isDebugEnabled()) {
 					logger.debug("insert into " + tableName + " values " + "(" + values + ")");
 				}
-					
+
 				database.insertOrThrow(tableName, null, values);
 			}
-			
+
 			if (syncOperation == SyncOperation.UPDATE) {
 				if (this.logger.isDebugEnabled()) {
 					logger.debug("update " + tableName + " set values (" + values + ") where " + primaryKeyName + " = '" + whereArg + "'");
 				}
-				
+
 				database.update(tableName, values, whereClause, new String[] { whereArg });
 			}
-			
+
 			if (syncOperation == SyncOperation.DELETE) {
 				if (this.logger.isDebugEnabled()) {
 					logger.debug("delete from " + tableName + " where " + primaryKeyName + " = '" + whereArg + "'");
 				}
-				
+
 				database.delete(tableName, whereClause, new String[] { whereArg });
 			}
 			

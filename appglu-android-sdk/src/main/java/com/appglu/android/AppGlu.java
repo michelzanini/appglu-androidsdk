@@ -47,6 +47,8 @@ public final class AppGlu {
 	
 	private UserApi userApi;
 	
+	private SyncApi syncApi;
+	
 	protected AppGlu() {
 		
 	}
@@ -76,7 +78,7 @@ public final class AppGlu {
 		
 		this.appGluTemplate = settings.createAppGluTemplate();
 		this.appGluTemplate.setAsyncExecutor(new AsyncTaskExecutor());
-		this.appGluTemplate.setDefaultHeaders(this.deviceInstallation.createDefaultHeaders());
+		this.appGluTemplate.setDefaultHeaders(this.deviceInstallation.createDefaultHeaders(settings));
 		
 		UserSessionPersistence userSessionPersistence = this.settings.getUserSessionPersistence();
 		if (userSessionPersistence == null) {
@@ -160,6 +162,13 @@ public final class AppGlu {
 		return this.userApi;
 	}
 	
+	protected SyncApi getSyncApi() {
+		if (this.syncApi == null) {
+			this.syncApi = new SyncApi(this.getAppGluTemplate().syncOperations());
+		}
+		return this.syncApi;
+	}
+	
 	protected boolean checkInternetConnection() {
 		return AppGluUtils.hasInternetConnection(context);
 	}
@@ -210,6 +219,10 @@ public final class AppGlu {
 	
 	public static UserApi userApi() {
 		return getRequiredInstance().getUserApi();
+	}
+	
+	public static SyncApi syncApi() {
+		return getRequiredInstance().getSyncApi();
 	}
 	
 }

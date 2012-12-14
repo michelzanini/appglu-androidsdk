@@ -154,13 +154,23 @@ public class DeviceInstallation {
 		this.appIdentifier = StringUtils.replaceSemicolon(this.appIdentifier);
 	}
 	
-	protected Map<String, List<String>> createDefaultHeaders() {
+	protected Map<String, List<String>> createDefaultHeaders(AppGluSettings settings) {
 		Map<String, List<String>> httpHeaders = new HashMap<String, List<String>>();
 		
 		httpHeaders.put("User-Agent", Arrays.asList(this.createUserAgentHeader()));
 		httpHeaders.put("X-AppGlu-Client-Id", Arrays.asList(this.getDeviceUUID()));
 		httpHeaders.put("X-AppGlu-Client-App", Arrays.asList(this.createClientAppHeader()));
 		httpHeaders.put("X-AppGlu-Client-Device", Arrays.asList(this.createClientDeviceHeader()));
+		
+		if (StringUtils.isNotEmpty(settings.getApplicationEnvironment())) {
+			httpHeaders.put("X-AppGlu-Environment", Arrays.asList(settings.getApplicationEnvironment()));
+		}
+		
+		if (StringUtils.isNotEmpty(settings.getApplicationVersion())) {
+			httpHeaders.put("X-AppGlu-Client-Version", Arrays.asList(settings.getApplicationVersion()));
+		} else {
+			httpHeaders.put("X-AppGlu-Client-Version", Arrays.asList(this.getAppVersion()));
+		}
 		
 		return httpHeaders;
 	}

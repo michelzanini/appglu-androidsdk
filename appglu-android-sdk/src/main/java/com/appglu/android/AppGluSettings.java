@@ -15,6 +15,10 @@ public class AppGluSettings {
 	
 	private String applicationSecret;
 	
+	private String applicationEnvironment;
+	
+	private String applicationVersion;
+	
 	private boolean uploadAnalyticsSessionsToServer = true;
 	
 	private AnalyticsDispatcher analyticsDispatcher;
@@ -24,9 +28,14 @@ public class AppGluSettings {
 	private UserSessionPersistence userSessionPersistence;
 	
 	public AppGluSettings(String baseUrl, String applicationKey, String applicationSecret) {
+		this(baseUrl, applicationKey, applicationSecret, null);
+	}
+	
+	public AppGluSettings(String baseUrl, String applicationKey, String applicationSecret, String applicationEnvironment) {
 		this.baseUrl = baseUrl;
 		this.applicationKey = applicationKey;
 		this.applicationSecret = applicationSecret;
+		this.applicationEnvironment = applicationEnvironment;
 	}
 	
 	public String getBaseUrl() {
@@ -41,6 +50,18 @@ public class AppGluSettings {
 		return applicationSecret;
 	}
 	
+	public String getApplicationEnvironment() {
+		return applicationEnvironment;
+	}
+	
+	public String getApplicationVersion() {
+		return applicationVersion;
+	}
+
+	public void setApplicationVersion(String applicationVersion) {
+		this.applicationVersion = applicationVersion;
+	}
+
 	public LoggerLevel getLoggerLevel() {
 		return LoggerFactory.getLevel();
 	}

@@ -86,24 +86,35 @@ public class SyncService {
 	
 	private void fetchAndApplyChangesForTables(List<TableVersion> tableVersions) {
 		if (tableVersions.isEmpty()) {
+			this.logger.info("No changes were applied because no local tables were found");
 			return;
 		}
 		
-		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Fetching remote changes for tables " + tableVersions);
-		}
+		this.logger.debug("Fetching remote changes for tables " + tableVersions);
 		
 		List<TableChanges> tableChanges = this.syncOperations.changesForTables(tableVersions);
 		
-		if (tableChanges.isEmpty()) {
+		if (!this.areThereChangesToBeApplied(tableChanges)) {
+			this.logger.info("No changes were applied because tables are already syncronized");
 			return;
 		}
 		
-		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Applying remote changes in tables " + tableChanges);
-		}
+		this.logger.debug("Applying remote changes in tables " + tableChanges);
 		
 		this.applyChangesWithTransaction(tableChanges);
+		
+		this.logger.info("Changes were applied with success");
+	}
+
+	private boolean areThereChangesToBeApplied(List<TableChanges> tableChanges) {
+		boolean foundChanges = false;
+		
+		for (TableChanges table : tableChanges) {
+			if (table.hasChanges()) {
+				foundChanges = true;
+			}
+		}
+		return foundChanges;
 	}
 
 	private void applyChangesWithTransaction(List<TableChanges> changes) {

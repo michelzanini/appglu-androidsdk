@@ -47,6 +47,10 @@ public class TableChanges {
 	public void setChanges(List<RowChanges> changes) {
 		this.changes = changes;
 	}
+	
+	public boolean hasChanges() {
+		return !this.changes.isEmpty();
+	}
 
 	@Override
 	public String toString() {

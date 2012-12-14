@@ -81,7 +81,7 @@ public class Column implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ColumnDescription [name=" + name + ", type=" + type
+		return "Column [name=" + name + ", type=" + type
 				+ ", nullable=" + nullable + ", primaryKey=" + primaryKey + "]";
 	}
 

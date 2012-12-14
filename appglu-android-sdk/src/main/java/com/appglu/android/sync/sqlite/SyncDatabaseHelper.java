@@ -7,10 +7,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	
 	private static final int MAX_APP_DATABASE_VERSION_IN_BITS = 20;
-	private static final int MAX_APP_DATABASE_VERSION_IN_INTEGER = (1 << MAX_APP_DATABASE_VERSION_IN_BITS) - 1;
+	private static final int MAX_APP_DATABASE_VERSION_IN_DECIMAL = (1 << MAX_APP_DATABASE_VERSION_IN_BITS) - 1;
 	
 	private static final int MAX_SYNC_DATABASE_VERSION_IN_BITS = Integer.SIZE - MAX_APP_DATABASE_VERSION_IN_BITS;
-	private static final int MAX_SYNC_DATABASE_VERSION_IN_INTEGER = (1 << MAX_SYNC_DATABASE_VERSION_IN_BITS) - 1;
+	private static final int MAX_SYNC_DATABASE_VERSION_IN_DECIMAL = (1 << MAX_SYNC_DATABASE_VERSION_IN_BITS) - 1;
 	
 	private static final int SYNC_DATABASE_VERSION = 1;
 	
@@ -69,12 +69,12 @@ public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	/* Utility methods */
 	
 	private static int joinVersionNumbers(int syncDatabaseVersion, int appDatabaseVersion) {
-		if (appDatabaseVersion > MAX_APP_DATABASE_VERSION_IN_INTEGER) {
-			throw new IllegalArgumentException("Version must be < " + MAX_APP_DATABASE_VERSION_IN_INTEGER + ", was " + appDatabaseVersion);
+		if (appDatabaseVersion > MAX_APP_DATABASE_VERSION_IN_DECIMAL) {
+			throw new IllegalArgumentException("Version must be < " + MAX_APP_DATABASE_VERSION_IN_DECIMAL + ", was " + appDatabaseVersion);
 		}
 		
-		if (syncDatabaseVersion > MAX_SYNC_DATABASE_VERSION_IN_INTEGER) {
-			throw new IllegalArgumentException("AppGlu sync database version must be < " + MAX_SYNC_DATABASE_VERSION_IN_INTEGER + ", was " + syncDatabaseVersion);
+		if (syncDatabaseVersion > MAX_SYNC_DATABASE_VERSION_IN_DECIMAL) {
+			throw new IllegalArgumentException("AppGlu sync database version must be < " + MAX_SYNC_DATABASE_VERSION_IN_DECIMAL + ", was " + syncDatabaseVersion);
 		}
 		
 		int shiftedSyncDatabaseVersion = syncDatabaseVersion << MAX_APP_DATABASE_VERSION_IN_BITS;
@@ -86,7 +86,7 @@ public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	private int extractAppDatabaseVersion(int joinedDatabaseVersion) {
-		return joinedDatabaseVersion & MAX_APP_DATABASE_VERSION_IN_INTEGER;
+		return joinedDatabaseVersion & MAX_APP_DATABASE_VERSION_IN_DECIMAL;
 	}
 
 }
