@@ -21,27 +21,28 @@ public class ContentValuesRowMapper implements RowMapper<ContentValues> {
 		
 		for (Entry<String, Object> rowProperty : row.entrySet()) {
 			String columnName = rowProperty.getKey();
+			String escapedColumnName = "'" + columnName + "'";
 			
 			Column column = tableColumns.get(columnName);
 			
 			if (column != null) {
 				if (column.getType().contains("int")) {
-					values.put(columnName, row.getInt(columnName));
+					values.put(escapedColumnName, row.getInt(columnName));
 					continue;
 				}
 				
 				if (column.getType().contains("char") || column.getType().contains("clob") || column.getType().contains("text")) {
-					values.put(columnName, row.getString(columnName));
+					values.put(escapedColumnName, row.getString(columnName));
 					continue;
 				}
 				
 				if (column.getType().contains("blob")) {
-					values.put(columnName, row.getByteArray(columnName));
+					values.put(escapedColumnName, row.getByteArray(columnName));
 					continue;
 				}
 				
 				if (column.getType().contains("real") || column.getType().contains("floa") || column.getType().contains("doub")) {
-					values.put(columnName, row.getDouble(columnName));
+					values.put(escapedColumnName, row.getDouble(columnName));
 					continue;
 				}
 			}

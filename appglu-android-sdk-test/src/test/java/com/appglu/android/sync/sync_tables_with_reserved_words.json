@@ -1,0 +1,22 @@
+{
+	"tables":[
+		{
+			"tableName":"reserverd_words",
+			"version":2,
+			"changes":[
+            	{
+					"id":1,
+					"order":"row1",
+					"appglu_key":1,
+					"appglu_sync_operation":"insert"
+         		},
+				{
+					"id":2,
+					"order":"row2",
+					"appglu_key":2,
+					"appglu_sync_operation":"insert"
+				}
+			]
+		}
+	]
+}

@@ -45,14 +45,24 @@ public class SyncServiceTest extends AbstractSyncSQLiteTest {
 		this.assertTableVersions(updatedTables, 0, 9, 3);
 	}
 	
-	public void testCheckIfDatabaseIsSynchronized_WithChanges() {
+	public void testSyncTables_withReservedWords() {
+		this.defineSyncServiceWithMockOperations("sync_tables_with_reserved_words", null);
+		
+		List<String> tables = new ArrayList<String>();
+		
+		tables.add("reserverd_words");
+		
+		this.syncService.syncTables(tables);
+	}
+	
+	public void testCheckIfDatabaseIsSynchronized_withChanges() {
 		this.defineSyncServiceWithMockOperations(null, "check_if_database_is_synchronized_with_changes");
 		
 		boolean result = this.syncService.checkIfDatabaseIsSynchronized();
 		Assert.assertFalse(result);
 	}
 	
-	public void testCheckIfTablesAreSynchronized_WithChanges() {
+	public void testCheckIfTablesAreSynchronized_withChanges() {
 		this.defineSyncServiceWithMockOperations(null, "check_if_tables_are_synchronized_with_changes");
 		
 		List<String> tables = new ArrayList<String>();
@@ -64,14 +74,14 @@ public class SyncServiceTest extends AbstractSyncSQLiteTest {
 		Assert.assertFalse(result);
 	}
 	
-	public void testCheckIfDatabaseIsSynchronized_NoChanges() {
+	public void testCheckIfDatabaseIsSynchronized_noChanges() {
 		this.defineSyncServiceWithMockOperations(null, "check_if_database_is_synchronized_no_changes");
 		
 		boolean result = this.syncService.checkIfDatabaseIsSynchronized();
 		Assert.assertTrue(result);
 	}
 	
-	public void testCheckIfTablesAreSynchronized_NoChanges() {
+	public void testCheckIfTablesAreSynchronized_noChanges() {
 		this.defineSyncServiceWithMockOperations(null, "check_if_tables_are_synchronized_no_changes");
 		
 		List<String> tables = new ArrayList<String>();

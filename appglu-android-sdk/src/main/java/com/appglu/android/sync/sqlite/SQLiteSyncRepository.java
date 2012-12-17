@@ -66,7 +66,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 		
 		sql.append("SELECT m.name, t.version FROM sqlite_master m ");
 		sql.append("LEFT OUTER JOIN appglu_table_versions t ON m.name = t.table_name ");
-		sql.append("WHERE m.type = 'table' and m.name not in ('appglu_table_versions', 'android_metadata', 'sqlite_sequence') ORDER BY m.name;");
+		sql.append("WHERE m.type = 'table' and m.name not in ('appglu_table_versions') and m.name not like 'android_%' and m.name not like 'sqlite_%' ORDER BY m.name;");
 		
 		return this.queryForTableVersions(sql.toString(), new String[0]);
 	}
@@ -162,14 +162,14 @@ public class SQLiteSyncRepository implements SyncRepository {
 			String primaryKeyName = columns.getSinglePrimaryKeyName();
 			Object primaryKeyValue = values.get(primaryKeyName);
 
-			String whereClause = primaryKeyName + " = ?";
+			String whereClause = "'" + primaryKeyName + "' = ?";
 			String whereArg = String.valueOf(primaryKeyValue);
 
 			SyncOperation syncOperation = rowChanges.getSyncOperation();
 
 			if (syncOperation == SyncOperation.INSERT) {
 				if (this.logger.isDebugEnabled()) {
-					logger.debug("insert into " + tableName + " values " + "(" + values + ")");
+					logger.debug("insert into '" + tableName + "' values " + "(" + values + ")");
 				}
 
 				database.insertOrThrow(tableName, null, values);
@@ -177,7 +177,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 
 			if (syncOperation == SyncOperation.UPDATE) {
 				if (this.logger.isDebugEnabled()) {
-					logger.debug("update " + tableName + " set values (" + values + ") where " + primaryKeyName + " = '" + whereArg + "'");
+					logger.debug("update '" + tableName + "' set values (" + values + ") where '" + primaryKeyName + "' = '" + whereArg + "'");
 				}
 
 				database.update(tableName, values, whereClause, new String[] { whereArg });
@@ -185,7 +185,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 
 			if (syncOperation == SyncOperation.DELETE) {
 				if (this.logger.isDebugEnabled()) {
-					logger.debug("delete from " + tableName + " where " + primaryKeyName + " = '" + whereArg + "'");
+					logger.debug("delete from '" + tableName + "' where '" + primaryKeyName + "' = '" + whereArg + "'");
 				}
 
 				database.delete(tableName, whereClause, new String[] { whereArg });

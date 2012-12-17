@@ -42,11 +42,13 @@ public abstract class AbstractSyncSQLiteTest extends AndroidTestCase {
 			database.execSQL("DROP TABLE IF EXISTS other_table");
 			database.execSQL("DROP TABLE IF EXISTS no_primary_key");
 			database.execSQL("DROP TABLE IF EXISTS compose_primary_key");
+			database.execSQL("DROP TABLE IF EXISTS reserverd_words");
 			
 			database.execSQL("CREATE TABLE logged_table (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR);");
 			database.execSQL("CREATE TABLE other_table (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR);");
 			database.execSQL("CREATE TABLE no_primary_key (id INTEGER, name VARCHAR);");
 			database.execSQL("CREATE TABLE compose_primary_key (id INTEGER, name VARCHAR, PRIMARY KEY(id, name));");
+			database.execSQL("CREATE TABLE reserverd_words (id INTEGER PRIMARY KEY, 'order' VARCHAR);");
 			
 			database.execSQL("delete from appglu_table_versions");
 			database.execSQL("insert into appglu_table_versions (table_name, version) values ('logged_table', 1)");
