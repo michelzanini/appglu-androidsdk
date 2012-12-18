@@ -14,7 +14,7 @@ public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	
 	private static final int SYNC_DATABASE_VERSION = 1;
 	
-	private boolean enableForeignKeys;
+	private boolean foreignKeysEnabled;
 
 	public SyncDatabaseHelper(Context context, String name, int version) {
 		this(context, name, version, false);
@@ -22,7 +22,11 @@ public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	
 	public SyncDatabaseHelper(Context context, String name, int version, boolean enableForeignKeys) {
 		super(context, name, null, joinVersionNumbers(SYNC_DATABASE_VERSION, version));
-		this.enableForeignKeys = enableForeignKeys;
+		this.foreignKeysEnabled = enableForeignKeys;
+	}
+	
+	public boolean getForeignKeysEnabled() {
+		return foreignKeysEnabled;
 	}
 
 	@Override
@@ -47,13 +51,13 @@ public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onOpen(SQLiteDatabase db) {
 	    super.onOpen(db);
-	    if (!db.isReadOnly() && this.enableForeignKeys) {
+	    if (!db.isReadOnly() && this.foreignKeysEnabled) {
 	        db.execSQL("PRAGMA foreign_keys=ON;");
 	    }
 	}
 	
 	public void onCreateSyncDatabase(SQLiteDatabase db) {
-		db.execSQL("CREATE TABLE appglu_storage_files (id INTEGER PRIMARY KEY NOT NULL, key VARCHAR, name VARCHAR, content_type VARCHAR, title VARCHAR, size INTEGER, last_modified NUMERIC, url VARCHAR, directory_id INTEGER);");
+		db.execSQL("CREATE TABLE appglu_storage_files (id INTEGER PRIMARY KEY NOT NULL, key VARCHAR, name VARCHAR, content_type VARCHAR, title VARCHAR, size INTEGER, last_modified DATETIME, url VARCHAR, directory_id INTEGER);");
 		db.execSQL("CREATE TABLE appglu_table_versions (table_name VARCHAR PRIMARY KEY NOT NULL, version INTEGER NOT NULL DEFAULT 0);");
 		db.execSQL("CREATE INDEX appglu_storage_files_url ON appglu_storage_files (url);");
 	}

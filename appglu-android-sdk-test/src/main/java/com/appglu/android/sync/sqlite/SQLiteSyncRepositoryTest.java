@@ -5,6 +5,8 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import android.database.sqlite.SQLiteDatabase;
+
 import com.appglu.TableVersion;
 import com.appglu.TableChanges;
 import com.appglu.android.sync.sqlite.SQLiteSyncRepository;
@@ -49,7 +51,7 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 	}
 	
 	public void testColumnsForTable() {
-		TableColumns tableColumns = this.syncRepository.columnsForTable("logged_table");
+		TableColumns tableColumns = this.columnsForTable("logged_table");
 		
 		Assert.assertEquals(2, tableColumns.size());
 		
@@ -73,15 +75,25 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 	}
 	
 	public void testColumnsForTable_NoPrimaryKey() {
-		TableColumns tableColumns = this.syncRepository.columnsForTable("no_primary_key");
+		TableColumns tableColumns = this.columnsForTable("no_primary_key");
+		
 		Assert.assertFalse(tableColumns.hasSinglePrimaryKey());
 		Assert.assertFalse(tableColumns.hasComposePrimaryKey());
 	}
-	
+
 	public void testColumnsForTable_ComposePrimaryKey() {
-		TableColumns tableColumns = this.syncRepository.columnsForTable("compose_primary_key");
+		TableColumns tableColumns = this.columnsForTable("compose_primary_key");
 		Assert.assertFalse(tableColumns.hasSinglePrimaryKey());
 		Assert.assertTrue(tableColumns.hasComposePrimaryKey());
+	}
+	
+	private TableColumns columnsForTable(String table) {
+		SQLiteDatabase database = this.syncDatabaseHelper.getReadableDatabase();
+		try {
+			return this.syncRepository.columnsForTable(table, database);
+		} finally {
+			database.close();
+		}
 	}
 
 }

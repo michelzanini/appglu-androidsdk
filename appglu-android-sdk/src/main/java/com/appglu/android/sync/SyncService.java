@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.appglu.RowChanges;
 import com.appglu.SyncOperations;
 import com.appglu.TableChanges;
 import com.appglu.TableVersion;
@@ -59,7 +58,7 @@ public class SyncService {
 			TableVersion localTableVersion = localTables.get(remoteTableVersion.getTableName());
 			
 			if (localTableVersion == null) {
-				return false;
+				continue;
 			}
 			
 			if (remoteTableVersion.getVersion() > localTableVersion.getVersion()) {
@@ -72,7 +71,7 @@ public class SyncService {
 
 	public void syncDatabase() {
 		List<TableVersion> tableVersions = this.syncRepository.versionsForAllTables();
-		this.fetchAndApplyChangesForTables(tableVersions);
+		this.fetchAndApplyChangesToTables(tableVersions);
 	}
 	
 	public void syncTables(String... tables) {
@@ -81,27 +80,29 @@ public class SyncService {
 	
 	public void syncTables(List<String> tables) {
 		List<TableVersion> tableVersions = this.syncRepository.versionsForTables(tables);
-		this.fetchAndApplyChangesForTables(tableVersions);
+		this.fetchAndApplyChangesToTables(tableVersions);
 	}
 	
-	private void fetchAndApplyChangesForTables(List<TableVersion> tableVersions) {
+	private void fetchAndApplyChangesToTables(List<TableVersion> tableVersions) {
+		this.logger.info("Synchronization started");
+		
 		if (tableVersions.isEmpty()) {
 			this.logger.info("No changes were applied because no local tables were found");
 			return;
 		}
 		
-		this.logger.debug("Fetching remote changes for tables " + tableVersions);
+		this.logger.info("Fetching remote changes for tables " + tableVersions);
 		
 		List<TableChanges> tableChanges = this.syncOperations.changesForTables(tableVersions);
 		
 		if (!this.areThereChangesToBeApplied(tableChanges)) {
-			this.logger.info("No changes were applied because tables are already syncronized");
+			this.logger.info("No changes were applied because tables are already synchronized");
 			return;
 		}
 		
-		this.logger.debug("Applying remote changes in tables " + tableChanges);
+		this.logger.info("Applying remote changes to tables " + tableChanges);
 		
-		this.applyChangesWithTransaction(tableChanges);
+		this.syncRepository.applyChangesWithTransaction(tableChanges);
 		
 		this.logger.info("Changes were applied with success");
 	}
@@ -115,35 +116,6 @@ public class SyncService {
 			}
 		}
 		return foundChanges;
-	}
-
-	private void applyChangesWithTransaction(List<TableChanges> changes) {
-		this.syncRepository.beginTransaction();
-		try {
-			this.applyChangesToDatabase(changes);
-			this.syncRepository.saveTableVersions(changes);
-			this.syncRepository.setTransactionSuccessful();
-		} finally {
-			this.syncRepository.endTransaction();
-		}
-	}
-
-	private void applyChangesToDatabase(List<TableChanges> changes) {
-		for (TableChanges tableChanges : changes) {
-			this.applyChangesToTable(tableChanges);
-		}
-	}
-
-	private void applyChangesToTable(TableChanges tableChanges) {
-		String tableName = tableChanges.getTableName();
-
-		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Applying row changes in table " + tableName);
-		}
-		
-		for (RowChanges rowChanges : tableChanges.getChanges()) {
-			this.syncRepository.executeSyncOperation(tableName, rowChanges);
-		}
 	}
 
 }

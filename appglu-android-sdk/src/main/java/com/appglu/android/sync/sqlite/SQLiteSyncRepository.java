@@ -35,7 +35,6 @@ public class SQLiteSyncRepository implements SyncRepository {
 	private SyncDatabaseHelper syncDatabaseHelper;
 	
 	public SQLiteSyncRepository(SyncDatabaseHelper syncDatabaseHelper) {
-		super();
 		this.syncDatabaseHelper = syncDatabaseHelper;
 	}
 	
@@ -47,20 +46,6 @@ public class SQLiteSyncRepository implements SyncRepository {
 		return this.syncDatabaseHelper.getWritableDatabase();
 	}
 	
-	public void beginTransaction() {
-		this.getWritableDatabase().beginTransaction();
-	}
-
-	public void setTransactionSuccessful() {
-		this.getWritableDatabase().setTransactionSuccessful();
-	}
-	
-	public void endTransaction() {
-		SQLiteDatabase database = this.getWritableDatabase();
-		database.endTransaction();
-		database.close();
-	}
-
 	public List<TableVersion> versionsForAllTables() {
 		StringBuilder sql = new StringBuilder();
 		
@@ -118,7 +103,120 @@ public class SQLiteSyncRepository implements SyncRepository {
 		return tables;
 	}
 	
-	public void saveTableVersions(List<TableChanges> tables) {
+	public void applyChangesWithTransaction(List<TableChanges> changes) {
+		SQLiteDatabase database = this.getWritableDatabase();
+		
+		boolean foreignKeysWereEnabled = this.areForeignKeysEnabled(database);
+		try {
+			if (foreignKeysWereEnabled) {
+				this.setForeignKeysEnabled(database, false);
+			}
+			
+			database.beginTransaction();
+			try {
+				this.applyChangesToDatabase(changes);
+				this.saveTableVersions(changes);
+				database.setTransactionSuccessful();
+			} finally {
+				database.endTransaction();
+			}
+		} finally {
+			if (foreignKeysWereEnabled) {
+				this.setForeignKeysEnabled(database, true);
+			}
+			
+			database.close();
+		}
+	}
+
+	protected void applyChangesToDatabase(List<TableChanges> changes) {
+		for (TableChanges tableChanges : changes) {
+			this.applyChangesToTable(tableChanges);
+		}
+	}
+
+	protected void applyChangesToTable(TableChanges tableChanges) {
+		String tableName = tableChanges.getTableName();
+
+		if (this.logger.isDebugEnabled()) {
+			if (tableChanges.hasChanges()) {
+				this.logger.info("Applying remote changes to table '" + tableName + "'");
+			} else {
+				this.logger.info("Table '" + tableName + "' is already synchronized");
+			}
+		}
+		
+		for (RowChanges rowChanges : tableChanges.getChanges()) {
+			this.executeSyncOperation(tableName, rowChanges);
+		}
+	}
+
+	protected void executeSyncOperation(String tableName, RowChanges rowChanges) {
+		Row row = rowChanges.getRow();
+		
+		if (row.isEmpty()) {
+			logger.warn("Ignoring changes to table '" + tableName + "' because they are empty");
+			return;
+		}
+		
+		SQLiteDatabase database = this.getWritableDatabase();
+	    try {
+	    	TableColumns columns = this.columnsForTable(tableName, database);
+	    	
+	    	if (!columns.hasSinglePrimaryKey()) {
+	    		logger.warn("Ignoring changes to table '" + tableName + "' because it should have one and only one column as primary key");
+	    		return;
+	    	}
+	    	
+	    	ContentValuesRowMapper contentValuesRowMapper = new ContentValuesRowMapper(columns);
+    		ContentValues values = contentValuesRowMapper.mapRow(row);
+    		
+    		if (values.size() == 0) {
+    			logger.warn("Ignoring changes to table '" + tableName + "' because there is no matching column to sync");
+    			return;
+    		}
+    		
+			SyncOperation syncOperation = rowChanges.getSyncOperation();
+
+			if (syncOperation == SyncOperation.INSERT) {
+				if (this.logger.isDebugEnabled()) {
+					logger.debug("insert into '" + tableName + "' values " + "(" + values + ")");
+				}
+
+				database.insertOrThrow(tableName, null, values);
+				return;
+			}
+			
+			String primaryKeyName = columns.getSinglePrimaryKeyName();
+			Object primaryKeyValue = values.get(primaryKeyName);
+
+			String whereClause = "'" + primaryKeyName + "' = ?";
+			String whereArg = String.valueOf(primaryKeyValue);
+
+			if (syncOperation == SyncOperation.UPDATE) {
+				if (this.logger.isDebugEnabled()) {
+					logger.debug("update '" + tableName + "' set values (" + values + ") where '" + primaryKeyName + "' = '" + whereArg + "'");
+				}
+
+				database.update(tableName, values, whereClause, new String[] { whereArg });
+				return;
+			}
+
+			if (syncOperation == SyncOperation.DELETE) {
+				if (this.logger.isDebugEnabled()) {
+					logger.debug("delete from '" + tableName + "' where '" + primaryKeyName + "' = '" + whereArg + "'");
+				}
+
+				database.delete(tableName, whereClause, new String[] { whereArg });
+				return;
+			}
+			
+		} catch (SQLException e) {
+			throw new SyncRepositoryException(e);
+		}
+	}
+	
+	protected void saveTableVersions(List<TableChanges> tables) {
 		SQLiteDatabase database = this.getWritableDatabase();
 	    try {
 	    	for (TableChanges table : tables) {
@@ -131,77 +229,6 @@ public class SQLiteSyncRepository implements SyncRepository {
 			}
 		} catch (SQLException e) {
 			throw new SyncRepositoryException(e);
-		}
-	}
-	
-	public void executeSyncOperation(String tableName, RowChanges rowChanges) {
-		Row row = rowChanges.getRow();
-		
-		if (row.isEmpty()) {
-			logger.warn("Ignoring changes to table " + tableName + " because they are empty");
-			return;
-		}
-		
-		SQLiteDatabase database = this.getWritableDatabase();
-	    try {
-	    	TableColumns columns = this.columnsForTable(tableName, database);
-	    	
-	    	if (!columns.hasSinglePrimaryKey()) {
-	    		logger.warn("Ignoring changes to table " + tableName + " because it should have one and only one column as primary key");
-	    		return;
-	    	}
-	    	
-	    	ContentValuesRowMapper contentValuesRowMapper = new ContentValuesRowMapper(columns);
-    		ContentValues values = contentValuesRowMapper.mapRow(row);
-    		
-    		if (values.size() == 0) {
-    			logger.warn("Ignoring changes to table " + tableName + " because there is no matching column to sync");
-    			return;
-    		}
-    		
-			String primaryKeyName = columns.getSinglePrimaryKeyName();
-			Object primaryKeyValue = values.get(primaryKeyName);
-
-			String whereClause = "'" + primaryKeyName + "' = ?";
-			String whereArg = String.valueOf(primaryKeyValue);
-
-			SyncOperation syncOperation = rowChanges.getSyncOperation();
-
-			if (syncOperation == SyncOperation.INSERT) {
-				if (this.logger.isDebugEnabled()) {
-					logger.debug("insert into '" + tableName + "' values " + "(" + values + ")");
-				}
-
-				database.insertOrThrow(tableName, null, values);
-			}
-
-			if (syncOperation == SyncOperation.UPDATE) {
-				if (this.logger.isDebugEnabled()) {
-					logger.debug("update '" + tableName + "' set values (" + values + ") where '" + primaryKeyName + "' = '" + whereArg + "'");
-				}
-
-				database.update(tableName, values, whereClause, new String[] { whereArg });
-			}
-
-			if (syncOperation == SyncOperation.DELETE) {
-				if (this.logger.isDebugEnabled()) {
-					logger.debug("delete from '" + tableName + "' where '" + primaryKeyName + "' = '" + whereArg + "'");
-				}
-
-				database.delete(tableName, whereClause, new String[] { whereArg });
-			}
-			
-		} catch (SQLException e) {
-			throw new SyncRepositoryException(e);
-		}
-	}
-	
-	protected TableColumns columnsForTable(String tableName) {
-		SQLiteDatabase database = this.getReadableDatabase();
-		try {
-			return this.columnsForTable(tableName, database);
-		} finally {
-			database.close();
 		}
 	}
 	
@@ -239,6 +266,35 @@ public class SQLiteSyncRepository implements SyncRepository {
 		}
 		
 		return tableColumns;
+	}
+	
+	protected boolean areForeignKeysEnabled(SQLiteDatabase database) {
+		Cursor cursor = null;
+		
+		try {
+			cursor = database.rawQuery("PRAGMA foreign_keys", new String[0]);
+		    cursor.moveToFirst();
+		    
+		    if (cursor.getCount() > 0) {
+		    	return cursor.getInt(0) == 1 ? true : false; 
+		    }
+		    
+		    return false;
+		} catch (SQLException e) {
+			throw new SyncRepositoryException(e);
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+		}
+	}
+	
+	protected void setForeignKeysEnabled(SQLiteDatabase database, boolean enabled) {
+		try {
+			database.execSQL("PRAGMA foreign_keys = " + enabled);
+		} catch (SQLException e) {
+			throw new SyncRepositoryException(e);
+		}
 	}
 	
 }
