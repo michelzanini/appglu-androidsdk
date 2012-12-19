@@ -32,6 +32,10 @@ public class StringUtils {
 		return string.replace(';', ':');
 	}
 	
+	public static String escapeColumn(String columnName) {
+		return "`" + columnName + "`";
+	}
+	
 	public static boolean hasLength(CharSequence str) {
 		return (str != null && str.length() > 0);
 	}

@@ -9,6 +9,7 @@ import com.appglu.DataTypeConversionException;
 import com.appglu.Row;
 import com.appglu.RowMapper;
 import com.appglu.RowMapperException;
+import com.appglu.impl.util.StringUtils;
 
 public class ContentValuesRowMapper implements RowMapper<ContentValues> {
 	
@@ -23,7 +24,7 @@ public class ContentValuesRowMapper implements RowMapper<ContentValues> {
 		
 		for (Entry<String, Object> rowProperty : row.entrySet()) {
 			String columnName = rowProperty.getKey();
-			String escapedColumnName = "'" + columnName + "'";
+			String escapedColumnName = StringUtils.escapeColumn(columnName);
 			
 			Column column = tableColumns.get(columnName);
 			
@@ -72,6 +73,8 @@ public class ContentValuesRowMapper implements RowMapper<ContentValues> {
 					values.put(escapedColumnName, row.getLong(escapedColumnName));
 					continue;
 				}
+				
+				values.putNull(escapedColumnName);
 			}
 		}
 		

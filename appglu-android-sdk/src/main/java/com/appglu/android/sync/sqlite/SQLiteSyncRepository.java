@@ -177,7 +177,7 @@ public class SQLiteSyncRepository implements SyncRepository {
     		}
     		
     		String primaryKeyName = columns.getSinglePrimaryKeyName();
-    		Object primaryKeyValue = values.get(primaryKeyName);
+    		Object primaryKeyValue = values.get(StringUtils.escapeColumn(primaryKeyName));
     		
 			long syncKey = rowChanges.getSyncKey();
 			SyncOperation syncOperation = rowChanges.getSyncOperation();
@@ -216,7 +216,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 			logger.debug("insert into '" + tableName + "' values " + "(" + values + ")");
 		}
 
-		database.insertOrThrow(tableName, null, values);
+		database.insertOrThrow(StringUtils.escapeColumn(tableName), null, values);
 	}
 
 	protected void updateOperation(SQLiteDatabase database, String tableName, ContentValues values, String primaryKeyName, String primaryKeyForSyncKey) {
@@ -224,17 +224,17 @@ public class SQLiteSyncRepository implements SyncRepository {
 			logger.debug("update '" + tableName + "' set values (" + values + ") where '" + primaryKeyName + "' = '" + primaryKeyForSyncKey + "'");
 		}
 
-		String whereClause = "'" + primaryKeyName + "' = ?";
-		database.update(tableName, values, whereClause, new String[] { primaryKeyForSyncKey });
+		String whereClause = StringUtils.escapeColumn(primaryKeyName) + " = ?";
+		database.update(StringUtils.escapeColumn(tableName), values, whereClause, new String[] { primaryKeyForSyncKey });
 	}
 
 	protected void deleteOperation(SQLiteDatabase database, String tableName, String primaryKeyName, String primaryKeyForSyncKey) {
 		if (this.logger.isDebugEnabled()) {
 			logger.debug("delete from '" + tableName + "' where '" + primaryKeyName + "' = '" + primaryKeyForSyncKey + "'");
 		}
-
-		String whereClause = "'" + primaryKeyName + "' = ?";
-		database.delete(tableName, whereClause, new String[] { primaryKeyForSyncKey });
+		
+		String whereClause = StringUtils.escapeColumn(primaryKeyName) + " = ?";
+		database.delete(StringUtils.escapeColumn(tableName), whereClause, new String[] { primaryKeyForSyncKey });
 	}
 	
 	protected void saveTableVersions(List<TableChanges> tables) {
@@ -351,7 +351,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 	}
 	
 	protected void deleteSyncMetadata(SQLiteDatabase database, String tableName, long syncKey) {
-		database.delete("appglu_sync_metadata", "sync_key = ? and table_name = ?", new String[] { tableName, String.valueOf(syncKey) });
+		database.delete("appglu_sync_metadata", "sync_key = ? and table_name = ?", new String[] { String.valueOf(syncKey), tableName });
 	}
 	
 }
