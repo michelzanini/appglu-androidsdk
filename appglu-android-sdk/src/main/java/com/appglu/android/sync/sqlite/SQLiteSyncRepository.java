@@ -51,7 +51,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 		
 		sql.append("SELECT m.name, t.version FROM sqlite_master m ");
 		sql.append("LEFT OUTER JOIN appglu_table_versions t ON m.name = t.table_name ");
-		sql.append("WHERE m.type = 'table' and m.name not in ('appglu_table_versions') and m.name not like 'android_%' and m.name not like 'sqlite_%' ORDER BY m.name;");
+		sql.append("WHERE m.type = 'table' and m.name not in ('appglu_table_versions', 'appglu_sync_metadata') and m.name not like 'android_%' and m.name not like 'sqlite_%' ORDER BY m.name;");
 		
 		return this.queryForTableVersions(sql.toString(), new String[0]);
 	}
@@ -176,44 +176,65 @@ public class SQLiteSyncRepository implements SyncRepository {
     			return;
     		}
     		
+    		String primaryKeyName = columns.getSinglePrimaryKeyName();
+    		Object primaryKeyValue = values.get(primaryKeyName);
+    		
+			long syncKey = rowChanges.getSyncKey();
 			SyncOperation syncOperation = rowChanges.getSyncOperation();
 
 			if (syncOperation == SyncOperation.INSERT) {
-				if (this.logger.isDebugEnabled()) {
-					logger.debug("insert into '" + tableName + "' values " + "(" + values + ")");
-				}
-
-				database.insertOrThrow(tableName, null, values);
+				this.insertOperation(database, tableName, values);
+				this.saveSyncMetadata(database, tableName, primaryKeyValue, syncKey);
 				return;
 			}
 			
-			String primaryKeyName = columns.getSinglePrimaryKeyName();
-			Object primaryKeyValue = values.get(primaryKeyName);
-
-			String whereClause = "'" + primaryKeyName + "' = ?";
-			String whereArg = String.valueOf(primaryKeyValue);
-
+			String primaryKeyForSyncKey = this.primaryKeyForSyncKey(database, syncKey, tableName);
+			
 			if (syncOperation == SyncOperation.UPDATE) {
-				if (this.logger.isDebugEnabled()) {
-					logger.debug("update '" + tableName + "' set values (" + values + ") where '" + primaryKeyName + "' = '" + whereArg + "'");
+				if (StringUtils.isEmpty(primaryKeyForSyncKey)) {
+					this.insertOperation(database, tableName, values);
+				} else {
+					this.updateOperation(database, tableName, values, primaryKeyName, primaryKeyForSyncKey);
 				}
-
-				database.update(tableName, values, whereClause, new String[] { whereArg });
-				return;
+				this.saveSyncMetadata(database, tableName, primaryKeyValue, syncKey);
 			}
 
 			if (syncOperation == SyncOperation.DELETE) {
-				if (this.logger.isDebugEnabled()) {
-					logger.debug("delete from '" + tableName + "' where '" + primaryKeyName + "' = '" + whereArg + "'");
+				if (StringUtils.isNotEmpty(primaryKeyForSyncKey)) {
+					this.deleteOperation(database, tableName, primaryKeyName, primaryKeyForSyncKey);
+					this.deleteSyncMetadata(database, tableName, syncKey);
 				}
-
-				database.delete(tableName, whereClause, new String[] { whereArg });
-				return;
 			}
 			
 		} catch (SQLException e) {
 			throw new SyncRepositoryException(e);
 		}
+	}
+	
+	protected void insertOperation(SQLiteDatabase database, String tableName, ContentValues values) {
+		if (this.logger.isDebugEnabled()) {
+			logger.debug("insert into '" + tableName + "' values " + "(" + values + ")");
+		}
+
+		database.insertOrThrow(tableName, null, values);
+	}
+
+	protected void updateOperation(SQLiteDatabase database, String tableName, ContentValues values, String primaryKeyName, String primaryKeyForSyncKey) {
+		if (this.logger.isDebugEnabled()) {
+			logger.debug("update '" + tableName + "' set values (" + values + ") where '" + primaryKeyName + "' = '" + primaryKeyForSyncKey + "'");
+		}
+
+		String whereClause = "'" + primaryKeyName + "' = ?";
+		database.update(tableName, values, whereClause, new String[] { primaryKeyForSyncKey });
+	}
+
+	protected void deleteOperation(SQLiteDatabase database, String tableName, String primaryKeyName, String primaryKeyForSyncKey) {
+		if (this.logger.isDebugEnabled()) {
+			logger.debug("delete from '" + tableName + "' where '" + primaryKeyName + "' = '" + primaryKeyForSyncKey + "'");
+		}
+
+		String whereClause = "'" + primaryKeyName + "' = ?";
+		database.delete(tableName, whereClause, new String[] { primaryKeyForSyncKey });
 	}
 	
 	protected void saveTableVersions(List<TableChanges> tables) {
@@ -295,6 +316,42 @@ public class SQLiteSyncRepository implements SyncRepository {
 		} catch (SQLException e) {
 			throw new SyncRepositoryException(e);
 		}
+	}
+	
+	protected String primaryKeyForSyncKey(SQLiteDatabase database, long syncKey, String tableName) {
+		Cursor cursor = null;
+		
+		try {
+			String[] selectionArgs = new String[] { String.valueOf(syncKey), tableName };
+			cursor = database.rawQuery("select primary_key from appglu_sync_metadata where sync_key = ? and table_name = ?", selectionArgs);
+		    cursor.moveToFirst();
+		    
+		    if (cursor.getCount() > 0) {
+		    	return cursor.getString(0);
+		    }
+		    
+		    return null;
+		} catch (SQLException e) {
+			throw new SyncRepositoryException(e);
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+		}
+	}
+	
+	protected void saveSyncMetadata(SQLiteDatabase database, String tableName, Object primaryKeyValue, long syncKey) {
+		ContentValues metadata = new ContentValues();
+		
+		metadata.put("sync_key", syncKey);
+		metadata.put("table_name", tableName);
+		metadata.put("primary_key", String.valueOf(primaryKeyValue));
+		
+		database.replaceOrThrow("appglu_sync_metadata", null, metadata);
+	}
+	
+	protected void deleteSyncMetadata(SQLiteDatabase database, String tableName, long syncKey) {
+		database.delete("appglu_sync_metadata", "sync_key = ? and table_name = ?", new String[] { tableName, String.valueOf(syncKey) });
 	}
 	
 }
