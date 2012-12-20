@@ -84,7 +84,8 @@ public final class UserTemplate implements UserOperations {
 
 	public boolean logout() throws AppGluRestClientException {
 		try {
-			this.restOperations.exchange(LOGOUT_URL, HttpMethod.POST, null, null);
+			Class<?> noReturningClass = null;
+			this.restOperations.exchange(LOGOUT_URL, HttpMethod.POST, null, noReturningClass);
 			this.userSessionPersistence.logout();
 			return true;
 		} catch (AppGluHttpUserUnauthorizedException e) {
@@ -109,7 +110,8 @@ public final class UserTemplate implements UserOperations {
 
 	public void writeData(Map<String, Object> data) throws AppGluRestClientException {
 		try {
-			this.restOperations.exchange(DATA_URL, HttpMethod.PUT, new HttpEntity<Map<String, Object>>(data), null);
+			Class<?> noReturningClass = null;
+			this.restOperations.exchange(DATA_URL, HttpMethod.PUT, new HttpEntity<Map<String, Object>>(data), noReturningClass);
 		} catch (AppGluHttpUserUnauthorizedException e) {
 			this.userSessionPersistence.logout();
 			throw e;
