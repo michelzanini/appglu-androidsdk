@@ -1,0 +1,51 @@
+{
+	"tables":[
+		{
+			"tableName":"appglu_storage_files",
+			"version":1,
+			"changes":[
+            	  {
+	            	  "id": 1,
+				      "key": "1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png",
+				      "name": "app-icon.png",
+				      "content_type": "image/png",
+				      "title": "app-icon.png",
+				      "size": 10540,
+				      "last_modified": "2012-10-29T19:07:50+0000",
+				      "url": "https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png",
+				      "directory_id": 1,
+				      "appglu_key": 5,
+				      "appglu_sync_operation": "insert"
+			      }
+			]
+		},
+		{
+			"tableName":"logged_table",
+			"version":3,
+			"changes":[
+            	{
+					"id":4,
+					"name":"new row",
+					"appglu_key":6,
+					"appglu_sync_operation":"insert"
+         		},
+				{
+					"id":1,
+					"name":"row1 update",
+					"appglu_key":2,
+					"appglu_sync_operation":"update"
+				}
+			]
+		},
+		{
+			"tableName":"other_table",
+			"version":3,
+			"changes":[{
+				"id":null,
+				"name":null,
+				"appglu_key":1,
+				"appglu_sync_operation":"delete"
+			}]
+   		}
+	]
+}

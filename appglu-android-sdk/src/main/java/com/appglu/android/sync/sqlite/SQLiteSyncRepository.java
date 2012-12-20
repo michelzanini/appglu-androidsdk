@@ -29,7 +29,6 @@ public class SQLiteSyncRepository implements SyncRepository {
 	
 	private static final int COLUMN_NAME_INDEX = 1;
 	private static final int COLUMN_TYPE_INDEX = 2;
-	private static final int IS_NOT_NULL_INDEX = 3;
 	private static final int PRIMARY_KEY_INDEX = 5;
 	
 	private SyncDatabaseHelper syncDatabaseHelper;
@@ -77,7 +76,6 @@ public class SQLiteSyncRepository implements SyncRepository {
 		Cursor cursor = null;
 		
 		try {
-			
 			cursor = database.rawQuery(sql, selectionArgs);
 		    cursor.moveToFirst();
 		    
@@ -106,10 +104,12 @@ public class SQLiteSyncRepository implements SyncRepository {
 	public void applyChangesWithTransaction(List<TableChanges> changes) {
 		SQLiteDatabase database = this.getWritableDatabase();
 		
-		boolean foreignKeysWereEnabled = this.areForeignKeysEnabled(database);
+		boolean foreignKeysWereEnabled = false;
 		try {
+			foreignKeysWereEnabled = this.areForeignKeysEnabled();
+			
 			if (foreignKeysWereEnabled) {
-				this.setForeignKeysEnabled(database, false);
+				this.setForeignKeysEnabled(false);
 			}
 			
 			database.beginTransaction();
@@ -122,7 +122,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 			}
 		} finally {
 			if (foreignKeysWereEnabled) {
-				this.setForeignKeysEnabled(database, true);
+				this.setForeignKeysEnabled(true);
 			}
 			
 			database.close();
@@ -151,21 +151,20 @@ public class SQLiteSyncRepository implements SyncRepository {
 		}
 	}
 
-	protected void executeSyncOperation(String tableName, RowChanges rowChanges) {
+	protected boolean executeSyncOperation(String tableName, RowChanges rowChanges) {
 		Row row = rowChanges.getRow();
 		
 		if (row.isEmpty()) {
 			logger.warn("Ignoring changes to table '" + tableName + "' because they are empty");
-			return;
+			return false;
 		}
 		
-		SQLiteDatabase database = this.getWritableDatabase();
 	    try {
-	    	TableColumns columns = this.columnsForTable(tableName, database);
+	    	TableColumns columns = this.columnsForTable(tableName);
 	    	
 	    	if (!columns.hasSinglePrimaryKey()) {
 	    		logger.warn("Ignoring changes to table '" + tableName + "' because it should have one and only one column as primary key");
-	    		return;
+	    		return false;
 	    	}
 	    	
 	    	ContentValuesRowMapper contentValuesRowMapper = new ContentValuesRowMapper(columns);
@@ -173,7 +172,7 @@ public class SQLiteSyncRepository implements SyncRepository {
     		
     		if (values.size() == 0) {
     			logger.warn("Ignoring changes to table '" + tableName + "' because there is no matching column to sync");
-    			return;
+    			return false;
     		}
     		
     		String primaryKeyName = columns.getSinglePrimaryKeyName();
@@ -183,63 +182,71 @@ public class SQLiteSyncRepository implements SyncRepository {
 			SyncOperation syncOperation = rowChanges.getSyncOperation();
 
 			if (syncOperation == SyncOperation.INSERT) {
-				this.insertOperation(database, tableName, values);
-				this.saveSyncMetadata(database, tableName, primaryKeyValue, syncKey);
-				return;
+				this.insertOperation(tableName, values);
+				this.saveSyncMetadata(syncKey, tableName, primaryKeyValue);
 			}
 			
-			String primaryKeyForSyncKey = this.primaryKeyForSyncKey(database, syncKey, tableName);
-			
 			if (syncOperation == SyncOperation.UPDATE) {
+				String primaryKeyForSyncKey = this.primaryKeyForSyncKey(syncKey, tableName);
+				
 				if (StringUtils.isEmpty(primaryKeyForSyncKey)) {
-					this.insertOperation(database, tableName, values);
+					this.insertOperation(tableName, values);
 				} else {
-					this.updateOperation(database, tableName, values, primaryKeyName, primaryKeyForSyncKey);
+					this.updateOperation(tableName, values, primaryKeyName, primaryKeyForSyncKey);
 				}
-				this.saveSyncMetadata(database, tableName, primaryKeyValue, syncKey);
+				this.saveSyncMetadata(syncKey, tableName, primaryKeyValue);
 			}
 
 			if (syncOperation == SyncOperation.DELETE) {
+				String primaryKeyForSyncKey = this.primaryKeyForSyncKey(syncKey, tableName);
+				
 				if (StringUtils.isNotEmpty(primaryKeyForSyncKey)) {
-					this.deleteOperation(database, tableName, primaryKeyName, primaryKeyForSyncKey);
-					this.deleteSyncMetadata(database, tableName, syncKey);
+					this.deleteOperation(tableName, primaryKeyName, primaryKeyForSyncKey);
+					this.deleteSyncMetadata(syncKey, tableName);
 				}
 			}
 			
+			return true;
 		} catch (SQLException e) {
 			throw new SyncRepositoryException(e);
 		}
 	}
 	
-	protected void insertOperation(SQLiteDatabase database, String tableName, ContentValues values) {
+	protected void insertOperation(String tableName, ContentValues values) {
 		if (this.logger.isDebugEnabled()) {
 			logger.debug("insert into '" + tableName + "' values " + "(" + values + ")");
 		}
-
+		
+		SQLiteDatabase database = this.getWritableDatabase();
 		database.insertOrThrow(StringUtils.escapeColumn(tableName), null, values);
 	}
 
-	protected void updateOperation(SQLiteDatabase database, String tableName, ContentValues values, String primaryKeyName, String primaryKeyForSyncKey) {
+	protected void updateOperation(String tableName, ContentValues values, String primaryKeyName, String primaryKeyForSyncKey) {
 		if (this.logger.isDebugEnabled()) {
 			logger.debug("update '" + tableName + "' set values (" + values + ") where '" + primaryKeyName + "' = '" + primaryKeyForSyncKey + "'");
 		}
-
+		
+		SQLiteDatabase database = this.getWritableDatabase();
 		String whereClause = StringUtils.escapeColumn(primaryKeyName) + " = ?";
+		
 		database.update(StringUtils.escapeColumn(tableName), values, whereClause, new String[] { primaryKeyForSyncKey });
 	}
 
-	protected void deleteOperation(SQLiteDatabase database, String tableName, String primaryKeyName, String primaryKeyForSyncKey) {
+	protected void deleteOperation(String tableName, String primaryKeyName, String primaryKeyForSyncKey) {
 		if (this.logger.isDebugEnabled()) {
 			logger.debug("delete from '" + tableName + "' where '" + primaryKeyName + "' = '" + primaryKeyForSyncKey + "'");
 		}
 		
+		SQLiteDatabase database = this.getWritableDatabase();
 		String whereClause = StringUtils.escapeColumn(primaryKeyName) + " = ?";
+		
 		database.delete(StringUtils.escapeColumn(tableName), whereClause, new String[] { primaryKeyForSyncKey });
 	}
 	
 	protected void saveTableVersions(List<TableChanges> tables) {
-		SQLiteDatabase database = this.getWritableDatabase();
 	    try {
+	    	SQLiteDatabase database = this.getWritableDatabase();
+	    	
 	    	for (TableChanges table : tables) {
 	    		ContentValues values = new ContentValues();
 	    		
@@ -253,12 +260,13 @@ public class SQLiteSyncRepository implements SyncRepository {
 		}
 	}
 	
-	protected TableColumns columnsForTable(String tableName, SQLiteDatabase database) {
+	protected TableColumns columnsForTable(String tableName) {
 		TableColumns tableColumns = new TableColumns();
 		
 		Cursor cursor = null;
 		
 		try {
+			SQLiteDatabase database = this.getReadableDatabase();
 			cursor = database.rawQuery("PRAGMA table_info (" + tableName + ")", new String[0]);
 		    cursor.moveToFirst();
 		    
@@ -267,7 +275,6 @@ public class SQLiteSyncRepository implements SyncRepository {
 		    	
 		    	column.setName(cursor.getString(COLUMN_NAME_INDEX));
 		    	column.setType(cursor.getString(COLUMN_TYPE_INDEX));
-		    	column.setNullable(cursor.getInt(IS_NOT_NULL_INDEX) == 1 ? false : true);
 		    	column.setPrimaryKey(cursor.getInt(PRIMARY_KEY_INDEX) == 1 ? true : false);
 		    	
 		    	tableColumns.put(column.getName(), column);
@@ -289,10 +296,11 @@ public class SQLiteSyncRepository implements SyncRepository {
 		return tableColumns;
 	}
 	
-	protected boolean areForeignKeysEnabled(SQLiteDatabase database) {
+	protected boolean areForeignKeysEnabled() {
 		Cursor cursor = null;
 		
 		try {
+			SQLiteDatabase database = this.getReadableDatabase();
 			cursor = database.rawQuery("PRAGMA foreign_keys", new String[0]);
 		    cursor.moveToFirst();
 		    
@@ -310,18 +318,21 @@ public class SQLiteSyncRepository implements SyncRepository {
 		}
 	}
 	
-	protected void setForeignKeysEnabled(SQLiteDatabase database, boolean enabled) {
+	protected void setForeignKeysEnabled(boolean enabled) {
 		try {
+			SQLiteDatabase database = this.getWritableDatabase();
 			database.execSQL("PRAGMA foreign_keys = " + enabled);
 		} catch (SQLException e) {
 			throw new SyncRepositoryException(e);
 		}
 	}
 	
-	protected String primaryKeyForSyncKey(SQLiteDatabase database, long syncKey, String tableName) {
+	protected String primaryKeyForSyncKey(long syncKey, String tableName) {
 		Cursor cursor = null;
 		
 		try {
+			SQLiteDatabase database = this.getReadableDatabase();
+			
 			String[] selectionArgs = new String[] { String.valueOf(syncKey), tableName };
 			cursor = database.rawQuery("select primary_key from appglu_sync_metadata where sync_key = ? and table_name = ?", selectionArgs);
 		    cursor.moveToFirst();
@@ -340,17 +351,19 @@ public class SQLiteSyncRepository implements SyncRepository {
 		}
 	}
 	
-	protected void saveSyncMetadata(SQLiteDatabase database, String tableName, Object primaryKeyValue, long syncKey) {
+	protected void saveSyncMetadata(long syncKey, String tableName, Object primaryKeyValue) {
 		ContentValues metadata = new ContentValues();
 		
 		metadata.put("sync_key", syncKey);
 		metadata.put("table_name", tableName);
 		metadata.put("primary_key", String.valueOf(primaryKeyValue));
 		
+		SQLiteDatabase database = this.getWritableDatabase();
 		database.replaceOrThrow("appglu_sync_metadata", null, metadata);
 	}
 	
-	protected void deleteSyncMetadata(SQLiteDatabase database, String tableName, long syncKey) {
+	protected void deleteSyncMetadata(long syncKey, String tableName) {
+		SQLiteDatabase database = this.getWritableDatabase();
 		database.delete("appglu_sync_metadata", "sync_key = ? and table_name = ?", new String[] { String.valueOf(syncKey), tableName });
 	}
 	

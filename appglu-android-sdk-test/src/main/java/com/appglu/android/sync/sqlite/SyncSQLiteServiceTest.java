@@ -1,4 +1,4 @@
-package com.appglu.android.sync;
+package com.appglu.android.sync.sqlite;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,10 @@ import java.util.List;
 import junit.framework.Assert;
 
 import com.appglu.TableVersion;
-import com.appglu.android.sync.sqlite.AbstractSyncSQLiteTest;
+import com.appglu.android.sync.SyncService;
 import com.appglu.android.sync.sqlite.SQLiteSyncRepository;
 
-public class SyncServiceTest extends AbstractSyncSQLiteTest {
+public class SyncSQLiteServiceTest extends AbstractSyncSQLiteTest {
 
 	private SyncService syncService;
 	
@@ -25,14 +25,29 @@ public class SyncServiceTest extends AbstractSyncSQLiteTest {
 	public void testSyncDatabase() {
 		this.defineSyncServiceWithMockOperations("sync_database", null);
 		
+		int rowsBeforeForStorageFiles = this.countTable("appglu_storage_files");
+		int rowsBeforeForLoggedTable = this.countTable("logged_table");
+		int rowsBeforeForOtherTable = this.countTable("other_table");
+		
 		this.syncService.syncDatabase();
 		
 		List<TableVersion> updatedTables = this.syncRepository.versionsForAllTables();
-		this.assertTableVersions(updatedTables, 4, 9, 3);
+		this.assertTableVersions(updatedTables, 1, 3, 3);
+		
+		int rowsAfterForStorageFiles = this.countTable("appglu_storage_files");
+		int rowsAfterForLoggedTable = this.countTable("logged_table");
+		int rowsAfterForOtherTable = this.countTable("other_table");
+		
+		Assert.assertEquals(rowsBeforeForStorageFiles + 1, rowsAfterForStorageFiles);
+		Assert.assertEquals(rowsBeforeForLoggedTable + 1, rowsAfterForLoggedTable);
+		Assert.assertEquals(rowsBeforeForOtherTable - 1, rowsAfterForOtherTable);
 	}
 	
 	public void testSyncTables() {
 		this.defineSyncServiceWithMockOperations("sync_tables", null);
+		
+		int rowsBeforeForLoggedTable = this.countTable("logged_table");
+		int rowsBeforeForOtherTable = this.countTable("other_table");
 		
 		List<String> tables = new ArrayList<String>();
 		
@@ -42,7 +57,13 @@ public class SyncServiceTest extends AbstractSyncSQLiteTest {
 		this.syncService.syncTables(tables);
 		
 		List<TableVersion> updatedTables = this.syncRepository.versionsForAllTables();
-		this.assertTableVersions(updatedTables, 0, 9, 3);
+		this.assertTableVersions(updatedTables, 0, 3, 3);
+		
+		int rowsAfterForLoggedTable = this.countTable("logged_table");
+		int rowsAfterForOtherTable = this.countTable("other_table");
+		
+		Assert.assertEquals(rowsBeforeForLoggedTable + 1, rowsAfterForLoggedTable);
+		Assert.assertEquals(rowsBeforeForOtherTable - 1, rowsAfterForOtherTable);
 	}
 	
 	public void testSyncTables_withReservedWords() {

@@ -3,34 +3,22 @@ package com.appglu.android.sync.sqlite;
 import java.util.List;
 
 import junit.framework.Assert;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.appglu.TableVersion;
-import com.appglu.android.sync.sqlite.SyncDatabaseHelper;
 
-import android.database.sqlite.SQLiteDatabase;
-import android.test.AndroidTestCase;
+public abstract class AbstractSyncSQLiteTest extends AbstractDatabaseHelperTest {
 
-public abstract class AbstractSyncSQLiteTest extends AndroidTestCase {
-
-	protected SyncDatabaseHelper syncDatabaseHelper;
+	protected String getDatabaseName() {
+		return "sync_test_cases.sqlite";
+	}
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		
-		this.syncDatabaseHelper = new SyncDatabaseHelper(getContext(), "sync_test_cases.sqlite", 1) {
-
-			public void onCreateAppDatabase(SQLiteDatabase db) {
-				
-			}
-
-			public void onUpgradeAppDatabase(SQLiteDatabase db, int oldVersion, int newVersion) {
-				
-			}
-			
-		};
-		
-		this.setUpScript();
+	protected int getDatabaseVersion() {
+		return 1;
+	}
+	
+	protected boolean enableForeignKeys() {
+		return false;
 	}
 	
 	protected void setUpScript() {
@@ -50,9 +38,23 @@ public abstract class AbstractSyncSQLiteTest extends AndroidTestCase {
 			database.execSQL("CREATE TABLE compose_primary_key (id INTEGER, name VARCHAR, PRIMARY KEY(id, name));");
 			database.execSQL("CREATE TABLE reserverd_words (id INTEGER PRIMARY KEY, 'order' VARCHAR);");
 			
+			database.execSQL("insert into logged_table (id, name) values (1, 'value')");
+			database.execSQL("insert into logged_table (id, name) values (2, 'value')");
+			database.execSQL("insert into logged_table (id, name) values (3, 'value')");
+			
+			database.execSQL("insert into other_table (id, name) values (1, 'value')");
+			
 			database.execSQL("delete from appglu_table_versions");
 			database.execSQL("insert into appglu_table_versions (table_name, version) values ('logged_table', 1)");
 			database.execSQL("insert into appglu_table_versions (table_name, version) values ('other_table', 2)");
+			
+			database.execSQL("delete from appglu_sync_metadata");
+			database.execSQL("insert into appglu_sync_metadata(sync_key, table_name, primary_key) values (1, 'other_table', '1');");
+			database.execSQL("insert into appglu_sync_metadata(sync_key, table_name, primary_key) values (2, 'logged_table', '1');");
+			database.execSQL("insert into appglu_sync_metadata(sync_key, table_name, primary_key) values (3, 'logged_table', '2');");
+			database.execSQL("insert into appglu_sync_metadata(sync_key, table_name, primary_key) values (4, 'logged_table', '3');");
+			
+			database.execSQL("delete from appglu_storage_files");
 			
 			database.setTransactionSuccessful();
 		} finally {

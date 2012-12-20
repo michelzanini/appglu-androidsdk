@@ -2,17 +2,17 @@
 	"tables":[
 		{
 			"tableName":"logged_table",
-			"version":9,
+			"version":3,
 			"changes":[
             	{
-					"id":1,
-					"name":"row1",
-					"appglu_key":1,
+					"id":4,
+					"name":"new row",
+					"appglu_key":6,
 					"appglu_sync_operation":"insert"
          		},
 				{
-					"id":2,
-					"name":"row2",
+					"id":1,
+					"name":"row1 update",
 					"appglu_key":2,
 					"appglu_sync_operation":"update"
 				}
@@ -22,9 +22,9 @@
 			"tableName":"other_table",
 			"version":3,
 			"changes":[{
-				"id":1,
-				"name":"row1",
-				"appglu_key":6,
+				"id":null,
+				"name":null,
+				"appglu_key":1,
 				"appglu_sync_operation":"delete"
 			}]
    		}

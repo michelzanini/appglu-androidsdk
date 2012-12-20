@@ -65,16 +65,16 @@ public class ContentValuesRowMapper implements RowMapper<ContentValues> {
 				}
 				
 				if (column.getType().equals("boolean")) {
-					values.put(escapedColumnName, row.getBoolean(escapedColumnName));
+					values.put(escapedColumnName, row.getBoolean(columnName));
 					continue;
 				}
 				
 				if (column.getType().contains("numeric") || column.getType().contains("decimal")) {
-					values.put(escapedColumnName, row.getLong(escapedColumnName));
+					values.put(escapedColumnName, row.getLong(columnName));
 					continue;
 				}
 				
-				values.putNull(escapedColumnName);
+				values.putNull(columnName);
 			}
 		}
 		

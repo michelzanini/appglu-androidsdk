@@ -10,9 +10,22 @@ public class Column implements Serializable {
 	
 	private String type;
 	
-	private boolean nullable;
-	
 	private boolean primaryKey;
+	
+	public Column() {
+
+	}
+
+	public Column(String name, String type) {
+		this.name = name;
+		this.type = type;
+	}
+	
+	public Column(String name, String type, boolean primaryKey) {
+		this.name = name;
+		this.type = type;
+		this.primaryKey = primaryKey;
+	}
 
 	public String getName() {
 		return name;
@@ -20,10 +33,6 @@ public class Column implements Serializable {
 
 	public String getType() {
 		return type;
-	}
-
-	public boolean isNullable() {
-		return nullable;
 	}
 
 	public boolean isPrimaryKey() {
@@ -44,10 +53,6 @@ public class Column implements Serializable {
 		} else {
 			this.type = null;
 		}
-	}
-
-	public void setNullable(boolean nullable) {
-		this.nullable = nullable;
 	}
 
 	public void setPrimaryKey(boolean primaryKey) {
@@ -81,8 +86,8 @@ public class Column implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Column [name=" + name + ", type=" + type
-				+ ", nullable=" + nullable + ", primaryKey=" + primaryKey + "]";
+		return "Column [name=" + name + ", type=" + type + ", primaryKey="
+				+ primaryKey + "]";
 	}
 
 }

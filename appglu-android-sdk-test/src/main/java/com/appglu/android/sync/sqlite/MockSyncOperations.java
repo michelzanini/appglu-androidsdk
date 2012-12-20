@@ -1,14 +1,12 @@
-package com.appglu.android.sync;
+package com.appglu.android.sync.sqlite;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 import com.appglu.AppGluRestClientException;
 import com.appglu.SyncOperations;
@@ -41,12 +39,21 @@ public class MockSyncOperations implements SyncOperations {
 			return null;
 		}
 
+		InputStream inputStream = null;
 		try {
-			String json = this.compactedJson(changesForTablesJson);
-			TableChangesBody body = objectMapper.readValue(json, TableChangesBody.class);
+			inputStream = this.jsonInputStream(changesForTablesJson);
+			TableChangesBody body = objectMapper.readValue(inputStream, TableChangesBody.class);
 			return body.getTables();
 		} catch (IOException e) {
 			throw new AppGluRestClientException(e);
+		} finally {
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					
+				}
+			}
 		}
 	}
 
@@ -63,33 +70,27 @@ public class MockSyncOperations implements SyncOperations {
 			return null;
 		}
 
+		InputStream inputStream = null;
 		try {
-			String json = this.compactedJson(versionsForTablesJson);
-			TableVersionBody body = objectMapper.readValue(json, TableVersionBody.class);
+			inputStream = this.jsonInputStream(versionsForTablesJson);
+			TableVersionBody body = objectMapper.readValue(inputStream, TableVersionBody.class);
 			return body.getTables();
 		} catch (IOException e) {
 			throw new AppGluRestClientException(e);
+		} finally {
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					
+				}
+			}
 		}
 	}
 	
-	protected Resource jsonResource(String filename) {
-		return new ClassPathResource(filename + ".json", getClass());
-	}
-
-	protected String compactedJson(String jsonFilename) {
-		return readCompactedJsonResource(jsonResource(jsonFilename));
-	}
-	
-	protected String readCompactedJsonResource(Resource resource) {
-		StringBuilder resourceText = new StringBuilder();
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
-			while (reader.ready()) {
-				resourceText.append(reader.readLine().trim().replace("\n", ""));
-			}
-		} catch (IOException e) {
-		}		
-		return resourceText.toString();
+	protected InputStream jsonInputStream(String filename) throws IOException {
+		ClassPathResource classPathResource = new ClassPathResource(filename + ".json", getClass());
+		return classPathResource.getInputStream();
 	}
 
 }
