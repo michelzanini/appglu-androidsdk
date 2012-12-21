@@ -11,10 +11,12 @@ import org.springframework.core.io.ClassPathResource;
 import com.appglu.AppGluRestClientException;
 import com.appglu.SyncOperations;
 import com.appglu.TableChanges;
+import com.appglu.TableChangesCallback;
 import com.appglu.TableVersion;
-import com.appglu.impl.json.AppGluModule;
 import com.appglu.impl.json.TableChangesBody;
 import com.appglu.impl.json.TableVersionBody;
+import com.appglu.impl.json.jackson.AppGluModule;
+import com.appglu.impl.json.jackson.JacksonTableChangesJsonParser;
 
 public class MockSyncOperations implements SyncOperations {
 	
@@ -91,6 +93,33 @@ public class MockSyncOperations implements SyncOperations {
 	protected InputStream jsonInputStream(String filename) throws IOException {
 		ClassPathResource classPathResource = new ClassPathResource(filename + ".json", getClass());
 		return classPathResource.getInputStream();
+	}
+
+	public void changesForTables(TableChangesCallback tableChangesCallback, TableVersion... tables) throws AppGluRestClientException {
+		this.changesForTables(Arrays.asList(tables), tableChangesCallback);
+	}
+
+	public void changesForTables(List<TableVersion> tables, TableChangesCallback tableChangesCallback) throws AppGluRestClientException {
+		if (changesForTablesJson == null) {
+			return;
+		}
+
+		InputStream inputStream = null;
+		try {
+			inputStream = this.jsonInputStream(changesForTablesJson);
+			JacksonTableChangesJsonParser parser = new JacksonTableChangesJsonParser(objectMapper);
+			parser.parseTableChanges(inputStream, tableChangesCallback);
+		} catch (IOException e) {
+			throw new AppGluRestClientException(e);
+		} finally {
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					
+				}
+			}
+		}
 	}
 
 }

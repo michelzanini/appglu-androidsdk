@@ -1,16 +1,12 @@
 package com.appglu.impl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -33,8 +29,8 @@ import com.appglu.SyncOperations;
 import com.appglu.User;
 import com.appglu.UserOperations;
 import com.appglu.UserSessionPersistence;
-import com.appglu.impl.json.AppGluModule;
-import com.appglu.impl.util.DateUtils;
+import com.appglu.impl.json.JsonMessageConverterSelector;
+import com.appglu.impl.json.TableChangesJsonParser;
 import com.appglu.impl.util.StringUtils;
 
 public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
@@ -77,6 +73,8 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	
 	private HttpMessageConverter<Object> jsonMessageConverter;
 	
+	private TableChangesJsonParser tableChangesJsonParser;
+	
 	private DefaultHeadersHttpRequestInterceptor defaultHeadersHttpRequestInterceptor;
 	
 	private BasicAuthHttpRequestInterceptor basicAuthHttpRequestInterceptor;
@@ -96,7 +94,8 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.userSessionPersistence = new MemoryUserSessionPersistence();
 
 		this.restTemplate = this.createRestTemplate();
-		this.jsonMessageConverter = this.createJsonMessageConverter();
+		this.jsonMessageConverter = JsonMessageConverterSelector.getJsonMessageConverter();
+		this.tableChangesJsonParser = JsonMessageConverterSelector.getTableChangesJsonParser();
 		this.restTemplate.setMessageConverters(this.getMessageConverters());
 		this.restTemplate.setErrorHandler(this.getResponseErrorHandler());
 		this.restTemplate.setInterceptors(this.createInterceptors());
@@ -231,17 +230,10 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		return this.userSessionPersistence.getAuthenticatedUser();
 	}
 	
-	private HttpMessageConverter<Object> createJsonMessageConverter() {
-		MappingJacksonHttpMessageConverter converter = new MappingJacksonHttpMessageConverter();
-		ObjectMapper objectMapper = new ObjectMapper();
-		this.configureObjectMapper(objectMapper);
-		converter.setObjectMapper(objectMapper);
-		return converter;
-	}
-	
 	private List<HttpMessageConverter<?>> getMessageConverters() {
 		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
 		messageConverters.add(new StringHttpMessageConverter());
+		messageConverters.add(new InputStreamHttpMessageConverter(this.jsonMessageConverter));
 		messageConverters.add(this.jsonMessageConverter);
 		return messageConverters;
 	}
@@ -262,7 +254,7 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.pushOperations = new PushTemplate(this.restOperations());
 		this.analyticsOperations = new AnalyticsTemplate(this.restOperations());
 		this.userOperations = new UserTemplate(this.restOperations(), this.userSessionPersistence);
-		this.syncOperations = new SyncTemplate(this.restOperations());
+		this.syncOperations = new SyncTemplate(this.restOperations(), this.tableChangesJsonParser);
 	}
 	
 	private void initAsyncApis() {
@@ -279,12 +271,6 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 			return new RestTemplate();
 		}
 		return new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
-	}
-	
-	protected void configureObjectMapper(ObjectMapper objectMapper) {
-		objectMapper.registerModule(new AppGluModule());
-		DateFormat dateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT);
-		objectMapper.setDateFormat(dateFormat);
 	}
 
 	protected void configureHttpRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {

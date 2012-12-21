@@ -1,4 +1,4 @@
-package com.appglu.impl.json;
+package com.appglu.impl.json.jackson;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 

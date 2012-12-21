@@ -1,4 +1,4 @@
-package com.appglu.impl.json;
+package com.appglu.impl.json.jackson;
 
 import java.util.Date;
 import java.util.Map;

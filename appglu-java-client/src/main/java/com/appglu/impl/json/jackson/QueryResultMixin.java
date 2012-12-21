@@ -1,4 +1,4 @@
-package com.appglu.impl.json;
+package com.appglu.impl.json.jackson;
 
 import java.util.List;
 
@@ -7,13 +7,13 @@ import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
 import com.appglu.Row;
 
-@JsonPropertyOrder({"rows", "totalRows"})
-public abstract class RowsMixin {
+@JsonPropertyOrder({"rows", "rowsAffected"})
+public abstract class QueryResultMixin {
 	
 	@JsonProperty("rows")
 	List<Row> rows;
-
-	@JsonProperty("totalRows")
-	Integer totalRows;
+	
+	@JsonProperty("rowsAffected")
+	Integer rowsAffected;
 
 }

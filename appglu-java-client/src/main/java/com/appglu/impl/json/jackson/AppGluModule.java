@@ -1,4 +1,4 @@
-package com.appglu.impl.json;
+package com.appglu.impl.json.jackson;
 
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.module.SimpleModule;
@@ -14,6 +14,13 @@ import com.appglu.User;
 import com.appglu.RowChanges;
 import com.appglu.TableVersion;
 import com.appglu.TableChanges;
+import com.appglu.impl.json.AnalyticsSessionsBody;
+import com.appglu.impl.json.DeviceBody;
+import com.appglu.impl.json.QueryParamsBody;
+import com.appglu.impl.json.RowBody;
+import com.appglu.impl.json.TableChangesBody;
+import com.appglu.impl.json.TableVersionBody;
+import com.appglu.impl.json.UserBody;
 
 public class AppGluModule extends SimpleModule {
 
