@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 import com.appglu.AsyncCallback;
 import com.appglu.AsyncSyncOperations;
 import com.appglu.SyncOperations;
+import com.appglu.TableChangesCallback;
 import com.appglu.TableVersion;
 import com.appglu.TableChanges;
 
@@ -29,6 +30,19 @@ public final class AsyncSyncTemplate implements AsyncSyncOperations {
 		asyncExecutor.execute(callback, new Callable<List<TableChanges>>() {
 			public List<TableChanges> call() {
 				return syncOperations.changesForTables(tables);
+			}
+		});
+	}
+	
+	public void changesForTablesInBackground(TableChangesCallback tableChangesCallback, AsyncCallback<Void> asyncCallback, TableVersion... tables) {
+		this.changesForTablesInBackground(Arrays.asList(tables), tableChangesCallback, asyncCallback);
+	}
+	
+	public void changesForTablesInBackground(final List<TableVersion> tables, final TableChangesCallback tableChangesCallback, AsyncCallback<Void> asyncCallback) {
+		asyncExecutor.execute(asyncCallback, new Callable<Void>() {
+			public Void call() {
+				syncOperations.changesForTables(tables, tableChangesCallback);
+				return null;
 			}
 		});
 	}

@@ -17,6 +17,7 @@ import com.appglu.impl.json.TableChangesBody;
 import com.appglu.impl.json.TableVersionBody;
 import com.appglu.impl.json.jackson.AppGluModule;
 import com.appglu.impl.json.jackson.JacksonTableChangesJsonParser;
+import com.appglu.impl.util.IOUtils;
 
 public class MockSyncOperations implements SyncOperations {
 	
@@ -49,18 +50,33 @@ public class MockSyncOperations implements SyncOperations {
 		} catch (IOException e) {
 			throw new AppGluRestClientException(e);
 		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					
-				}
-			}
+			IOUtils.closeQuietly(inputStream);
+		}
+	}
+	
+	public void changesForTables(TableChangesCallback tableChangesCallback, TableVersion... tables) throws AppGluRestClientException {
+		this.changesForTables(Arrays.asList(tables), tableChangesCallback);
+	}
+
+	public void changesForTables(List<TableVersion> tables, TableChangesCallback tableChangesCallback) throws AppGluRestClientException {
+		if (changesForTablesJson == null) {
+			return;
+		}
+
+		InputStream inputStream = null;
+		try {
+			inputStream = this.jsonInputStream(changesForTablesJson);
+			JacksonTableChangesJsonParser parser = new JacksonTableChangesJsonParser(objectMapper);
+			parser.parseTableChanges(inputStream, tableChangesCallback);
+		} catch (IOException e) {
+			throw new AppGluRestClientException(e);
+		} finally {
+			IOUtils.closeQuietly(inputStream);
 		}
 	}
 
 	public TableChanges changesForTable(String tableName, long version) throws AppGluRestClientException {
-		return null;
+		throw new UnsupportedOperationException("Not implemented by this mock");
 	}
 
 	public List<TableVersion> versionsForTables(String... tables) throws AppGluRestClientException {
@@ -80,46 +96,13 @@ public class MockSyncOperations implements SyncOperations {
 		} catch (IOException e) {
 			throw new AppGluRestClientException(e);
 		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					
-				}
-			}
+			IOUtils.closeQuietly(inputStream);
 		}
 	}
 	
 	protected InputStream jsonInputStream(String filename) throws IOException {
 		ClassPathResource classPathResource = new ClassPathResource(filename + ".json", getClass());
 		return classPathResource.getInputStream();
-	}
-
-	public void changesForTables(TableChangesCallback tableChangesCallback, TableVersion... tables) throws AppGluRestClientException {
-		this.changesForTables(Arrays.asList(tables), tableChangesCallback);
-	}
-
-	public void changesForTables(List<TableVersion> tables, TableChangesCallback tableChangesCallback) throws AppGluRestClientException {
-		if (changesForTablesJson == null) {
-			return;
-		}
-
-		InputStream inputStream = null;
-		try {
-			inputStream = this.jsonInputStream(changesForTablesJson);
-			JacksonTableChangesJsonParser parser = new JacksonTableChangesJsonParser(objectMapper);
-			parser.parseTableChanges(inputStream, tableChangesCallback);
-		} catch (IOException e) {
-			throw new AppGluRestClientException(e);
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					
-				}
-			}
-		}
 	}
 
 }

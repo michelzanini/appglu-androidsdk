@@ -13,6 +13,7 @@ import com.appglu.RowChanges;
 import com.appglu.TableChangesCallback;
 import com.appglu.TableVersion;
 import com.appglu.impl.json.TableChangesJsonParser;
+import com.appglu.impl.util.StringUtils;
 
 public class JacksonTableChangesJsonParser implements TableChangesJsonParser {
 
@@ -27,25 +28,27 @@ public class JacksonTableChangesJsonParser implements TableChangesJsonParser {
 		JsonParser jsonParser = jsonFactory.createJsonParser(inputStream);
 		
 		this.doParse(jsonParser, tableChangesCallback);
+		
+		jsonParser.close();
 	}
 	
 	private void doParse(JsonParser jsonParser, TableChangesCallback tableChangesCallback) throws IOException {
 		jsonParser.nextToken();
 		
 		if (jsonParser.getCurrentToken() != JsonToken.START_OBJECT) {
-			throw new JsonParseException("Json must start with {", jsonParser.getCurrentLocation());
+			throw new JsonParseException("Start object { expected", jsonParser.getCurrentLocation());
 		}
 		
 		jsonParser.nextToken();
 		
 		if (!"tables".equals(jsonParser.getCurrentName())) {
-			throw new JsonParseException("tables property expected", jsonParser.getCurrentLocation());
+			throw new JsonParseException("Field name 'tables' expected", jsonParser.getCurrentLocation());
 		}
 		
 		jsonParser.nextToken();
 		
 		if (jsonParser.getCurrentToken() != JsonToken.START_ARRAY) {
-			throw new JsonParseException("Start array char [ expected", jsonParser.getCurrentLocation());
+			throw new JsonParseException("Start array [ expected", jsonParser.getCurrentLocation());
 		}
 		
 		jsonParser.nextToken();
@@ -64,29 +67,42 @@ public class JacksonTableChangesJsonParser implements TableChangesJsonParser {
 		TableVersion tableVersion = new TableVersion();
 		
 		jsonParser.nextToken();
-		if (!"tableName".equals(jsonParser.getCurrentName())) {
-			throw new JsonParseException("tableName property expected", jsonParser.getCurrentLocation());
-		}
-		tableVersion.setTableName(jsonParser.nextTextValue());
 		
-		jsonParser.nextToken();
-		if (!"version".equals(jsonParser.getCurrentName())) {
-			throw new JsonParseException("version property expected", jsonParser.getCurrentLocation());
+		while (jsonParser.getCurrentToken() == JsonToken.FIELD_NAME) {
+			
+			if ("tableName".equals(jsonParser.getCurrentName())) {
+				
+				tableVersion.setTableName(jsonParser.nextTextValue());
+				
+			} else if ("version".equals(jsonParser.getCurrentName())) {
+				
+				tableVersion.setVersion(jsonParser.nextIntValue(0));
+				
+			} else if ("changes".equals(jsonParser.getCurrentName())) {
+				
+				if (StringUtils.isEmpty(tableVersion.getTableName())) {
+					throw new JsonParseException("Field 'tableName' is expected before field 'changes'", jsonParser.getCurrentLocation());
+				}
+				
+				this.parseRowChanges(jsonParser, tableVersion, tableChangesCallback);
+				
+			} else {
+				//skip unknown property
+				jsonParser.nextToken();
+				
+				//if it is an array or object, them skip its children
+				jsonParser.skipChildren();
+			}
+			
+			jsonParser.nextToken();
 		}
-		tableVersion.setVersion(jsonParser.nextIntValue(0));
-		
-		jsonParser.nextToken();
-		if (!"changes".equals(jsonParser.getCurrentName())) {
-			throw new JsonParseException("changes property expected", jsonParser.getCurrentLocation());
-		}
-		this.parseRowChanges(jsonParser, tableVersion, tableChangesCallback);
 	}
 
 	private void parseRowChanges(JsonParser jsonParser, TableVersion tableVersion, TableChangesCallback tableChangesCallback) throws IOException {
 		jsonParser.nextToken();
 		
 		if (jsonParser.getCurrentToken() != JsonToken.START_ARRAY) {
-			throw new JsonParseException("End array char ] expected", jsonParser.getCurrentLocation());
+			throw new JsonParseException("Start array [ expected", jsonParser.getCurrentLocation());
 		}
 		
 		jsonParser.nextToken();

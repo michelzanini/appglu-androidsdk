@@ -9,9 +9,11 @@ import org.springframework.util.ClassUtils;
 
 public class ClientHttpRequestFactorySelector {
 	
-	private static final boolean HTTP_COMPONENTS_AVAILABLE = ClassUtils.isPresent("org.apache.http.client.HttpClient", ClientHttpRequestFactorySelector.class.getClassLoader());
+	private static final boolean HTTP_COMPONENTS_AVAILABLE = 
+		ClassUtils.isPresent("org.apache.http.client.HttpClient", ClientHttpRequestFactorySelector.class.getClassLoader());
 	
-	private static final boolean DECOMPRESSING_HTTP_CLIENT_AVAILABLE = ClassUtils.isPresent("org.apache.http.impl.client.DecompressingHttpClient", ClientHttpRequestFactorySelector.class.getClassLoader());
+	private static final boolean DECOMPRESSING_HTTP_CLIENT_AVAILABLE = 
+		ClassUtils.isPresent("org.apache.http.impl.client.DecompressingHttpClient", ClientHttpRequestFactorySelector.class.getClassLoader());
 	
 	public static ClientHttpRequestFactory getRequestFactory() {
 		if (DECOMPRESSING_HTTP_CLIENT_AVAILABLE) {

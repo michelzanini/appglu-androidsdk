@@ -16,12 +16,14 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 import com.appglu.AppGluHttpClientException;
+import com.appglu.AppGluRestClientException;
 import com.appglu.ErrorCode;
 import com.appglu.RowChanges;
 import com.appglu.SyncOperation;
 import com.appglu.SyncOperations;
 import com.appglu.TableChanges;
 import com.appglu.TableVersion;
+import com.appglu.impl.json.MemoryTableChangesCallback;
 
 public class SyncTemplateTest extends AbstractAppGluApiTest {
 	
@@ -45,24 +47,124 @@ public class SyncTemplateTest extends AbstractAppGluApiTest {
 		TableVersion otherTable = new TableVersion("other_table", 1);
 		
 		List<TableChanges> changes = this.syncOperations.changesForTables(loggedTable, otherTable);
+
+		this.assertChanges(changes);
 		
-		Assert.assertNotNull(changes);
-		Assert.assertEquals(2, changes.size());
+		mockServer.verify();
+	}
+
+	@Test
+	public void changesForTablesUsingCallback() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/sync/changes"))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
+			.andExpect(content().string(compactedJson("data/sync_changes_for_tables_request")))
+			.andRespond(withStatus(HttpStatus.OK).body(compactedJson("data/sync_changes_for_tables_response")).headers(responseHeaders));
 		
-		TableChanges loggedTableChanges = changes.get(0);
-		this.assertTable(loggedTableChanges, "logged_table", 9, 2);
+		MemoryTableChangesCallback callback = new MemoryTableChangesCallback();
 		
-		RowChanges firstRow = loggedTableChanges.getChanges().get(0);
-		this.assertRow(firstRow, 2, 1, "row1", 1, SyncOperation.INSERT);
+		TableVersion loggedTable = new TableVersion("logged_table");
+		TableVersion otherTable = new TableVersion("other_table", 1);
 		
-		RowChanges secondRow = loggedTableChanges.getChanges().get(1);
-		this.assertRow(secondRow, 2, 2, "row2", 2, SyncOperation.UPDATE);
+		this.syncOperations.changesForTables(callback, loggedTable, otherTable);
 		
-		TableChanges otherTableChanges = changes.get(1);
-		this.assertTable(otherTableChanges, "other_table", 1, 1);
+		this.assertChanges(callback.getTableChanges());
 		
-		RowChanges firstRowOtherTable = otherTableChanges.getChanges().get(0);
-		this.assertRow(firstRowOtherTable, 2, 1, "row1", 6, SyncOperation.DELETE);
+		mockServer.verify();
+	}
+	
+	@Test(expected = AppGluRestClientException.class)
+	public void changesForTablesUsingCallback_TableNameAfterChanges() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/sync/changes"))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
+			.andExpect(content().string(compactedJson("data/sync_changes_for_tables_request")))
+			.andRespond(withStatus(HttpStatus.OK).body(compactedJson("data/sync_parser_table_name_after_changes")).headers(responseHeaders));
+		
+		MemoryTableChangesCallback callback = new MemoryTableChangesCallback();
+		
+		TableVersion loggedTable = new TableVersion("logged_table");
+		TableVersion otherTable = new TableVersion("other_table", 1);
+		
+		this.syncOperations.changesForTables(callback, loggedTable, otherTable);
+	}
+	
+	@Test
+	public void changesForTablesUsingCallback_NoVersion() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/sync/changes"))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
+			.andExpect(content().string(compactedJson("data/sync_changes_for_tables_request")))
+			.andRespond(withStatus(HttpStatus.OK).body(compactedJson("data/sync_parser_no_version")).headers(responseHeaders));
+		
+		MemoryTableChangesCallback callback = new MemoryTableChangesCallback();
+		
+		TableVersion loggedTable = new TableVersion("logged_table");
+		TableVersion otherTable = new TableVersion("other_table", 1);
+		
+		this.syncOperations.changesForTables(callback, loggedTable, otherTable);
+		
+		this.assertChanges(callback.getTableChanges(), true, false);
+		
+		mockServer.verify();
+	}
+	
+	@Test
+	public void changesForTablesUsingCallback_NewProperties() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/sync/changes"))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
+			.andExpect(content().string(compactedJson("data/sync_changes_for_tables_request")))
+			.andRespond(withStatus(HttpStatus.OK).body(compactedJson("data/sync_parser_new_properties")).headers(responseHeaders));
+		
+		MemoryTableChangesCallback callback = new MemoryTableChangesCallback();
+		
+		TableVersion loggedTable = new TableVersion("logged_table");
+		TableVersion otherTable = new TableVersion("other_table", 1);
+		
+		this.syncOperations.changesForTables(callback, loggedTable, otherTable);
+		
+		this.assertChanges(callback.getTableChanges());
+		
+		mockServer.verify();
+	}
+	
+	@Test
+	public void changesForTablesUsingCallback_ArrayAndObject() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/sync/changes"))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
+			.andExpect(content().string(compactedJson("data/sync_changes_for_tables_request")))
+			.andRespond(withStatus(HttpStatus.OK).body(compactedJson("data/sync_parser_array_and_object")).headers(responseHeaders));
+		
+		MemoryTableChangesCallback callback = new MemoryTableChangesCallback();
+		
+		TableVersion loggedTable = new TableVersion("logged_table");
+		TableVersion otherTable = new TableVersion("other_table", 1);
+		
+		this.syncOperations.changesForTables(callback, loggedTable, otherTable);
+		
+		this.assertChanges(callback.getTableChanges());
+		
+		mockServer.verify();
+	}
+	
+	@Test
+	public void changesForTablesUsingCallback_EmptyChanges() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/sync/changes"))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
+			.andExpect(content().string(compactedJson("data/sync_changes_for_tables_request")))
+			.andRespond(withStatus(HttpStatus.OK).body(compactedJson("data/sync_parser_empty_changes")).headers(responseHeaders));
+		
+		MemoryTableChangesCallback callback = new MemoryTableChangesCallback();
+		
+		TableVersion loggedTable = new TableVersion("logged_table");
+		TableVersion otherTable = new TableVersion("other_table", 1);
+		
+		this.syncOperations.changesForTables(callback, loggedTable, otherTable);
+		
+		this.assertChanges(callback.getTableChanges(), false, true);
 		
 		mockServer.verify();
 	}
@@ -128,7 +230,7 @@ public class SyncTemplateTest extends AbstractAppGluApiTest {
 		
 		mockServer.verify();
 	}
-
+	
 	private void assertTable(TableChanges changes, String name, int version, int changesSize) {
 		Assert.assertNotNull(changes);
 		Assert.assertEquals(name, changes.getTableName());
@@ -144,6 +246,34 @@ public class SyncTemplateTest extends AbstractAppGluApiTest {
 		Assert.assertEquals(name, row.getRow().getString("name"));
 		Assert.assertEquals(appgluKey, row.getSyncKey());
 		Assert.assertEquals(operation, row.getSyncOperation());
+	}
+	
+	private void assertChanges(List<TableChanges> changes) {
+		this.assertChanges(changes, false, false);
+	}
+	
+	private void assertChanges(List<TableChanges> changes, boolean noVersion, boolean noChanges) {
+		Assert.assertNotNull(changes);
+		Assert.assertEquals(2, changes.size());
+		
+		TableChanges loggedTableChanges = changes.get(0);
+		this.assertTable(loggedTableChanges, "logged_table", noVersion ? 0 : 9, noChanges ? 0 : 2);
+		
+		if (!noChanges) {
+			RowChanges firstRow = loggedTableChanges.getChanges().get(0);
+			this.assertRow(firstRow, 2, 1, "row1", 1, SyncOperation.INSERT);
+			
+			RowChanges secondRow = loggedTableChanges.getChanges().get(1);
+			this.assertRow(secondRow, 2, 2, "row2", 2, SyncOperation.UPDATE);
+		}
+		
+		TableChanges otherTableChanges = changes.get(1);
+		this.assertTable(otherTableChanges, "other_table", noVersion ? 0 : 1, noChanges ? 0 : 1);
+		
+		if (!noChanges) {
+			RowChanges firstRowOtherTable = otherTableChanges.getChanges().get(0);
+			this.assertRow(firstRowOtherTable, 2, 1, "row1", 6, SyncOperation.DELETE);
+		}
 	}
 	
 }

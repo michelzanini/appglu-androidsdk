@@ -7,7 +7,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.util.ClassUtils;
-import org.springframework.web.client.RestTemplate;
 
 import com.appglu.AppGluRestClientException;
 import com.appglu.impl.json.jackson.AppGluModule;
@@ -17,12 +16,12 @@ import com.appglu.impl.util.DateUtils;
 public class JsonMessageConverterSelector {
 	
 	private static final boolean JACKSON_AVAILABLE =
-		ClassUtils.isPresent("org.codehaus.jackson.map.ObjectMapper", RestTemplate.class.getClassLoader()) &&
-		ClassUtils.isPresent("org.codehaus.jackson.JsonGenerator", RestTemplate.class.getClassLoader());
+		ClassUtils.isPresent("org.codehaus.jackson.map.ObjectMapper", JsonMessageConverterSelector.class.getClassLoader()) &&
+		ClassUtils.isPresent("org.codehaus.jackson.JsonGenerator", JsonMessageConverterSelector.class.getClassLoader());
 		
 	public static HttpMessageConverter<Object> getJsonMessageConverter() {
 		if (JACKSON_AVAILABLE) {
-			return MappingJacksonHttpMessageConverterCreator.createJsonMessageConverter();
+			return JacksonHttpMessageConverterCreator.createJsonMessageConverter();
 		}
 		
 		throw new AppGluRestClientException("No supported JSON parser library found on classpath");
@@ -30,13 +29,13 @@ public class JsonMessageConverterSelector {
 	
 	public static TableChangesJsonParser getTableChangesJsonParser() {
 		if (JACKSON_AVAILABLE) {
-			return MappingJacksonHttpMessageConverterCreator.createTableChangesJsonParser();
+			return JacksonHttpMessageConverterCreator.createTableChangesJsonParser();
 		}
 		
 		throw new AppGluRestClientException("No supported JSON parser library found on classpath");
 	}
 	
-	public static class MappingJacksonHttpMessageConverterCreator {
+	public static class JacksonHttpMessageConverterCreator {
 		
 		private static ObjectMapper cachedObjectMapper;
 		

@@ -11,12 +11,13 @@ import org.springframework.web.client.RestOperations;
 
 import com.appglu.AppGluRestClientException;
 import com.appglu.SyncOperations;
+import com.appglu.TableChanges;
 import com.appglu.TableChangesCallback;
 import com.appglu.TableVersion;
-import com.appglu.TableChanges;
 import com.appglu.impl.json.TableChangesBody;
 import com.appglu.impl.json.TableChangesJsonParser;
 import com.appglu.impl.json.TableVersionBody;
+import com.appglu.impl.util.IOUtils;
 
 public final class SyncTemplate implements SyncOperations {
 	
@@ -48,6 +49,26 @@ public final class SyncTemplate implements SyncOperations {
 	public List<TableChanges> changesForTables(TableVersion... tables) throws AppGluRestClientException {
 		return this.changesForTables(Arrays.asList(tables));
 	}
+	
+	public void changesForTables(TableChangesCallback tableChangesCallback, TableVersion... tables) throws AppGluRestClientException {
+		this.changesForTables(Arrays.asList(tables), tableChangesCallback);
+	}
+	
+	public void changesForTables(List<TableVersion> tables, TableChangesCallback tableChangesCallback) throws AppGluRestClientException {
+		InputStream inputStream = null;
+		try {
+			TableVersionBody body = new TableVersionBody(tables);
+			inputStream = this.restOperations.postForObject(CHANGES_FOR_TABLES_URL, body, InputStream.class);
+			
+			this.tableChangesJsonParser.parseTableChanges(inputStream, tableChangesCallback);
+		} catch (RestClientException e) {
+			throw new AppGluRestClientException(e.getMessage(), e);
+		} catch (IOException e) {
+			throw new AppGluRestClientException(e.getMessage(), e);
+		} finally {
+			IOUtils.closeQuietly(inputStream);
+		}
+	}
 
 	public TableChanges changesForTable(String tableName, long version) throws AppGluRestClientException {
 		try {
@@ -69,23 +90,6 @@ public final class SyncTemplate implements SyncOperations {
 
 	public List<TableVersion> versionsForTables(String... tables) throws AppGluRestClientException {
 		return this.versionsForTables(Arrays.asList(tables));
-	}
-	
-	public void changesForTables(TableChangesCallback tableChangesCallback, TableVersion... tables) throws AppGluRestClientException {
-		this.changesForTables(Arrays.asList(tables), tableChangesCallback);
-	}
-	
-	public void changesForTables(List<TableVersion> tables, TableChangesCallback tableChangesCallback) throws AppGluRestClientException {
-		try {
-			TableVersionBody body = new TableVersionBody(tables);
-			InputStream inputStream = this.restOperations.postForObject(CHANGES_FOR_TABLES_URL, body, InputStream.class);
-			
-			this.tableChangesJsonParser.parseTableChanges(inputStream, tableChangesCallback);
-		} catch (RestClientException e) {
-			throw new AppGluRestClientException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new AppGluRestClientException(e.getMessage(), e);
-		}
 	}
 
 }

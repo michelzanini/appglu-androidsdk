@@ -8,6 +8,10 @@ public interface AsyncSyncOperations {
 	
 	void changesForTablesInBackground(List<TableVersion> tables, AsyncCallback<List<TableChanges>> callback);
 	
+	void changesForTablesInBackground(TableChangesCallback tableChangesCallback, AsyncCallback<Void> asyncCallback, TableVersion... tables);
+	
+	void changesForTablesInBackground(List<TableVersion> tables, TableChangesCallback tableChangesCallback, AsyncCallback<Void> asyncCallback);
+	
 	void changesForTableInBackground(String tableName, long version, AsyncCallback<TableChanges> callback);
 	
 	void versionsForTablesInBackground(AsyncCallback<List<TableVersion>> callback, String... tables);

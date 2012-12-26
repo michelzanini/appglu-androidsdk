@@ -8,14 +8,14 @@ public interface SyncOperations {
 	
 	List<TableChanges> changesForTables(List<TableVersion> tables) throws AppGluRestClientException;
 	
+	void changesForTables(TableChangesCallback tableChangesCallback, TableVersion... tables) throws AppGluRestClientException;
+	
+	void changesForTables(List<TableVersion> tables, TableChangesCallback tableChangesCallback) throws AppGluRestClientException;
+	
 	TableChanges changesForTable(String tableName, long version) throws AppGluRestClientException;
 	
 	List<TableVersion> versionsForTables(String... tables) throws AppGluRestClientException;
 	
 	List<TableVersion> versionsForTables(List<String> tables) throws AppGluRestClientException;
-	
-	void changesForTables(TableChangesCallback tableChangesCallback, TableVersion... tables) throws AppGluRestClientException;
-	
-	void changesForTables(List<TableVersion> tables, TableChangesCallback tableChangesCallback) throws AppGluRestClientException;
 
 }
