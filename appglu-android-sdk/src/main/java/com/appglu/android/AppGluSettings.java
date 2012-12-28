@@ -5,6 +5,7 @@ import com.appglu.android.analytics.AnalyticsDispatcher;
 import com.appglu.android.analytics.AnalyticsSessionCallback;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.log.LoggerLevel;
+import com.appglu.android.sync.sqlite.SyncDatabaseHelper;
 import com.appglu.impl.AppGluTemplate;
 
 public class AppGluSettings {
@@ -26,6 +27,8 @@ public class AppGluSettings {
 	private AnalyticsSessionCallback analyticsSessionCallback;
 	
 	private UserSessionPersistence userSessionPersistence;
+	
+	private SyncDatabaseHelper defaultSyncDatabaseHelper;
 	
 	public AppGluSettings(String baseUrl, String applicationKey, String applicationSecret) {
 		this(baseUrl, applicationKey, applicationSecret, null);
@@ -89,6 +92,10 @@ public class AppGluSettings {
 	public void setUserSessionPersistence(UserSessionPersistence userSessionPersistence) {
 		this.userSessionPersistence = userSessionPersistence;
 	}
+	
+	public void setDefaultSyncDatabaseHelper(SyncDatabaseHelper defaultSyncDatabaseHelper) {
+		this.defaultSyncDatabaseHelper = defaultSyncDatabaseHelper;
+	}
 
 	protected AnalyticsDispatcher getAnalyticsDispatcher() {
 		return this.analyticsDispatcher;
@@ -102,6 +109,10 @@ public class AppGluSettings {
 		return this.userSessionPersistence;
 	}
 	
+	public SyncDatabaseHelper getDefaultSyncDatabaseHelper() {
+		return defaultSyncDatabaseHelper;
+	}
+
 	protected AppGluTemplate createAppGluTemplate() {
 		return new AppGluTemplate(this.getBaseUrl(), this.getApplicationKey(), this.getApplicationSecret());
 	}

@@ -47,7 +47,7 @@ public class AsyncTaskExecutor implements AsyncExecutor {
 		};
 		
 		if (AppGlu.hasInternetConnection()) {
-			asyncTask.execute();	
+			asyncTask.execute();
 		} else {
 			handler.post(new Runnable() {
 				public void run() {

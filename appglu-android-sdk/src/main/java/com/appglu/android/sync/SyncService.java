@@ -1,7 +1,6 @@
 package com.appglu.android.sync;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +27,6 @@ public class SyncService {
 	public boolean checkIfDatabaseIsSynchronized() {
 		List<TableVersion> localTableVersions = this.syncRepository.versionsForAllTables();
 		return this.checkForChangesInTables(localTableVersions);
-	}
-	
-	public boolean checkIfTablesAreSynchronized(String... tables) {
-		return this.checkIfTablesAreSynchronized(Arrays.asList(tables));
 	}
 	
 	public boolean checkIfTablesAreSynchronized(List<String> tables) {
@@ -71,10 +66,6 @@ public class SyncService {
 	public void syncDatabase() {
 		List<TableVersion> tableVersions = this.syncRepository.versionsForAllTables();
 		this.fetchAndApplyChangesToTables(tableVersions);
-	}
-	
-	public void syncTables(String... tables) {
-		this.syncTables(Arrays.asList(tables));
 	}
 	
 	public void syncTables(List<String> tables) {

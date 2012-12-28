@@ -214,6 +214,10 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		return restTemplate;
 	}
 	
+	public AsyncExecutor getAsyncExecutor() {
+		return asyncExecutor;
+	}
+	
 	public boolean isUserAuthenticated() {
 		return this.userSessionPersistence.isUserAuthenticated();
 	}

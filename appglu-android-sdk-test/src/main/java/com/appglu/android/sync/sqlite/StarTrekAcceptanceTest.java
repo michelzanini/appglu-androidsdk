@@ -15,6 +15,7 @@ import android.test.suitebuilder.annotation.Suppress;
 
 import com.appglu.TableVersion;
 import com.appglu.android.sync.SyncService;
+import com.appglu.impl.util.IOUtils;
 
 /**
  * We are using @Suppress here to avoid executing this test all the time.
@@ -155,8 +156,8 @@ public class StarTrekAcceptanceTest extends AbstractDatabaseHelperTest {
 		  
 		  FileCopyUtils.copy(inputStream, outputStream);
 		} finally {
-			outputStream.close();
-		    inputStream.close();
+			IOUtils.closeQuietly(inputStream);
+			IOUtils.closeQuietly(outputStream);
 		}
 	}
 
