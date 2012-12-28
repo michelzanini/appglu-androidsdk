@@ -1,6 +1,7 @@
 {
 	"tables":[
 		{
+			"version":9
 			"changes":[
             	{
 					"id":1,
@@ -16,7 +17,6 @@
 				}
 			],
 			"tableName":"logged_table",
-			"version":9
 		},
 		{
 			"tableName":"other_table",

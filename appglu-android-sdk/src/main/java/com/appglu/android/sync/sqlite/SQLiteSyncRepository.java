@@ -11,18 +11,18 @@ import android.database.sqlite.SQLiteDatabase;
 import com.appglu.Row;
 import com.appglu.RowChanges;
 import com.appglu.SyncOperation;
-import com.appglu.TableChanges;
 import com.appglu.TableVersion;
 import com.appglu.android.AppGlu;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.sync.SyncRepository;
 import com.appglu.android.sync.SyncRepositoryException;
+import com.appglu.android.sync.TransactionCallback;
 import com.appglu.impl.util.StringUtils;
 
 public class SQLiteSyncRepository implements SyncRepository {
 	
-	private Logger logger = LoggerFactory.getLogger(AppGlu.SYNC_LOG_TAG);
+	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
 	
 	private static final int TABLE_NAME_INDEX = 0;
 	private static final int VERSION_INDEX = 1;
@@ -101,7 +101,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 		return tables;
 	}
 	
-	public void applyChangesWithTransaction(List<TableChanges> changes) {
+	public void applyChangesWithTransaction(TransactionCallback transactionCallback) {
 		SQLiteDatabase database = this.getWritableDatabase();
 		
 		boolean foreignKeysWereEnabled = false;
@@ -114,8 +114,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 			
 			database.beginTransaction();
 			try {
-				this.applyChangesToDatabase(changes);
-				this.saveTableVersions(changes);
+				transactionCallback.doInTransaction();
 				database.setTransactionSuccessful();
 			} finally {
 				database.endTransaction();
@@ -128,27 +127,21 @@ public class SQLiteSyncRepository implements SyncRepository {
 			database.close();
 		}
 	}
-
-	protected void applyChangesToDatabase(List<TableChanges> changes) {
-		for (TableChanges tableChanges : changes) {
-			this.applyChangesToTable(tableChanges);
-		}
-	}
-
-	protected void applyChangesToTable(TableChanges tableChanges) {
-		String tableName = tableChanges.getTableName();
-
-		if (this.logger.isDebugEnabled()) {
-			if (tableChanges.hasChanges()) {
-				this.logger.info("Applying remote changes to table '" + tableName + "'");
+	
+	public void doWithTableVersion(TableVersion tableVersion, boolean hasChanges) {
+		if (this.logger.isInfoEnabled()) {
+			if (hasChanges) {
+				this.logger.info("Applying remote changes to table '" + tableVersion.getTableName() + "'");
 			} else {
-				this.logger.info("Table '" + tableName + "' is already synchronized");
+				this.logger.info("Table '" + tableVersion.getTableName() + "' is already synchronized");
 			}
 		}
 		
-		for (RowChanges rowChanges : tableChanges.getChanges()) {
-			this.executeSyncOperation(tableName, rowChanges);
-		}
+		this.saveTableVersion(tableVersion);
+	}
+
+	public void doWithRowChanges(TableVersion tableVersion, RowChanges rowChanges) {
+		this.executeSyncOperation(tableVersion.getTableName(), rowChanges);
 	}
 
 	protected boolean executeSyncOperation(String tableName, RowChanges rowChanges) {
@@ -243,18 +236,16 @@ public class SQLiteSyncRepository implements SyncRepository {
 		database.delete(StringUtils.escapeColumn(tableName), whereClause, new String[] { primaryKeyForSyncKey });
 	}
 	
-	protected void saveTableVersions(List<TableChanges> tables) {
+	protected void saveTableVersion(TableVersion tableVersion) {
 	    try {
 	    	SQLiteDatabase database = this.getWritableDatabase();
 	    	
-	    	for (TableChanges table : tables) {
-	    		ContentValues values = new ContentValues();
-	    		
-	    		values.put("table_name", table.getTableName());
-		    	values.put("version", table.getVersion());
-				
-				database.replaceOrThrow("appglu_table_versions", null, values);
-			}
+    		ContentValues values = new ContentValues();
+    		
+    		values.put("table_name", tableVersion.getTableName());
+	    	values.put("version", tableVersion.getVersion());
+			
+			database.replaceOrThrow("appglu_table_versions", null, values);
 		} catch (SQLException e) {
 			throw new SyncRepositoryException(e);
 		}
@@ -366,5 +357,5 @@ public class SQLiteSyncRepository implements SyncRepository {
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.delete("appglu_sync_metadata", "sync_key = ? and table_name = ?", new String[] { String.valueOf(syncKey), tableName });
 	}
-	
+
 }

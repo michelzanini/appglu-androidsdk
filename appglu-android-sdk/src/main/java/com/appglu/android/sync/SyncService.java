@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.appglu.SyncOperations;
-import com.appglu.TableChanges;
 import com.appglu.TableVersion;
 import com.appglu.android.AppGlu;
 import com.appglu.android.log.Logger;
@@ -15,7 +14,7 @@ import com.appglu.android.log.LoggerFactory;
 
 public class SyncService {
 	
-	private Logger logger = LoggerFactory.getLogger(AppGlu.SYNC_LOG_TAG);
+	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
 	
 	private SyncOperations syncOperations;
 	
@@ -83,39 +82,30 @@ public class SyncService {
 		this.fetchAndApplyChangesToTables(tableVersions);
 	}
 	
-	private void fetchAndApplyChangesToTables(List<TableVersion> tableVersions) {
+	private void fetchAndApplyChangesToTables(final List<TableVersion> tableVersions) {
 		this.logger.info("Synchronization started");
-		
-		if (tableVersions.isEmpty()) {
-			this.logger.info("No changes were applied because no local tables were found");
-			return;
-		}
-		
-		this.logger.info("Fetching remote changes for tables " + tableVersions);
-		
-		List<TableChanges> tableChanges = this.syncOperations.changesForTables(tableVersions);
-		
-		if (!this.areThereChangesToBeApplied(tableChanges)) {
-			this.logger.info("No changes were applied because tables are already synchronized");
-			return;
-		}
-		
-		this.logger.info("Applying remote changes to tables " + tableChanges);
-		
-		this.syncRepository.applyChangesWithTransaction(tableChanges);
-		
-		this.logger.info("Changes were applied with success");
-	}
-
-	private boolean areThereChangesToBeApplied(List<TableChanges> tableChanges) {
-		boolean foundChanges = false;
-		
-		for (TableChanges table : tableChanges) {
-			if (table.hasChanges()) {
-				foundChanges = true;
+		try {
+			if (tableVersions.isEmpty()) {
+				this.logger.info("No changes were applied because no local tables were found");
+				return;
 			}
+			
+			this.logger.info("Fetching and applying remote changes for tables " + tableVersions);
+			
+			this.syncRepository.applyChangesWithTransaction(new TransactionCallback() {
+				public void doInTransaction() {
+					syncOperations.changesForTables(tableVersions, syncRepository);
+					
+				}
+			});
+			
+			this.logger.info("Changes were applied with success");
+		} catch (RuntimeException e) {
+			this.logger.error("Synchronization failed with exception", e);
+			throw e;
+		} finally {
+			this.logger.info("Synchronization finished");
 		}
-		return foundChanges;
 	}
 
 }

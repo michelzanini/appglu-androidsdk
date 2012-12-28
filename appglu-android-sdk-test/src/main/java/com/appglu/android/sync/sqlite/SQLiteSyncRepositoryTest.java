@@ -5,13 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
-
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.appglu.Row;
 import com.appglu.RowChanges;
-import com.appglu.TableChanges;
 import com.appglu.TableVersion;
 
 public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
@@ -134,13 +132,9 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 	}
 
 	public void testSaveTableVersions() {
-		List<TableChanges> tables = new ArrayList<TableChanges>();
-		
-		tables.add(new TableChanges("appglu_storage_files", 5));
-		tables.add(new TableChanges("logged_table", 4));
-		tables.add(new TableChanges("other_table", 10));
-		
-		this.syncRepository.saveTableVersions(tables);
+		this.syncRepository.saveTableVersion(new TableVersion("appglu_storage_files", 5));
+		this.syncRepository.saveTableVersion(new TableVersion("logged_table", 4));
+		this.syncRepository.saveTableVersion(new TableVersion("other_table", 10));
 		
 		List<TableVersion> updatedTables = this.syncRepository.versionsForAllTables();
 		this.assertTableVersions(updatedTables, 5, 4, 10);

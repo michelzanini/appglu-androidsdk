@@ -30,7 +30,6 @@ import com.appglu.User;
 import com.appglu.UserOperations;
 import com.appglu.UserSessionPersistence;
 import com.appglu.impl.json.JsonMessageConverterSelector;
-import com.appglu.impl.json.TableChangesJsonParser;
 import com.appglu.impl.util.StringUtils;
 
 public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
@@ -73,8 +72,6 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	
 	private HttpMessageConverter<Object> jsonMessageConverter;
 	
-	private TableChangesJsonParser tableChangesJsonParser;
-	
 	private DefaultHeadersHttpRequestInterceptor defaultHeadersHttpRequestInterceptor;
 	
 	private BasicAuthHttpRequestInterceptor basicAuthHttpRequestInterceptor;
@@ -95,7 +92,6 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 
 		this.restTemplate = this.createRestTemplate();
 		this.jsonMessageConverter = JsonMessageConverterSelector.getJsonMessageConverter();
-		this.tableChangesJsonParser = JsonMessageConverterSelector.getTableChangesJsonParser();
 		this.restTemplate.setMessageConverters(this.getMessageConverters());
 		this.restTemplate.setErrorHandler(this.getResponseErrorHandler());
 		this.restTemplate.setInterceptors(this.createInterceptors());
@@ -233,7 +229,6 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	private List<HttpMessageConverter<?>> getMessageConverters() {
 		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
 		messageConverters.add(new StringHttpMessageConverter());
-		messageConverters.add(new InputStreamHttpMessageConverter(this.jsonMessageConverter));
 		messageConverters.add(this.jsonMessageConverter);
 		return messageConverters;
 	}
@@ -254,7 +249,7 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.pushOperations = new PushTemplate(this.restOperations());
 		this.analyticsOperations = new AnalyticsTemplate(this.restOperations());
 		this.userOperations = new UserTemplate(this.restOperations(), this.userSessionPersistence);
-		this.syncOperations = new SyncTemplate(this.restOperations(), this.tableChangesJsonParser);
+		this.syncOperations = new SyncTemplate(this.restOperations(), this.jsonMessageConverter);
 	}
 	
 	private void initAsyncApis() {

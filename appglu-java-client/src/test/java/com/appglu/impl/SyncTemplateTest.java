@@ -89,7 +89,7 @@ public class SyncTemplateTest extends AbstractAppGluApiTest {
 		this.syncOperations.changesForTables(callback, loggedTable, otherTable);
 	}
 	
-	@Test
+	@Test(expected = AppGluRestClientException.class)
 	public void changesForTablesUsingCallback_NoVersion() {
 		mockServer.expect(requestTo("http://localhost/appglu/v1/sync/changes"))
 			.andExpect(method(HttpMethod.POST))
@@ -103,10 +103,6 @@ public class SyncTemplateTest extends AbstractAppGluApiTest {
 		TableVersion otherTable = new TableVersion("other_table", 1);
 		
 		this.syncOperations.changesForTables(callback, loggedTable, otherTable);
-		
-		this.assertChanges(callback.getTableChanges(), true, false);
-		
-		mockServer.verify();
 	}
 	
 	@Test

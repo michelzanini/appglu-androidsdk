@@ -66,6 +66,8 @@ public class JacksonTableChangesJsonParser implements TableChangesJsonParser {
 	private void parseTableChanges(JsonParser jsonParser, TableChangesCallback tableChangesCallback) throws IOException {
 		TableVersion tableVersion = new TableVersion();
 		
+		boolean versionWasReceived = false;
+		
 		jsonParser.nextToken();
 		
 		while (jsonParser.getCurrentToken() == JsonToken.FIELD_NAME) {
@@ -77,11 +79,16 @@ public class JacksonTableChangesJsonParser implements TableChangesJsonParser {
 			} else if ("version".equals(jsonParser.getCurrentName())) {
 				
 				tableVersion.setVersion(jsonParser.nextIntValue(0));
+				versionWasReceived = true;
 				
 			} else if ("changes".equals(jsonParser.getCurrentName())) {
 				
 				if (StringUtils.isEmpty(tableVersion.getTableName())) {
 					throw new JsonParseException("Field 'tableName' is expected before field 'changes'", jsonParser.getCurrentLocation());
+				}
+				
+				if (!versionWasReceived) {
+					throw new JsonParseException("Field 'version' is expected before field 'changes'", jsonParser.getCurrentLocation());
 				}
 				
 				this.parseRowChanges(jsonParser, tableVersion, tableChangesCallback);

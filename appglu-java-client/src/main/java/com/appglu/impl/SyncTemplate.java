@@ -1,11 +1,18 @@
 package com.appglu.impl;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -14,10 +21,10 @@ import com.appglu.SyncOperations;
 import com.appglu.TableChanges;
 import com.appglu.TableChangesCallback;
 import com.appglu.TableVersion;
+import com.appglu.impl.json.JsonMessageConverterSelector;
 import com.appglu.impl.json.TableChangesBody;
 import com.appglu.impl.json.TableChangesJsonParser;
 import com.appglu.impl.json.TableVersionBody;
-import com.appglu.impl.util.IOUtils;
 
 public final class SyncTemplate implements SyncOperations {
 	
@@ -29,11 +36,14 @@ public final class SyncTemplate implements SyncOperations {
 	
 	private RestOperations restOperations;
 	
+	private HttpMessageConverter<Object> jsonMessageConverter;
+	
 	private TableChangesJsonParser tableChangesJsonParser;
 	
-	public SyncTemplate(RestOperations restOperations, TableChangesJsonParser tableChangesJsonParser) {
+	public SyncTemplate(RestOperations restOperations, HttpMessageConverter<Object> jsonMessageConverter) {
 		this.restOperations = restOperations;
-		this.tableChangesJsonParser = tableChangesJsonParser;
+		this.jsonMessageConverter = jsonMessageConverter;
+		this.tableChangesJsonParser = JsonMessageConverterSelector.getTableChangesJsonParser();
 	}
 
 	public List<TableChanges> changesForTables(List<TableVersion> tables) throws AppGluRestClientException {
@@ -54,19 +64,32 @@ public final class SyncTemplate implements SyncOperations {
 		this.changesForTables(Arrays.asList(tables), tableChangesCallback);
 	}
 	
-	public void changesForTables(List<TableVersion> tables, TableChangesCallback tableChangesCallback) throws AppGluRestClientException {
-		InputStream inputStream = null;
+	public void changesForTables(final List<TableVersion> tables, final TableChangesCallback tableChangesCallback) throws AppGluRestClientException {
+		
+		RequestCallback requestCallback = new RequestCallback() {
+			public void doWithRequest(ClientHttpRequest request) throws IOException {
+				HttpEntity<Object> requestEntity = new HttpEntity<Object>(new TableVersionBody(tables));
+				
+				HttpHeaders requestHeaders = requestEntity.getHeaders();
+				if (!requestHeaders.isEmpty()) {
+					request.getHeaders().putAll(requestHeaders);
+				}
+				
+				jsonMessageConverter.write(requestEntity.getBody(), requestHeaders.getContentType(), request);
+			}
+		};
+		
+		ResponseExtractor<Object> responseExtractor = new ResponseExtractor<Object>() {
+			public Object extractData(ClientHttpResponse response) throws IOException {
+				tableChangesJsonParser.parseTableChanges(response.getBody(), tableChangesCallback);
+				return null;
+			}
+		};
+		
 		try {
-			TableVersionBody body = new TableVersionBody(tables);
-			inputStream = this.restOperations.postForObject(CHANGES_FOR_TABLES_URL, body, InputStream.class);
-			
-			this.tableChangesJsonParser.parseTableChanges(inputStream, tableChangesCallback);
+			this.restOperations.execute(CHANGES_FOR_TABLES_URL, HttpMethod.POST, requestCallback, responseExtractor);
 		} catch (RestClientException e) {
 			throw new AppGluRestClientException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new AppGluRestClientException(e.getMessage(), e);
-		} finally {
-			IOUtils.closeQuietly(inputStream);
 		}
 	}
 
