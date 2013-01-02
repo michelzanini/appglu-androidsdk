@@ -1,4 +1,4 @@
-package com.appglu.android.sync.sqlite;
+package com.appglu.android.sync;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

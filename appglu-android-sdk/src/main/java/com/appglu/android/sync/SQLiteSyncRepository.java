@@ -1,4 +1,4 @@
-package com.appglu.android.sync.sqlite;
+package com.appglu.android.sync;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +15,6 @@ import com.appglu.TableVersion;
 import com.appglu.android.AppGlu;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
-import com.appglu.android.sync.SyncRepository;
-import com.appglu.android.sync.SyncRepositoryException;
-import com.appglu.android.sync.TransactionCallback;
 import com.appglu.impl.util.StringUtils;
 
 public class SQLiteSyncRepository implements SyncRepository {

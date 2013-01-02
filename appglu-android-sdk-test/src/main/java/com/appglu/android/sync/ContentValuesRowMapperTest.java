@@ -1,4 +1,4 @@
-package com.appglu.android.sync.sqlite;
+package com.appglu.android.sync;
 
 import java.util.Date;
 import java.util.TimeZone;
@@ -8,6 +8,9 @@ import android.content.ContentValues;
 import android.test.AndroidTestCase;
 
 import com.appglu.Row;
+import com.appglu.android.sync.Column;
+import com.appglu.android.sync.ContentValuesRowMapper;
+import com.appglu.android.sync.TableColumns;
 import com.appglu.impl.util.DateUtils;
 import com.appglu.impl.util.StringUtils;
 

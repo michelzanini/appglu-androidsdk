@@ -1,4 +1,4 @@
-package com.appglu.android.sync.sqlite;
+package com.appglu.android.sync;
 
 import java.io.IOException;
 import java.io.InputStream;

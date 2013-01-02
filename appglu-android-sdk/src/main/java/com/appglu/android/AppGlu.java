@@ -6,6 +6,7 @@ import com.appglu.AsyncPushOperations;
 import com.appglu.AsyncSavedQueriesOperations;
 import com.appglu.PushOperations;
 import com.appglu.SavedQueriesOperations;
+import com.appglu.SyncOperations;
 import com.appglu.User;
 import com.appglu.UserSessionPersistence;
 import com.appglu.android.analytics.AnalyticsDatabaseHelper;
@@ -16,9 +17,12 @@ import com.appglu.android.analytics.LogAnalyticsDispatcher;
 import com.appglu.android.analytics.SQLiteAnalyticsRepository;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
-import com.appglu.android.sync.sqlite.SyncDatabaseHelper;
+import com.appglu.android.sync.SQLiteSyncRepository;
+import com.appglu.android.sync.SyncDatabaseHelper;
+import com.appglu.android.sync.SyncRepository;
 import com.appglu.android.util.AppGluUtils;
 import com.appglu.impl.AppGluTemplate;
+import com.appglu.impl.AsyncExecutor;
 
 public final class AppGlu {
 	
@@ -187,7 +191,12 @@ public final class AppGlu {
 	
 	protected SyncApi getSyncApi(SyncDatabaseHelper syncDatabaseHelper) {
 		AppGluUtils.assertNotNull(syncDatabaseHelper, "SyncDatabaseHelper cannot be null");
-		return new SyncApi(this.getAppGluTemplate().syncOperations(), this.getAppGluTemplate().getAsyncExecutor(), syncDatabaseHelper);
+		
+		SyncOperations syncOperations = this.getAppGluTemplate().syncOperations();
+		SyncRepository syncRepository = new SQLiteSyncRepository(syncDatabaseHelper);
+		AsyncExecutor asyncExecutor = this.getAppGluTemplate().getAsyncExecutor();
+		
+		return new SyncApi(syncOperations, syncRepository, asyncExecutor);
 	}
 	
 	protected boolean checkInternetConnection() {

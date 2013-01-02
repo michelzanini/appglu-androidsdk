@@ -86,7 +86,6 @@ public class SyncService {
 			this.syncRepository.applyChangesWithTransaction(new TransactionCallback() {
 				public void doInTransaction() {
 					syncOperations.changesForTables(tableVersions, syncRepository);
-					
 				}
 			});
 			

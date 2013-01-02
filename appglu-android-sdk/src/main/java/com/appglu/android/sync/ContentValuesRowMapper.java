@@ -1,4 +1,4 @@
-package com.appglu.android.sync.sqlite;
+package com.appglu.android.sync;
 
 import java.util.Date;
 import java.util.Map.Entry;
@@ -27,6 +27,16 @@ public class ContentValuesRowMapper implements RowMapper<ContentValues> {
 			String escapedColumnName = StringUtils.escapeColumn(columnName);
 			
 			Column column = tableColumns.get(columnName);
+			
+			if (column == null) {
+				String underscoreColumnName = StringUtils.underscoreName(columnName);
+				column = tableColumns.get(underscoreColumnName);
+			}
+			
+			if (column == null) {
+				String camelCaseColumnName = StringUtils.camelCaseName(columnName);
+				column = tableColumns.get(camelCaseColumnName);
+			}
 			
 			if (column != null) {
 				if (column.getType().contains("int")) {

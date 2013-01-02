@@ -1,4 +1,4 @@
-package com.appglu.android.sync.sqlite;
+package com.appglu.android.sync;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.test.suitebuilder.annotation.Suppress;
 
 import com.appglu.TableVersion;
+import com.appglu.android.sync.SQLiteSyncRepository;
 import com.appglu.android.sync.SyncService;
 import com.appglu.impl.util.IOUtils;
 

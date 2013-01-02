@@ -1,7 +1,9 @@
-package com.appglu.android.sync.sqlite;
+package com.appglu.android.sync;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.appglu.android.sync.SyncDatabaseHelper;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

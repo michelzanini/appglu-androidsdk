@@ -5,7 +5,7 @@ import com.appglu.android.analytics.AnalyticsDispatcher;
 import com.appglu.android.analytics.AnalyticsSessionCallback;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.log.LoggerLevel;
-import com.appglu.android.sync.sqlite.SyncDatabaseHelper;
+import com.appglu.android.sync.SyncDatabaseHelper;
 import com.appglu.impl.AppGluTemplate;
 
 public class AppGluSettings {
