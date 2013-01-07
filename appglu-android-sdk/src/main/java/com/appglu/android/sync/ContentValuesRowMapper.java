@@ -28,16 +28,6 @@ public class ContentValuesRowMapper implements RowMapper<ContentValues> {
 			
 			Column column = tableColumns.get(columnName);
 			
-			if (column == null) {
-				String underscoreColumnName = StringUtils.underscoreName(columnName);
-				column = tableColumns.get(underscoreColumnName);
-			}
-			
-			if (column == null) {
-				String camelCaseColumnName = StringUtils.camelCaseName(columnName);
-				column = tableColumns.get(camelCaseColumnName);
-			}
-			
 			if (column != null) {
 				if (column.getType().contains("int")) {
 					values.put(escapedColumnName, row.getInt(columnName));

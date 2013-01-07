@@ -97,5 +97,5 @@ public class SyncService {
 			this.logger.info("Synchronization finished");
 		}
 	}
-
+	
 }

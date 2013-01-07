@@ -1,6 +1,7 @@
 package com.appglu.android.sync;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -8,6 +9,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.appglu.StorageFile;
 import com.appglu.Row;
 import com.appglu.RowChanges;
 import com.appglu.SyncOperation;
@@ -27,6 +29,16 @@ public class SQLiteSyncRepository implements SyncRepository {
 	private static final int COLUMN_NAME_INDEX = 1;
 	private static final int COLUMN_TYPE_INDEX = 2;
 	private static final int PRIMARY_KEY_INDEX = 5;
+	
+	private static final int FILE_ID_INDEX = 0;
+	private static final int FILE_KEY_INDEX = 1;
+	private static final int FILE_NAME_INDEX = 2;
+	private static final int FILE_CONTENT_TYPE_INDEX = 3;
+	private static final int FILE_TITLE_INDEX = 4;
+	private static final int FILE_SIZE_INDEX = 5;
+	private static final int FILE_LAST_MODIFIED_INDEX = 6;
+	private static final int FILE_URL_INDEX = 7;
+	private static final int FILE_DIRECTORY_ID_INDEX = 8;
 	
 	private SyncDatabaseHelper syncDatabaseHelper;
 	
@@ -96,6 +108,49 @@ public class SQLiteSyncRepository implements SyncRepository {
 		}
 		
 		return tables;
+	}
+	
+	public List<StorageFile> getAllFiles() {
+		return this.queryForFiles("select * from appglu_storage_files", new String[0]);
+	}
+	
+	protected List<StorageFile> queryForFiles(String sql, String[] selectionArgs) {
+		List<StorageFile> files = new ArrayList<StorageFile>();
+		
+		SQLiteDatabase database = this.getReadableDatabase();
+		Cursor cursor = null;
+		
+		try {
+			cursor = database.rawQuery(sql, selectionArgs);
+		    cursor.moveToFirst();
+		    
+		    for (int i = 0; i < cursor.getCount(); i++) {
+		    	StorageFile file = new StorageFile();
+		    	
+		    	file.setId(cursor.getInt(FILE_ID_INDEX));
+		    	file.setKey(cursor.getString(FILE_KEY_INDEX));
+		    	file.setName(cursor.getString(FILE_NAME_INDEX));
+		    	file.setContentType(cursor.getString(FILE_CONTENT_TYPE_INDEX));
+		    	file.setTitle(cursor.getString(FILE_TITLE_INDEX));
+		    	file.setSize(cursor.getInt(FILE_SIZE_INDEX));
+		    	file.setLastModified(new Date(cursor.getLong(FILE_LAST_MODIFIED_INDEX)));
+		    	file.setUrl(cursor.getString(FILE_URL_INDEX));
+		    	file.setDirectoryId(cursor.getInt(FILE_DIRECTORY_ID_INDEX));
+		    	
+		    	files.add(file);
+		    	
+		    	cursor.moveToNext();
+		    }
+		} catch (SQLException e) {
+			throw new SyncRepositoryException(e);
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+		    database.close();
+		}
+		
+		return files;
 	}
 	
 	public void applyChangesWithTransaction(TransactionCallback transactionCallback) {

@@ -8,6 +8,7 @@ import junit.framework.Assert;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.appglu.StorageFile;
 import com.appglu.Row;
 import com.appglu.RowChanges;
 import com.appglu.TableVersion;
@@ -240,6 +241,25 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 		
 		String primaryKeyAfterDelete = this.syncRepository.primaryKeyForSyncKey(1, "other_table");
 		Assert.assertNull(primaryKeyAfterDelete);
+	}
+	
+	public void testGetAllFiles() {
+		List<StorageFile> files = this.syncRepository.getAllFiles();
+
+		Assert.assertNotNull(files);
+		Assert.assertEquals(2, files.size());
+		
+		StorageFile fileOne = files.get(0);
+		
+		Assert.assertEquals(1001, fileOne.getId());
+		Assert.assertEquals("1ee26276-b773-4eaa-9762-49c380e604c7", fileOne.getKey());
+		Assert.assertEquals("app-icon.png", fileOne.getName());
+		Assert.assertEquals("image/png", fileOne.getContentType());
+		Assert.assertEquals("app-icon", fileOne.getTitle());
+		Assert.assertEquals(10125, fileOne.getSize());
+		Assert.assertEquals(1357309209000L, fileOne.getLastModified().getTime());
+		Assert.assertEquals("https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png", fileOne.getUrl());
+		Assert.assertEquals(1, fileOne.getDirectoryId());
 	}
 
 }

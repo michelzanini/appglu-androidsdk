@@ -56,6 +56,8 @@ public final class AppGlu {
 	
 	private SyncApi syncApi;
 	
+	private StorageApi storageApi;
+	
 	protected AppGlu() {
 		
 	}
@@ -199,6 +201,13 @@ public final class AppGlu {
 		return new SyncApi(syncOperations, syncRepository, asyncExecutor);
 	}
 	
+	protected StorageApi getStorageApi() {
+		if (this.storageApi == null) {
+			this.storageApi = new StorageApi(this.getAppGluTemplate().storageOperations());
+		}
+		return this.storageApi;
+	}
+	
 	protected boolean checkInternetConnection() {
 		return AppGluUtils.hasInternetConnection(context);
 	}
@@ -257,6 +266,10 @@ public final class AppGlu {
 	
 	public static SyncApi syncApi(SyncDatabaseHelper syncDatabaseHelper) {
 		return getRequiredInstance().getSyncApi(syncDatabaseHelper);
+	}
+	
+	public static StorageApi storageApi() {
+		return getRequiredInstance().getStorageApi();
 	}
 	
 }

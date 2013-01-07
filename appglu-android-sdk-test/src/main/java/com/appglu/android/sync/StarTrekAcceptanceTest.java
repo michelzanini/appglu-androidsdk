@@ -7,15 +7,10 @@ import java.io.IOException;
 import java.util.List;
 
 import junit.framework.Assert;
-
-import org.springframework.util.FileCopyUtils;
-
 import android.database.sqlite.SQLiteDatabase;
 import android.test.suitebuilder.annotation.Suppress;
 
 import com.appglu.TableVersion;
-import com.appglu.android.sync.SQLiteSyncRepository;
-import com.appglu.android.sync.SyncService;
 import com.appglu.impl.util.IOUtils;
 
 /**
@@ -155,7 +150,7 @@ public class StarTrekAcceptanceTest extends AbstractDatabaseHelperTest {
 		  inputStream = new FileInputStream(databaseFile);
 		  outputStream = new FileOutputStream("/mnt/sdcard/" + this.getDatabaseName());
 		  
-		  FileCopyUtils.copy(inputStream, outputStream);
+		  IOUtils.copy(inputStream, outputStream);
 		} finally {
 			IOUtils.closeQuietly(inputStream);
 			IOUtils.closeQuietly(outputStream);
