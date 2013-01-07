@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.Assert;
@@ -20,11 +21,13 @@ import com.appglu.AsyncAppGluOperations;
 import com.appglu.AsyncCrudOperations;
 import com.appglu.AsyncPushOperations;
 import com.appglu.AsyncSavedQueriesOperations;
+import com.appglu.AsyncStorageOperations;
 import com.appglu.AsyncSyncOperations;
 import com.appglu.AsyncUserOperations;
 import com.appglu.CrudOperations;
 import com.appglu.PushOperations;
 import com.appglu.SavedQueriesOperations;
+import com.appglu.StorageOperations;
 import com.appglu.SyncOperations;
 import com.appglu.User;
 import com.appglu.UserOperations;
@@ -43,6 +46,8 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	private String applicationSecret;
 	
 	private RestTemplate restTemplate;
+	
+	private RestTemplate downloadRestTemplate;
 	
 	private AsyncExecutor asyncExecutor;
 	
@@ -70,6 +75,10 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	
 	private AsyncSyncOperations asyncSyncOperations;
 	
+	private StorageOperations storageOperations;
+	
+	private AsyncStorageOperations asyncStorageOperations;
+	
 	private HttpMessageConverter<Object> jsonMessageConverter;
 	
 	private DefaultHeadersHttpRequestInterceptor defaultHeadersHttpRequestInterceptor;
@@ -96,9 +105,12 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.restTemplate.setErrorHandler(this.getResponseErrorHandler());
 		this.restTemplate.setInterceptors(this.createInterceptors());
 		
+		this.downloadRestTemplate = this.createRestTemplate();
+		this.downloadRestTemplate.setMessageConverters(this.getDownloadMessageConverters());
+		
 		this.initApis();
 	}
-	
+
 	public void setAsyncExecutor(AsyncExecutor asyncExecutor) {
 		Assert.notNull(asyncExecutor, "AsyncExecutor param cannot be null.");
 		this.asyncExecutor = asyncExecutor;
@@ -205,6 +217,15 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.checkAsyncExecutor();
 		return asyncSyncOperations;
 	}
+	
+	public StorageOperations storageOperations() {
+		return storageOperations;
+	}
+	
+	public AsyncStorageOperations asyncStorageOperations() {
+		this.checkAsyncExecutor();
+		return asyncStorageOperations;
+	}
 
 	public RestOperations restOperations() {
 		return getRestTemplate();
@@ -212,6 +233,14 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	
 	public RestTemplate getRestTemplate() {
 		return restTemplate;
+	}
+	
+	public RestOperations downloadRestOperations() {
+		return getDownloadRestTemplate();
+	}
+	
+	public RestTemplate getDownloadRestTemplate() {
+		return downloadRestTemplate;
 	}
 	
 	public AsyncExecutor getAsyncExecutor() {
@@ -237,6 +266,12 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		return messageConverters;
 	}
 	
+	private List<HttpMessageConverter<?>> getDownloadMessageConverters() {
+		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
+		messageConverters.add(new ByteArrayHttpMessageConverter());
+		return messageConverters;
+	}
+	
 	private ResponseErrorHandler getResponseErrorHandler() {
 		return new AppGluResponseErrorHandler(this.jsonMessageConverter);
 	}
@@ -254,15 +289,17 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.analyticsOperations = new AnalyticsTemplate(this.restOperations());
 		this.userOperations = new UserTemplate(this.restOperations(), this.userSessionPersistence);
 		this.syncOperations = new SyncTemplate(this.restOperations(), this.jsonMessageConverter);
+		this.storageOperations = new StorageTemplate(this.downloadRestOperations());
 	}
 	
 	private void initAsyncApis() {
-		this.asyncCrudOperations = new AsyncCrudTemplate(this.asyncExecutor, this.crudOperations);
-		this.asyncSavedQueriesOperations = new AsyncSavedQueriesTemplate(this.asyncExecutor, this.savedQueriesOperations);
-		this.asyncPushOperations = new AsyncPushTemplate(this.asyncExecutor, this.pushOperations);
-		this.asyncAnalyticsOperations = new AsyncAnalyticsTemplate(this.asyncExecutor, this.analyticsOperations);
-		this.asyncUserOperations = new AsyncUserTemplate(this.asyncExecutor, this.userOperations);
-		this.asyncSyncOperations = new AsyncSyncTemplate(this.asyncExecutor, this.syncOperations);
+		this.asyncCrudOperations = new AsyncCrudTemplate(this.getAsyncExecutor(), this.crudOperations());
+		this.asyncSavedQueriesOperations = new AsyncSavedQueriesTemplate(this.getAsyncExecutor(), this.savedQueriesOperations());
+		this.asyncPushOperations = new AsyncPushTemplate(this.getAsyncExecutor(), this.pushOperations());
+		this.asyncAnalyticsOperations = new AsyncAnalyticsTemplate(this.getAsyncExecutor(), this.analyticsOperations());
+		this.asyncUserOperations = new AsyncUserTemplate(this.getAsyncExecutor(), this.userOperations());
+		this.asyncSyncOperations = new AsyncSyncTemplate(this.getAsyncExecutor(), this.syncOperations());
+		this.asyncStorageOperations = new AsyncStorageTemplate(this.getAsyncExecutor(), this.storageOperations());
 	}
 	
 	protected RestTemplate createRestTemplate() {
@@ -273,8 +310,8 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	}
 
 	protected void configureHttpRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
-		this.defaultHeadersHttpRequestInterceptor = new DefaultHeadersHttpRequestInterceptor(this.baseUrl);
-		this.basicAuthHttpRequestInterceptor = new BasicAuthHttpRequestInterceptor(this.applicationKey, this.applicationSecret);
+		this.defaultHeadersHttpRequestInterceptor = new DefaultHeadersHttpRequestInterceptor(this.getBaseUrl());
+		this.basicAuthHttpRequestInterceptor = new BasicAuthHttpRequestInterceptor(this.getApplicationKey(), this.getApplicationSecret());
 		this.userSessionRequestInterceptor = new UserSessionRequestInterceptor(this.userSessionPersistence);
 		
 		interceptors.add(this.defaultHeadersHttpRequestInterceptor);

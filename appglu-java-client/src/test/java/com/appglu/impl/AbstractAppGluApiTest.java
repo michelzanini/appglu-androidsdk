@@ -16,7 +16,10 @@ import org.springframework.test.web.client.MockRestServiceServer;
 public abstract class AbstractAppGluApiTest {
 	
 	protected AppGluTemplate appGluTemplate;
+	
 	protected MockRestServiceServer mockServer;
+	protected MockRestServiceServer downloadMockServer;
+	
 	protected HttpHeaders responseHeaders;
 
 	protected MediaType jsonMediaType = new MediaType("application", "json", Charset.forName("UTF-8"));
@@ -28,10 +31,12 @@ public abstract class AbstractAppGluApiTest {
 		TimeZone.setDefault(gmt);
 		
 		appGluTemplate = createAppGluTemplate();
+		
 		mockServer = MockRestServiceServer.createServer(appGluTemplate.getRestTemplate());
+		downloadMockServer = MockRestServiceServer.createServer(appGluTemplate.getDownloadRestTemplate());
+		
 		responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(jsonMediaType);
-		
 	}
 
 	protected AppGluTemplate createAppGluTemplate() {
