@@ -65,12 +65,22 @@ public class SyncService {
 
 	public void syncDatabase() {
 		List<TableVersion> tableVersions = this.syncRepository.versionsForAllTables();
-		this.fetchAndApplyChangesToTables(tableVersions);
+		
+		if (this.checkForChangesInTables(tableVersions)) {
+			this.logger.info("Database is already synchronized");
+		} else {
+			this.fetchAndApplyChangesToTables(tableVersions);
+		}
 	}
 	
 	public void syncTables(List<String> tables) {
 		List<TableVersion> tableVersions = this.syncRepository.versionsForTables(tables);
-		this.fetchAndApplyChangesToTables(tableVersions);
+		
+		if (this.checkForChangesInTables(tableVersions)) {
+			this.logger.info("Tables '" + tables + "' are already synchronized");
+		} else {
+			this.fetchAndApplyChangesToTables(tableVersions);
+		}
 	}
 	
 	private void fetchAndApplyChangesToTables(final List<TableVersion> tableVersions) {

@@ -9,6 +9,7 @@ import com.appglu.SavedQueriesOperations;
 import com.appglu.SyncOperations;
 import com.appglu.User;
 import com.appglu.UserSessionPersistence;
+import com.appglu.android.analytics.AnalyticsApi;
 import com.appglu.android.analytics.AnalyticsDatabaseHelper;
 import com.appglu.android.analytics.AnalyticsDispatcher;
 import com.appglu.android.analytics.AnalyticsRepository;
@@ -18,11 +19,11 @@ import com.appglu.android.analytics.SQLiteAnalyticsRepository;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.sync.SQLiteSyncRepository;
+import com.appglu.android.sync.SyncApi;
 import com.appglu.android.sync.SyncDatabaseHelper;
 import com.appglu.android.sync.SyncRepository;
 import com.appglu.android.util.AppGluUtils;
 import com.appglu.impl.AppGluTemplate;
-import com.appglu.impl.AsyncExecutor;
 
 public final class AppGlu {
 	
@@ -182,7 +183,7 @@ public final class AppGlu {
 			SyncDatabaseHelper defaultSyncDatabaseHelper = this.getSettings().getDefaultSyncDatabaseHelper();
 			
 			if (defaultSyncDatabaseHelper == null) {
-				throw new IllegalStateException("The 'defaultSyncDatabaseHelper' property was not set on AppGluSettings. " +
+				throw new AppGluNotProperlyConfiguredException("The 'defaultSyncDatabaseHelper' property was not set on AppGluSettings. " +
 					"It is required to set a default database helper on initialization.");
 			}
 			
@@ -196,9 +197,8 @@ public final class AppGlu {
 		
 		SyncOperations syncOperations = this.getAppGluTemplate().syncOperations();
 		SyncRepository syncRepository = new SQLiteSyncRepository(syncDatabaseHelper);
-		AsyncExecutor asyncExecutor = this.getAppGluTemplate().getAsyncExecutor();
 		
-		return new SyncApi(syncOperations, syncRepository, asyncExecutor);
+		return new SyncApi(this.context, syncOperations, syncRepository);
 	}
 	
 	protected StorageApi getStorageApi() {
@@ -214,10 +214,8 @@ public final class AppGlu {
 
 	//Public Methods
 	
-	public static void initialize(Context context, AppGluSettings settings) {
-		if (instance == null) {
-			getInstance().doInitialize(context, settings);
-		}
+	public static synchronized void initialize(Context context, AppGluSettings settings) {
+		getInstance().doInitialize(context, settings);
 	}
 	
 	public static boolean hasInternetConnection() {

@@ -23,7 +23,7 @@ public class SyncSQLiteServiceTest extends AbstractSyncSQLiteTest {
 	}
 	
 	public void testSyncDatabase() {
-		this.defineSyncServiceWithMockOperations("sync_database", null);
+		this.defineSyncServiceWithMockOperations("sync_database", "check_if_database_is_synchronized_with_changes");
 		
 		int rowsBeforeForStorageFiles = this.countTable("appglu_storage_files");
 		int rowsBeforeForLoggedTable = this.countTable("logged_table");
@@ -44,7 +44,7 @@ public class SyncSQLiteServiceTest extends AbstractSyncSQLiteTest {
 	}
 	
 	public void testSyncTables() {
-		this.defineSyncServiceWithMockOperations("sync_tables", null);
+		this.defineSyncServiceWithMockOperations("sync_tables", "check_if_tables_are_synchronized_with_changes");
 		
 		int rowsBeforeForLoggedTable = this.countTable("logged_table");
 		int rowsBeforeForOtherTable = this.countTable("other_table");
@@ -67,7 +67,7 @@ public class SyncSQLiteServiceTest extends AbstractSyncSQLiteTest {
 	}
 	
 	public void testSyncTables_withReservedWords() {
-		this.defineSyncServiceWithMockOperations("sync_tables_with_reserved_words", null);
+		this.defineSyncServiceWithMockOperations("sync_tables_with_reserved_words", "table_version_reserved_words");
 		
 		List<String> tables = new ArrayList<String>();
 		

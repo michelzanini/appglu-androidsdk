@@ -2,11 +2,11 @@
 	"tables":[
 		{
 			"tableName": "appglu_storage_files",
-			"version": 4
+			"version": 1
 		},
 		{
 			"tableName": "logged_table",
-			"version": 9
+			"version": 3
 		},
       	{
 			"tableName": "other_table",

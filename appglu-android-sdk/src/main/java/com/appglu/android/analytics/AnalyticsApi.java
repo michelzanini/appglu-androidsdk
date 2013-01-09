@@ -1,4 +1,4 @@
-package com.appglu.android;
+package com.appglu.android.analytics;
 
 import java.util.Date;
 import java.util.Map;
@@ -8,10 +8,7 @@ import android.app.Activity;
 import android.os.Handler;
 
 import com.appglu.AnalyticsSessionEvent;
-import com.appglu.android.analytics.AnalyticsDispatcher;
-import com.appglu.android.analytics.AnalyticsRepository;
-import com.appglu.android.analytics.AnalyticsService;
-import com.appglu.android.analytics.AnalyticsSessionCallback;
+import com.appglu.android.AppGlu;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 
