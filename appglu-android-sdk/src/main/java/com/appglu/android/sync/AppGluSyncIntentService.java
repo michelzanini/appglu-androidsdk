@@ -3,15 +3,18 @@ package com.appglu.android.sync;
 import java.util.ArrayList;
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 
 import com.appglu.android.AppGlu;
-import com.appglu.android.log.Logger;
-import com.appglu.android.log.LoggerFactory;
 
 public class AppGluSyncIntentService extends IntentService {
 	
 	public static final String TABLES_STRING_ARRAY_EXTRA = "AppGluSyncIntentService.TABLES_STRING_ARRAY_EXTRA";
+	
+	public static final String NOTIFICATION_PARCELABLE_EXTRA = "AppGluSyncIntentService.NOTIFICATION_PARCELABLE_EXTRA";
 	
 	public static final String PRE_EXECUTE_ACTION = "AppGluSyncIntentService.ON_PRE_EXECUTE_ACTION";
 	
@@ -25,25 +28,20 @@ public class AppGluSyncIntentService extends IntentService {
 	
 	public static final String EXCEPTION_SERIALIZABLE_EXTRA = "AppGluSyncIntentService.EXCEPTION_SERIALIZABLE_EXTRA";
 	
-	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
-	
-	private static boolean isRunning = false;
-
 	public AppGluSyncIntentService() {
 		super("AppGluSyncIntentService");
 	}
 	
 	@Override
 	public void onStart(Intent intent, int startId) {
-		if (!isRunning) {
-			isRunning = true;
-			this.logger.info("AppGluSyncIntentService has being started");
-			super.onStart(intent, startId);
-		} else {
-			this.logger.info("AppGluSyncIntentService was not started because it is already running");
+		super.onStart(intent, startId);
+		
+		if (intent.hasExtra(NOTIFICATION_PARCELABLE_EXTRA)) {
+			Notification notification = (Notification) intent.getParcelableExtra(NOTIFICATION_PARCELABLE_EXTRA);
+			this.sendNotification(notification);
 		}
 	}
-	
+
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		try {
@@ -67,10 +65,27 @@ public class AppGluSyncIntentService extends IntentService {
 		} catch (Exception exception) {
 			this.broadcastException(exception);
 		} finally {
-			isRunning = false;
+			this.cancelNotification();
 		}
 		
 		this.broadcastAction(FINISH_ACTION);
+	}
+	
+	private void sendNotification(Notification notification) {
+		//removes auto cancel flag
+		notification.flags &= ~Notification.FLAG_AUTO_CANCEL;
+		//removes ongoing flag
+		notification.flags &= ~Notification.FLAG_ONGOING_EVENT;
+		//adds no clear flag
+		notification.flags |= Notification.FLAG_NO_CLEAR;
+		
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.notify(SyncApi.NOTIFICATION_ID, notification);
+	}
+
+	private void cancelNotification() {
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.cancel(SyncApi.NOTIFICATION_ID);
 	}
 	
 	protected void broadcastAction(String action) {
@@ -84,10 +99,6 @@ public class AppGluSyncIntentService extends IntentService {
 		intent.putExtra(EXCEPTION_SERIALIZABLE_EXTRA, exception);
 		intent.setAction(EXCEPTION_ACTION);
 		this.sendBroadcast(intent);
-	}
-	
-	public static boolean isRunning() {
-		return isRunning;
 	}
 
 }
