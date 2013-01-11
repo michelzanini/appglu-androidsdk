@@ -1,7 +1,6 @@
 package com.appglu.android.sync;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import android.app.Activity;
@@ -53,51 +52,27 @@ public final class SyncApi {
 	}
 	
 	public void startSyncDatabaseIntentService() {
-		this.startSyncIntentService();
+		this.startSyncIntentService(null, null, null);
 	}
 
-	public void startSyncTablesIntentService(String... tables) {
-		this.startSyncIntentService(Arrays.asList(tables));
-	}
-	
 	public void startSyncTablesIntentService(List<String> tables) {
-		this.startSyncIntentService(tables);
+		this.startSyncIntentService(null, null, tables);
 	}
 	
 	public void startSyncDatabaseIntentService(Notification executingSyncNotification) {
-		this.startSyncIntentService(executingSyncNotification, null);
+		this.startSyncIntentService(executingSyncNotification, null, null);
 	}
 
-	public void startSyncTablesIntentService(Notification executingSyncNotification, String... tables) {
-		this.startSyncIntentService(executingSyncNotification, Arrays.asList(tables));
-	}
-	
 	public void startSyncTablesIntentService(Notification executingSyncNotification, List<String> tables) {
-		this.startSyncIntentService(executingSyncNotification, tables);
+		this.startSyncIntentService(executingSyncNotification, null, tables);
 	}
 	
 	public void startSyncDatabaseIntentService(Notification executingSyncNotification, Notification changesAppliedNotification) {
 		this.startSyncIntentService(executingSyncNotification, changesAppliedNotification, null);
 	}
 
-	public void startSyncTablesIntentService(Notification executingSyncNotification, Notification changesAppliedNotification, String... tables) {
-		this.startSyncIntentService(executingSyncNotification, changesAppliedNotification, Arrays.asList(tables));
-	}
-	
 	public void startSyncTablesIntentService(Notification executingSyncNotification, Notification changesAppliedNotification, List<String> tables) {
 		this.startSyncIntentService(executingSyncNotification, changesAppliedNotification, tables);
-	}
-	
-	private void startSyncIntentService() {
-		this.startSyncIntentService(null, null, null);
-	}
-	
-	private void startSyncIntentService(List<String> tables) {
-		this.startSyncIntentService(null, null, tables);
-	}
-	
-	private void startSyncIntentService(Notification whileRunningNotification, List<String> tables) {
-		this.startSyncIntentService(whileRunningNotification, null, tables);
 	}
 	
 	private void startSyncIntentService(Notification executingSyncNotification, Notification changesAppliedNotification, List<String> tables) {
