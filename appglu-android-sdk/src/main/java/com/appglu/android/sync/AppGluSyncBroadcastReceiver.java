@@ -9,9 +9,9 @@ import android.content.Intent;
 
 public class AppGluSyncBroadcastReceiver extends BroadcastReceiver {
 
-	private AsyncCallback<Void> asyncCallback;
+	private AsyncCallback<Boolean> asyncCallback;
 	
-	public AppGluSyncBroadcastReceiver(AsyncCallback<Void> asyncCallback) {
+	public AppGluSyncBroadcastReceiver(AsyncCallback<Boolean> asyncCallback) {
 		this.asyncCallback = asyncCallback;
 	}
 
@@ -26,7 +26,8 @@ public class AppGluSyncBroadcastReceiver extends BroadcastReceiver {
 			asyncCallback.onNoInternetConnection();
 		}
 		if (AppGluSyncIntentService.RESULT_ACTION.equals(action)) {
-			asyncCallback.onResult(null);
+			boolean changesWereApplied = intent.getBooleanExtra(AppGluSyncIntentService.CHANGES_WERE_APPLIED_BOOLEAN_EXTRA, false);
+			asyncCallback.onResult(changesWereApplied);
 		}
 		if (AppGluSyncIntentService.EXCEPTION_ACTION.equals(action)) {
 			Exception exception = (Exception) intent.getSerializableExtra(AppGluSyncIntentService.EXCEPTION_SERIALIZABLE_EXTRA);

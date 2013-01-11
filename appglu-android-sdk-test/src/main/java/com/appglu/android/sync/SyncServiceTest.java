@@ -9,7 +9,7 @@ import com.appglu.TableVersion;
 import com.appglu.android.sync.SQLiteSyncRepository;
 import com.appglu.android.sync.SyncService;
 
-public class SyncSQLiteServiceTest extends AbstractSyncSQLiteTest {
+public class SyncServiceTest extends AbstractSyncSQLiteTest {
 
 	private SyncService syncService;
 	
@@ -29,7 +29,8 @@ public class SyncSQLiteServiceTest extends AbstractSyncSQLiteTest {
 		int rowsBeforeForLoggedTable = this.countTable("logged_table");
 		int rowsBeforeForOtherTable = this.countTable("other_table");
 		
-		this.syncService.syncDatabase();
+		boolean changesWereApplied = this.syncService.syncDatabase();
+		Assert.assertTrue(changesWereApplied);
 		
 		List<TableVersion> updatedTables = this.syncRepository.versionsForAllTables();
 		this.assertTableVersions(updatedTables, 1, 3, 3);
@@ -54,7 +55,8 @@ public class SyncSQLiteServiceTest extends AbstractSyncSQLiteTest {
 		tables.add("logged_table");
 		tables.add("other_table");
 		
-		this.syncService.syncTables(tables);
+		boolean changesWereApplied = this.syncService.syncTables(tables);
+		Assert.assertTrue(changesWereApplied);
 		
 		List<TableVersion> updatedTables = this.syncRepository.versionsForAllTables();
 		this.assertTableVersions(updatedTables, 0, 3, 3);
@@ -73,7 +75,8 @@ public class SyncSQLiteServiceTest extends AbstractSyncSQLiteTest {
 		
 		tables.add("reserverd_words");
 		
-		this.syncService.syncTables(tables);
+		boolean changesWereApplied = this.syncService.syncTables(tables);
+		Assert.assertTrue(changesWereApplied);
 	}
 	
 	public void testCheckIfDatabaseIsSynchronized_withChanges() {

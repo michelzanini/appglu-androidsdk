@@ -26,15 +26,15 @@ public class SyncService {
 	
 	public boolean checkIfDatabaseIsSynchronized() {
 		List<TableVersion> localTableVersions = this.syncRepository.versionsForAllTables();
-		return this.checkForChangesInTables(localTableVersions);
+		return this.areTablesSynchronized(localTableVersions);
 	}
 	
 	public boolean checkIfTablesAreSynchronized(List<String> tables) {
 		List<TableVersion> localTableVersions = this.syncRepository.versionsForTables(tables);
-		return this.checkForChangesInTables(localTableVersions);
+		return this.areTablesSynchronized(localTableVersions);
 	}
 
-	private boolean checkForChangesInTables(List<TableVersion> localTableVersions) {
+	private boolean areTablesSynchronized(List<TableVersion> localTableVersions) {
 		if (localTableVersions.isEmpty()) {
 			return true;
 		}
@@ -63,23 +63,27 @@ public class SyncService {
 		return true;
 	}
 
-	public void syncDatabase() {
+	public boolean syncDatabase() {
 		List<TableVersion> tableVersions = this.syncRepository.versionsForAllTables();
 		
-		if (this.checkForChangesInTables(tableVersions)) {
+		if (this.areTablesSynchronized(tableVersions)) {
 			this.logger.info("Database is already synchronized");
+			return false;
 		} else {
 			this.fetchAndApplyChangesToTables(tableVersions);
+			return true;
 		}
 	}
 	
-	public void syncTables(List<String> tables) {
+	public boolean syncTables(List<String> tables) {
 		List<TableVersion> tableVersions = this.syncRepository.versionsForTables(tables);
 		
-		if (this.checkForChangesInTables(tableVersions)) {
+		if (this.areTablesSynchronized(tableVersions)) {
 			this.logger.info("Tables '" + tables + "' are already synchronized");
+			return false;
 		} else {
 			this.fetchAndApplyChangesToTables(tableVersions);
+			return true;
 		}
 	}
 	

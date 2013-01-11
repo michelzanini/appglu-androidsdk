@@ -34,12 +34,12 @@ public final class SyncApi {
 		this.syncService = new SyncService(syncOperations, syncRepository);
 	}
 	
-	protected void doSyncDatabase() {
-		this.syncService.syncDatabase();
+	protected boolean doSyncDatabase() {
+		return this.syncService.syncDatabase();
 	}
 
-	protected void doSyncTables(List<String> tables) {
-		this.syncService.syncTables(tables);
+	protected boolean doSyncTables(List<String> tables) {
+		return this.syncService.syncTables(tables);
 	}
 	
 	public boolean isSyncIntentServiceRunning() {
@@ -53,30 +53,54 @@ public final class SyncApi {
 	}
 	
 	public void startSyncDatabaseIntentService() {
-		this.startSyncIntentService(null, null);
+		this.startSyncIntentService();
 	}
 
 	public void startSyncTablesIntentService(String... tables) {
-		this.startSyncIntentService(null, Arrays.asList(tables));
+		this.startSyncIntentService(Arrays.asList(tables));
 	}
 	
 	public void startSyncTablesIntentService(List<String> tables) {
-		this.startSyncIntentService(null, tables);
+		this.startSyncIntentService(tables);
 	}
 	
-	public void startSyncDatabaseIntentService(Notification notification) {
-		this.startSyncIntentService(notification, null);
+	public void startSyncDatabaseIntentService(Notification executingSyncNotification) {
+		this.startSyncIntentService(executingSyncNotification, null);
 	}
 
-	public void startSyncTablesIntentService(Notification notification, String... tables) {
-		this.startSyncIntentService(notification, Arrays.asList(tables));
+	public void startSyncTablesIntentService(Notification executingSyncNotification, String... tables) {
+		this.startSyncIntentService(executingSyncNotification, Arrays.asList(tables));
 	}
 	
-	public void startSyncTablesIntentService(Notification notification, List<String> tables) {
-		this.startSyncIntentService(notification, tables);
+	public void startSyncTablesIntentService(Notification executingSyncNotification, List<String> tables) {
+		this.startSyncIntentService(executingSyncNotification, tables);
 	}
 	
-	private void startSyncIntentService(Notification notification, List<String> tables) {
+	public void startSyncDatabaseIntentService(Notification executingSyncNotification, Notification changesAppliedNotification) {
+		this.startSyncIntentService(executingSyncNotification, changesAppliedNotification, null);
+	}
+
+	public void startSyncTablesIntentService(Notification executingSyncNotification, Notification changesAppliedNotification, String... tables) {
+		this.startSyncIntentService(executingSyncNotification, changesAppliedNotification, Arrays.asList(tables));
+	}
+	
+	public void startSyncTablesIntentService(Notification executingSyncNotification, Notification changesAppliedNotification, List<String> tables) {
+		this.startSyncIntentService(executingSyncNotification, changesAppliedNotification, tables);
+	}
+	
+	private void startSyncIntentService() {
+		this.startSyncIntentService(null, null, null);
+	}
+	
+	private void startSyncIntentService(List<String> tables) {
+		this.startSyncIntentService(null, null, tables);
+	}
+	
+	private void startSyncIntentService(Notification whileRunningNotification, List<String> tables) {
+		this.startSyncIntentService(whileRunningNotification, null, tables);
+	}
+	
+	private void startSyncIntentService(Notification executingSyncNotification, Notification changesAppliedNotification, List<String> tables) {
 		if (this.isSyncIntentServiceRunning()) {
 			this.logger.info("AppGluSyncIntentService was not started because it is already running");
 			return;
@@ -89,8 +113,12 @@ public final class SyncApi {
 			intent.putStringArrayListExtra(AppGluSyncIntentService.TABLES_STRING_ARRAY_EXTRA, new ArrayList<String>(tables));
 		}
 		
-		if (notification != null) {
-			intent.putExtra(AppGluSyncIntentService.NOTIFICATION_PARCELABLE_EXTRA, notification);
+		if (executingSyncNotification != null) {
+			intent.putExtra(AppGluSyncIntentService.EXECUTING_SYNC_NOTIFICATION_PARCELABLE_EXTRA, executingSyncNotification);
+		}
+		
+		if (changesAppliedNotification != null) {
+			intent.putExtra(AppGluSyncIntentService.CHANGES_APPLIED_NOTIFICATION_PARCELABLE_EXTRA, changesAppliedNotification);
 		}
 		
 		this.context.startService(intent);
