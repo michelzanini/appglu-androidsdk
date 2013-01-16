@@ -5,6 +5,6 @@ import java.io.InputStream;
 
 public interface StorageStreamCallback {
 	
-	void doWithInputStream(InputStream fileStream) throws IOException;
+	void doWithInputStream(InputStream inputStream) throws IOException;
 
 }

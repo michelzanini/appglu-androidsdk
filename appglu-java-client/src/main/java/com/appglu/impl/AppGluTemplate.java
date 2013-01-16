@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.Assert;
@@ -106,7 +105,6 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.restTemplate.setInterceptors(this.createInterceptors());
 		
 		this.downloadRestTemplate = this.createRestTemplate();
-		this.downloadRestTemplate.setMessageConverters(this.getDownloadMessageConverters());
 		
 		this.initApis();
 	}
@@ -263,12 +261,6 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
 		messageConverters.add(new StringHttpMessageConverter());
 		messageConverters.add(this.jsonMessageConverter);
-		return messageConverters;
-	}
-	
-	private List<HttpMessageConverter<?>> getDownloadMessageConverters() {
-		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
-		messageConverters.add(new ByteArrayHttpMessageConverter());
 		return messageConverters;
 	}
 	

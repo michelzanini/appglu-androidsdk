@@ -18,7 +18,6 @@ public abstract class AbstractAppGluApiTest {
 	protected AppGluTemplate appGluTemplate;
 	
 	protected MockRestServiceServer mockServer;
-	protected MockRestServiceServer downloadMockServer;
 	
 	protected HttpHeaders responseHeaders;
 
@@ -33,7 +32,6 @@ public abstract class AbstractAppGluApiTest {
 		appGluTemplate = createAppGluTemplate();
 		
 		mockServer = MockRestServiceServer.createServer(appGluTemplate.getRestTemplate());
-		downloadMockServer = MockRestServiceServer.createServer(appGluTemplate.getDownloadRestTemplate());
 		
 		responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(jsonMediaType);

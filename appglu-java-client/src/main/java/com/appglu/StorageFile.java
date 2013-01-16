@@ -23,6 +23,8 @@ public class StorageFile implements Serializable {
 	
 	private String url;
 	
+	private String eTag;
+	
 	private int directoryId;
 	
 	public StorageFile() {
@@ -68,6 +70,10 @@ public class StorageFile implements Serializable {
 	public String getUrl() {
 		return url;
 	}
+	
+	public String getETag() {
+		return eTag;
+	}
 
 	public int getDirectoryId() {
 		return directoryId;
@@ -104,6 +110,10 @@ public class StorageFile implements Serializable {
 	public void setUrl(String url) {
 		this.url = url;
 	}
+	
+	public void setETag(String eTag) {
+		this.eTag = eTag;
+	}
 
 	public void setDirectoryId(int directoryId) {
 		this.directoryId = directoryId;
@@ -111,7 +121,7 @@ public class StorageFile implements Serializable {
 
 	@Override
 	public String toString() {
-		return "StorageFile [name=" + name + ", url=" + url + "]";
+		return "StorageFile [name=" + name + ", url=" + url + ", eTag=" + eTag + "]";
 	}
 	
 }

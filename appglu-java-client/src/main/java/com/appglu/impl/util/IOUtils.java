@@ -9,17 +9,14 @@ public abstract class IOUtils {
 	
 	public static final int BUFFER_SIZE = 4096;
 	
-	public static int copy(InputStream in, OutputStream out) throws IOException {
+	public static void copy(InputStream in, OutputStream out) throws IOException {
 		try {
-			int byteCount = 0;
 			byte[] buffer = new byte[BUFFER_SIZE];
 			int bytesRead = -1;
 			while ((bytesRead = in.read(buffer)) != -1) {
 				out.write(buffer, 0, bytesRead);
-				byteCount += bytesRead;
 			}
 			out.flush();
-			return byteCount;
 		} finally {
 			closeQuietly(in);
 			closeQuietly(out);

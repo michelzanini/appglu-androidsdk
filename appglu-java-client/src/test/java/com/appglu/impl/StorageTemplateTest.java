@@ -12,8 +12,10 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.web.client.MockRestServiceServer;
 
 import com.appglu.AppGluRestClientException;
 import com.appglu.StorageFile;
@@ -26,20 +28,29 @@ public class StorageTemplateTest extends AbstractAppGluApiTest {
 	private static final String URL = "https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png";
 	
 	private static final byte[] CONTENT = "content".getBytes();
+	
+	private static final String ETAG = "\"9a0364b9e99bb480dd25e1f0284c8555\"";
 
+	private MockRestServiceServer downloadMockServer;
+	
 	private StorageOperations storageOperations;
 	
 	@Before
 	public void setup() {
 		super.setup();
 		storageOperations = appGluTemplate.storageOperations();
+		
+		downloadMockServer = MockRestServiceServer.createServer(appGluTemplate.getDownloadRestTemplate());
+		
+		responseHeaders = new HttpHeaders();
+		responseHeaders.setETag(ETAG);
 	}
 	
 	@Test
 	public void downloadFile() {
 		downloadMockServer.expect(requestTo(URL))
 			.andExpect(method(HttpMethod.GET))
-			.andRespond(withStatus(HttpStatus.OK).body(CONTENT));
+			.andRespond(withStatus(HttpStatus.OK).body(CONTENT).headers(responseHeaders));
 		
 		byte[] response = this.storageOperations.downloadStorageFile(new StorageFile(URL));
 		
@@ -52,7 +63,7 @@ public class StorageTemplateTest extends AbstractAppGluApiTest {
 	public void streamStorageFile() {
 		downloadMockServer.expect(requestTo(URL))
 			.andExpect(method(HttpMethod.GET))
-			.andRespond(withStatus(HttpStatus.OK).body(CONTENT));
+			.andRespond(withStatus(HttpStatus.OK).body(CONTENT).headers(responseHeaders));
 		
 		this.storageOperations.streamStorageFile(new StorageFile(URL), new StorageStreamCallback() {
 			
@@ -65,6 +76,20 @@ public class StorageTemplateTest extends AbstractAppGluApiTest {
 		});
 		
 		downloadMockServer.verify();
+	}
+	
+	@Test (expected = AppGluRestClientException.class)
+	public void downloadFile_invalidETag() {
+		String invalidETag = "\"1234567890\"";
+		
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setETag(invalidETag);
+		
+		downloadMockServer.expect(requestTo(URL))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withStatus(HttpStatus.OK).body(CONTENT).headers(responseHeaders));
+		
+		this.storageOperations.downloadStorageFile(new StorageFile(URL));
 	}
 	
 	@Test (expected = AppGluRestClientException.class)

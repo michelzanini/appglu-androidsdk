@@ -61,6 +61,13 @@ public class StringUtils {
 		return string.replace(';', ':');
 	}
 	
+	public static String removeDoubleQuotes(String string) {
+		if (string == null) {
+			return "";
+		}
+		return string.replace("\"", "");
+	}
+	
 	public static String escapeColumn(String columnName) {
 		return "`" + columnName + "`";
 	}
