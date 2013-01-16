@@ -17,9 +17,10 @@ public class SyncServiceTest extends AbstractSyncSQLiteTest {
 	
 	private void defineSyncServiceWithMockOperations(String changesForTablesJson, String versionsForTablesJson) {
 		MockSyncOperations syncOperations = new MockSyncOperations(changesForTablesJson, versionsForTablesJson);
+		MockStorageOperations mockStorageOperations = new MockStorageOperations();
 		
 		this.syncRepository = new SQLiteSyncRepository(this.syncDatabaseHelper);
-		this.syncService = new SyncService(syncOperations, this.syncRepository);
+		this.syncService = new SyncService(syncOperations, mockStorageOperations, this.syncRepository);
 	}
 	
 	public void testSyncDatabase() {

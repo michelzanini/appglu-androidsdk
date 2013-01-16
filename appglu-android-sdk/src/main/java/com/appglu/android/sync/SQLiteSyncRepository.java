@@ -38,7 +38,8 @@ public class SQLiteSyncRepository implements SyncRepository {
 	private static final int FILE_SIZE_INDEX = 5;
 	private static final int FILE_LAST_MODIFIED_INDEX = 6;
 	private static final int FILE_URL_INDEX = 7;
-	private static final int FILE_DIRECTORY_ID_INDEX = 8;
+	private static final int FILE_E_TAG_INDEX = 8;
+	private static final int FILE_DIRECTORY_ID_INDEX = 9;
 	
 	private SyncDatabaseHelper syncDatabaseHelper;
 	
@@ -110,7 +111,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 		return tables;
 	}
 	
-	public List<StorageFile> getAllFiles() {
+	protected List<StorageFile> getAllFiles() {
 		return this.queryForFiles("select * from appglu_storage_files", new String[0]);
 	}
 	
@@ -135,6 +136,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 		    	file.setSize(cursor.getInt(FILE_SIZE_INDEX));
 		    	file.setLastModified(new Date(cursor.getLong(FILE_LAST_MODIFIED_INDEX)));
 		    	file.setUrl(cursor.getString(FILE_URL_INDEX));
+		    	file.setETag(cursor.getString(FILE_E_TAG_INDEX));
 		    	file.setDirectoryId(cursor.getInt(FILE_DIRECTORY_ID_INDEX));
 		    	
 		    	files.add(file);
@@ -147,13 +149,12 @@ public class SQLiteSyncRepository implements SyncRepository {
 			if (cursor != null) {
 				cursor.close();
 			}
-		    database.close();
 		}
 		
 		return files;
 	}
 	
-	public void applyChangesWithTransaction(TransactionCallback transactionCallback) {
+	public void applyChangesWithTransaction(SyncRepositoryCallback repositoryCallback) {
 		SQLiteDatabase database = this.getWritableDatabase();
 		
 		boolean foreignKeysWereEnabled = false;
@@ -166,7 +167,9 @@ public class SQLiteSyncRepository implements SyncRepository {
 			
 			database.beginTransaction();
 			try {
-				transactionCallback.doInTransaction();
+				repositoryCallback.syncData();
+				repositoryCallback.syncFiles(this.getAllFiles());
+				
 				database.setTransactionSuccessful();
 			} finally {
 				database.endTransaction();

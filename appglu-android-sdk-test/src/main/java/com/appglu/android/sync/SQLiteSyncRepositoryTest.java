@@ -259,6 +259,7 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 		Assert.assertEquals(10125, fileOne.getSize());
 		Assert.assertEquals(1357309209000L, fileOne.getLastModified().getTime());
 		Assert.assertEquals("https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png", fileOne.getUrl());
+		Assert.assertEquals("abdca54e4ca831ec8013ef9f597adf1c", fileOne.getETag());
 		Assert.assertEquals(1, fileOne.getDirectoryId());
 	}
 

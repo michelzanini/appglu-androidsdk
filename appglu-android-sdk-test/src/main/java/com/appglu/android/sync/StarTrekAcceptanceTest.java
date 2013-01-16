@@ -98,10 +98,11 @@ public class StarTrekAcceptanceTest extends AbstractDatabaseHelperTest {
 		Assert.assertEquals(0, this.countTable("article_image"));
 		Assert.assertEquals(0, this.countTable("messages"));
 		
-		MockSyncOperations syncOperations = new MockSyncOperations("star_trek_full_database", null);
+		MockSyncOperations mockSyncOperations = new MockSyncOperations("star_trek_full_database", "star_trek_table_versions");
+		MockStorageOperations mockStorageOperations = new MockStorageOperations();
 		
 		SQLiteSyncRepository syncRepository = new SQLiteSyncRepository(this.syncDatabaseHelper);
-		SyncService syncService = new SyncService(syncOperations, syncRepository);
+		SyncService syncService = new SyncService(mockSyncOperations, mockStorageOperations, syncRepository);
 		
 		syncService.syncDatabase();
 		

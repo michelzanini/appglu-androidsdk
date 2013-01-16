@@ -1,11 +1,14 @@
 package com.appglu.android;
 
+import java.io.File;
+
 import android.content.Context;
 
 import com.appglu.AsyncPushOperations;
 import com.appglu.AsyncSavedQueriesOperations;
 import com.appglu.PushOperations;
 import com.appglu.SavedQueriesOperations;
+import com.appglu.StorageOperations;
 import com.appglu.SyncOperations;
 import com.appglu.User;
 import com.appglu.UserSessionPersistence;
@@ -21,6 +24,7 @@ import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.sync.SQLiteSyncRepository;
 import com.appglu.android.sync.SyncApi;
 import com.appglu.android.sync.SyncDatabaseHelper;
+import com.appglu.android.sync.SyncFileStorageException;
 import com.appglu.android.sync.SyncRepository;
 import com.appglu.android.util.AppGluUtils;
 import com.appglu.impl.AppGluTemplate;
@@ -196,9 +200,10 @@ public final class AppGlu {
 		AppGluUtils.assertNotNull(syncDatabaseHelper, "SyncDatabaseHelper cannot be null");
 		
 		SyncOperations syncOperations = this.getAppGluTemplate().syncOperations();
+		StorageOperations storageOperations = this.getAppGluTemplate().storageOperations();
 		SyncRepository syncRepository = new SQLiteSyncRepository(syncDatabaseHelper);
 		
-		return new SyncApi(this.context, syncOperations, syncRepository);
+		return new SyncApi(this.context, syncOperations, storageOperations, syncRepository);
 	}
 	
 	protected StorageApi getStorageApi() {
@@ -211,6 +216,14 @@ public final class AppGlu {
 	protected boolean checkInternetConnection() {
 		return AppGluUtils.hasInternetConnection(context);
 	}
+	
+	protected File externalAppGluStorageFilesDir() {
+		File externalStorageDirectory = this.context.getExternalFilesDir("appglu_storage_files");
+		if (externalStorageDirectory == null) {
+			throw new SyncFileStorageException("External storage is not accessible");
+		}
+		return externalStorageDirectory;
+	}
 
 	//Public Methods
 	
@@ -220,6 +233,10 @@ public final class AppGlu {
 	
 	public static boolean hasInternetConnection() {
 		return getRequiredInstance().checkInternetConnection();
+	}
+	
+	public static File getExternalAppGluStorageFilesDir() {
+		return getRequiredInstance().externalAppGluStorageFilesDir();
 	}
 	
 	public static boolean isUserAuthenticated() {
