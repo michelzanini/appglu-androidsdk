@@ -2,12 +2,17 @@ package com.appglu.android.sync;
 
 import java.util.ArrayList;
 
+import org.springframework.web.client.RestClientException;
+
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 
+import com.appglu.AppGluHttpClientException;
+import com.appglu.AppGluHttpServerException;
+import com.appglu.AppGluRestClientException;
 import com.appglu.android.AppGlu;
 
 public class SyncIntentService extends IntentService {
@@ -30,7 +35,7 @@ public class SyncIntentService extends IntentService {
 	
 	public static final String FINISH_ACTION = "SyncIntentService.FINISH_ACTION";
 	
-	public static final String EXCEPTION_SERIALIZABLE_EXTRA = "SyncIntentService.EXCEPTION_SERIALIZABLE_EXTRA";
+	public static final String EXCEPTION_WRAPPER_SERIALIZABLE_EXTRA = "SyncIntentService.EXCEPTION_WRAPPER_SERIALIZABLE_EXTRA";
 	
 	public static final String CHANGES_WERE_APPLIED_BOOLEAN_EXTRA = "SyncIntentService.CHANGES_WERE_APPLIED_BOOLEAN_EXTRA";
 	
@@ -137,10 +142,43 @@ public class SyncIntentService extends IntentService {
 	}
 	
 	protected void broadcastException(Exception exception) {
+		SyncExceptionWrapper wrapper = new SyncExceptionWrapper(exception);
+		
 		Intent intent = new Intent();
-		intent.putExtra(EXCEPTION_SERIALIZABLE_EXTRA, exception);
+		intent.putExtra(EXCEPTION_WRAPPER_SERIALIZABLE_EXTRA, wrapper);
 		intent.setAction(EXCEPTION_ACTION);
-		this.sendBroadcast(intent);
+		
+		try {	
+			this.sendBroadcast(intent);
+		} catch (RuntimeException e) {
+			this.broadcastNotSerializableException(wrapper);
+		}
+	}
+	
+	/**
+	 * If the original exception is not serializable then broadcast a exception that it is
+	 */
+	private void broadcastNotSerializableException(SyncExceptionWrapper wrapper) {
+		if (wrapper.isHttpClientException()) {
+			AppGluHttpClientException httpClientException = wrapper.getHttpClientException();
+			this.broadcastException(new AppGluHttpClientException(httpClientException.getStatusCode(), httpClientException.getError()));
+			return;
+		}
+		
+		if (wrapper.isHttpServerException()) {
+			AppGluHttpServerException httpServerException = wrapper.getHttpServerException();
+			this.broadcastException(new AppGluHttpServerException(httpServerException.getStatusCode(), httpServerException.getError()));
+			return;
+		}
+		
+		if (wrapper.isRestClientException()) {
+			AppGluRestClientException restException = wrapper.getRestClientException();
+			this.broadcastException(new RestClientException(restException.getMessage()));
+			return;
+		}
+		
+		Exception exception = wrapper.getException();
+		this.broadcastException(new Exception(exception.getMessage()));
 	}
 
 }

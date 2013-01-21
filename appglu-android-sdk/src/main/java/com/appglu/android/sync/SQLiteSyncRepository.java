@@ -9,9 +9,9 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.appglu.StorageFile;
 import com.appglu.Row;
 import com.appglu.RowChanges;
+import com.appglu.StorageFile;
 import com.appglu.SyncOperation;
 import com.appglu.TableVersion;
 import com.appglu.android.AppGlu;
@@ -83,6 +83,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 		List<TableVersion> tables = new ArrayList<TableVersion>();
 		
 		SQLiteDatabase database = this.getReadableDatabase();
+		
 		Cursor cursor = null;
 		
 		try {
@@ -105,20 +106,40 @@ public class SQLiteSyncRepository implements SyncRepository {
 			if (cursor != null) {
 				cursor.close();
 			}
-		    database.close();
+			database.close();
 		}
 		
 		return tables;
 	}
 	
-	protected List<StorageFile> getAllFiles() {
-		return this.queryForFiles("select * from appglu_storage_files", new String[0]);
+	public StorageFile getStorageFileByIdOrUrl(long id, String url) {
+		List<StorageFile> files = new ArrayList<StorageFile>();
+				
+		SQLiteDatabase database = this.getReadableDatabase();
+		
+		try {
+			String urlParam = url != null ? url : "";
+			files = this.queryForFiles(database, "select * from appglu_storage_files where id = ? or url = ?", new String[] { String.valueOf(id), urlParam });
+		} finally {
+			database.close();
+		}
+		
+		if (files.isEmpty()) {
+			return null;
+		}
+		
+		return files.get(0);
 	}
 	
-	protected List<StorageFile> queryForFiles(String sql, String[] selectionArgs) {
+	protected List<StorageFile> getAllFiles() {
+		SQLiteDatabase database = this.getReadableDatabase();
+		
+		return this.queryForFiles(database, "select * from appglu_storage_files", new String[0]);
+	}
+	
+	protected List<StorageFile> queryForFiles(SQLiteDatabase database, String sql, String[] selectionArgs) {
 		List<StorageFile> files = new ArrayList<StorageFile>();
 		
-		SQLiteDatabase database = this.getReadableDatabase();
 		Cursor cursor = null;
 		
 		try {
@@ -153,7 +174,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 		
 		return files;
 	}
-	
+
 	public void applyChangesWithTransaction(SyncRepositoryCallback repositoryCallback) {
 		SQLiteDatabase database = this.getWritableDatabase();
 		

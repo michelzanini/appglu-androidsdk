@@ -250,7 +250,21 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 		Assert.assertEquals(2, files.size());
 		
 		StorageFile fileOne = files.get(0);
+		this.assertFileOne(fileOne);
+	}
+
+	public void testGetStorageFileByIdOrUrl() {
+		StorageFile fileOneById = this.syncRepository.getStorageFileByIdOrUrl(1001, null);
+		this.assertFileOne(fileOneById);
 		
+		StorageFile fileOneByUrl = this.syncRepository.getStorageFileByIdOrUrl(0, "https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png");
+		this.assertFileOne(fileOneByUrl);
+		
+		StorageFile fileOneByIdOrUrl = this.syncRepository.getStorageFileByIdOrUrl(1001, "https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png");
+		this.assertFileOne(fileOneByIdOrUrl);
+	}
+	
+	private void assertFileOne(StorageFile fileOne) {
 		Assert.assertEquals(1001, fileOne.getId());
 		Assert.assertEquals("1ee26276-b773-4eaa-9762-49c380e604c7", fileOne.getKey());
 		Assert.assertEquals("app-icon.png", fileOne.getName());

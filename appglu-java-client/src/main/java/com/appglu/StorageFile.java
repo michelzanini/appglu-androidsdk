@@ -7,7 +7,7 @@ public class StorageFile implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	private int id;
+	private long id;
 	
 	private String key;
 	
@@ -31,7 +31,7 @@ public class StorageFile implements Serializable {
 		
 	}
 	
-	public StorageFile(int id) {
+	public StorageFile(long id) {
 		this.id = id;
 	}
 
@@ -39,7 +39,7 @@ public class StorageFile implements Serializable {
 		this.url = url;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

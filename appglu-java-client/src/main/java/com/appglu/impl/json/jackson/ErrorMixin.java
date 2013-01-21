@@ -12,7 +12,7 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.appglu.ErrorCode;
 
-@JsonPropertyOrder({"error", "message"})
+@JsonPropertyOrder({"code", "message"})
 public abstract class ErrorMixin {
 	
 	@JsonProperty("code")

@@ -40,6 +40,23 @@ public class SyncService {
 		this.syncRepository = syncRepository;
 	}
 	
+	public File getFileFromFileStorage(StorageFile file) {
+		StorageFile storageFile = this.syncRepository.getStorageFileByIdOrUrl(file.getId(), file.getUrl());
+		
+		if (storageFile == null) {
+			return null;
+		}
+		
+		File externalStorageDirectory = AppGlu.getExternalAppGluStorageFilesDir();
+		File cachedFile = new File(externalStorageDirectory, storageFile.getETag());
+		
+		if (!cachedFile.exists()) {
+			return null;
+		}
+		
+		return cachedFile;
+	}
+	
 	public boolean checkIfDatabaseIsSynchronized() {
 		List<TableVersion> localTableVersions = this.syncRepository.versionsForAllTables();
 		return this.areTablesSynchronized(localTableVersions);

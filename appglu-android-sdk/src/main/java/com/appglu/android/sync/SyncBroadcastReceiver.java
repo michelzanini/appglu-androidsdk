@@ -21,8 +21,8 @@ public abstract class SyncBroadcastReceiver extends BroadcastReceiver {
 			this.onResult(changesWereApplied);
 		}
 		if (SyncIntentService.EXCEPTION_ACTION.equals(action)) {
-			Exception exception = (Exception) intent.getSerializableExtra(SyncIntentService.EXCEPTION_SERIALIZABLE_EXTRA);
-			this.onException(new SyncExceptionWrapper(exception));
+			SyncExceptionWrapper exceptionWrapper = (SyncExceptionWrapper) intent.getSerializableExtra(SyncIntentService.EXCEPTION_WRAPPER_SERIALIZABLE_EXTRA);
+			this.onException(exceptionWrapper);
 		}
 		if (SyncIntentService.FINISH_ACTION.equals(action)) {
 			this.onFinish();
