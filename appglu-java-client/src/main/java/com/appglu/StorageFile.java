@@ -3,6 +3,8 @@ package com.appglu;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.appglu.impl.util.StringUtils;
+
 public class StorageFile implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -117,6 +119,47 @@ public class StorageFile implements Serializable {
 
 	public void setDirectoryId(int directoryId) {
 		this.directoryId = directoryId;
+	}
+	
+	public boolean hasId() {
+		return id > 0;
+	}
+	
+	public boolean hasKey() {
+		return StringUtils.isNotEmpty(key);
+	}
+	
+	public boolean hasUrl() {
+		return StringUtils.isNotEmpty(url);
+	}
+	
+	public boolean hasETag() {
+		return StringUtils.isNotEmpty(eTag);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((eTag == null) ? 0 : eTag.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		StorageFile other = (StorageFile) obj;
+		if (eTag == null) {
+			if (other.eTag != null)
+				return false;
+		} else if (!eTag.equals(other.eTag))
+			return false;
+		return true;
 	}
 
 	@Override

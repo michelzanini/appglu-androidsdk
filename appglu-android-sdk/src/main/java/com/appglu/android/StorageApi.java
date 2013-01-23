@@ -3,9 +3,9 @@ package com.appglu.android;
 import com.appglu.AppGluRestClientException;
 import com.appglu.AsyncCallback;
 import com.appglu.AsyncStorageOperations;
-import com.appglu.StorageStreamCallback;
 import com.appglu.StorageFile;
 import com.appglu.StorageOperations;
+import com.appglu.StorageStreamCallback;
 
 public final class StorageApi implements StorageOperations, AsyncStorageOperations {
 	
@@ -13,8 +13,9 @@ public final class StorageApi implements StorageOperations, AsyncStorageOperatio
 	
 	private AsyncStorageOperations asyncStorageOperations;
 	
-	public StorageApi(StorageOperations storageOperations) {
+	public StorageApi(StorageOperations storageOperations, AsyncStorageOperations asyncStorageOperations) {
 		this.storageOperations = storageOperations;
+		this.asyncStorageOperations = asyncStorageOperations;
 	}
 
 	public byte[] downloadStorageFile(StorageFile file) throws AppGluRestClientException {

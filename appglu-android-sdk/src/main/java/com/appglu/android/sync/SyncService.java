@@ -1,43 +1,32 @@
 package com.appglu.android.sync;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.os.StatFs;
-
 import com.appglu.StorageFile;
-import com.appglu.StorageOperations;
-import com.appglu.StorageStreamCallback;
 import com.appglu.SyncOperations;
 import com.appglu.TableVersion;
 import com.appglu.android.AppGlu;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
-import com.appglu.impl.util.IOUtils;
-import com.appglu.impl.util.Md5Utils;
-import com.appglu.impl.util.StringUtils;
 
 public class SyncService {
 	
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
 	
-	private StorageOperations storageOperations;
-	
 	private SyncOperations syncOperations;
 	
 	private SyncRepository syncRepository;
 	
-	public SyncService(SyncOperations syncOperations, StorageOperations storageOperations, SyncRepository syncRepository) {
-		this.storageOperations = storageOperations;
+	private SyncFileStorageService syncStorageService;
+	
+	public SyncService(SyncOperations syncOperations, SyncRepository syncRepository, SyncFileStorageService syncStorageService) {
 		this.syncOperations = syncOperations;
 		this.syncRepository = syncRepository;
+		this.syncStorageService = syncStorageService;
 	}
 	
 	public File getFileFromFileStorage(StorageFile file) {
@@ -47,8 +36,7 @@ public class SyncService {
 			return null;
 		}
 		
-		File externalStorageDirectory = AppGlu.getExternalAppGluStorageFilesDir();
-		File cachedFile = new File(externalStorageDirectory, storageFile.getETag());
+		File cachedFile = this.syncStorageService.getFileFromExternalStorage(storageFile);
 		
 		if (!cachedFile.exists()) {
 			return null;
@@ -189,10 +177,8 @@ public class SyncService {
 		for (StorageFile storageFile : files) {
 			boolean needsToBeDownloaded = this.verifyIfStorageFileNeedsToBeDownloaded(storageFile);
 
-			if (needsToBeDownloaded) {
-				if (!this.containsETag(filesToBeDownloaded, storageFile.getETag())) {
-					filesToBeDownloaded.add(storageFile);
-				}
+			if (needsToBeDownloaded && !filesToBeDownloaded.contains(storageFile)) {
+				filesToBeDownloaded.add(storageFile);
 			}
 		}
 		
@@ -204,9 +190,11 @@ public class SyncService {
 		
 		List<String> filesToBeRemoved = new ArrayList<String>();
 		
-		for (String eTagFileName : this.allFilesOnStorage()) {
-			if (!this.containsETag(files, eTagFileName)) {
-				filesToBeRemoved.add(eTagFileName);
+		for (String fileName : this.syncStorageService.allFilesOnStorage()) {
+			StorageFile file = this.syncStorageService.storageFileFromFileName(fileName);
+			
+			if (!files.contains(file)) {
+				filesToBeRemoved.add(fileName);
 			}
 		}
 		
@@ -218,29 +206,23 @@ public class SyncService {
 	}
 
 	protected boolean verifyIfStorageFileNeedsToBeDownloaded(StorageFile storageFile) {
-		if (StringUtils.isEmpty(storageFile.getETag())) {
+		File cachedFile = this.syncStorageService.getFileFromExternalStorage(storageFile);
+		
+		if (cachedFile == null) {
 			return false;
 		}
 		
-		File externalStorageDirectory = AppGlu.getExternalAppGluStorageFilesDir();
-		File cachedFile = new File(externalStorageDirectory, storageFile.getETag());
-		
-		if (cachedFile.exists()) {
-			if (this.md5MatchesWithETag(cachedFile, storageFile.getETag())) {
-				return false;
-			}
+		if (this.syncStorageService.md5MatchesWithETag(cachedFile, storageFile.getETag())) {
+			return false;
 		}
 		
 		return true;
 	}
 	
 	protected void downloadFiles(List<StorageFile> filesToBeDownloaded) {
-		long totalDownloadSizeInBytes = this.calculateTotalDownloadSizeInBytes(filesToBeDownloaded);
-		long availableSpaceInBytes = this.calculateExternalStorageAvailableSpaceInBytes();
-				
-		if (totalDownloadSizeInBytes > availableSpaceInBytes) {
-			throw new SyncFileStorageException("Not enough space available on external storage");
-		}
+		long totalDownloadSizeInBytes = this.syncStorageService.calculateTotalDownloadSizeInBytes(filesToBeDownloaded);
+		
+		this.syncStorageService.checkIfThereIsEnoughSpaceAvailableOnStorage(totalDownloadSizeInBytes);
 		
 		if (this.logger.isInfoEnabled()) {
 			this.logger.info(filesToBeDownloaded.size() + " file(s) will be downloaded totalizing " + totalDownloadSizeInBytes + " bytes of download");
@@ -250,7 +232,7 @@ public class SyncService {
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug("Dowloading file '" + storageFile.getName() + "' of " + storageFile.getSize() + " bytes of size");
 			}
-			this.downloadStorageFile(storageFile);
+			this.syncStorageService.downloadFileToExternalStorage(storageFile);
 		}
 		
 		this.logger.info("All files were downloaded with success");
@@ -265,75 +247,10 @@ public class SyncService {
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug("Removing file '" + fileName + "'");
 			}
-			this.removeFileWithName(fileName);
+			this.syncStorageService.removeFileWithName(fileName);
 		}
 
 		this.logger.info("Files were removed with success");
-	}
-
-	protected void downloadStorageFile(final StorageFile storageFile) {
-		this.storageOperations.streamStorageFile(storageFile, new StorageStreamCallback() {
-			
-			public void doWithInputStream(InputStream fileStream) throws IOException {
-				File externalStorageDirectory = AppGlu.getExternalAppGluStorageFilesDir();
-				File destinationFile = new File(externalStorageDirectory, storageFile.getETag());
-				
-				FileOutputStream outputStream = new FileOutputStream(destinationFile);
-				
-				IOUtils.copy(fileStream, outputStream);
-			}
-			
-		});
-	}
-	
-	protected boolean containsETag(List<StorageFile> files, String eTag) {
-		if (StringUtils.isEmpty(eTag)) {
-			return false;
-		}
-		for (StorageFile storageFile : files) {
-			if (eTag.equals(storageFile.getETag())) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	protected String[] allFilesOnStorage() {
-		File externalStorageDirectory = AppGlu.getExternalAppGluStorageFilesDir();
-		return externalStorageDirectory.list();
-	}
-	
-	protected void removeFileWithName(String fileName) {
-		File externalStorageDirectory = AppGlu.getExternalAppGluStorageFilesDir();
-		File file = new File(externalStorageDirectory, fileName);
-		
-		file.delete();
-	}
-	
-	protected boolean md5MatchesWithETag(File cachedFile, String eTag) {
-		try {
-			byte[] md5Hash = Md5Utils.computeMd5Hash(new FileInputStream(cachedFile));
-			return Md5Utils.md5MatchesWithETag(md5Hash, eTag);
-		} catch (IOException e) {
-			throw new SyncFileStorageException(e);
-		}
-	}
-	
-	protected long calculateTotalDownloadSizeInBytes(List<StorageFile> filesToBeDownloaded) {
-		long totalSizeInBytes = 0;
-		for (StorageFile storageFile : filesToBeDownloaded) {
-			totalSizeInBytes += storageFile.getSize();
-		}
-		return totalSizeInBytes;
-	}
-	
-	protected long calculateExternalStorageAvailableSpaceInBytes() {
-        File externalStorageDirectory = AppGlu.getExternalAppGluStorageFilesDir();
-        
-		StatFs stat = new StatFs(externalStorageDirectory.getPath());
-		long availableSpace = (long) stat.getAvailableBlocks() * (long) stat.getBlockSize();
-
-	    return availableSpace;
 	}
 	
 }

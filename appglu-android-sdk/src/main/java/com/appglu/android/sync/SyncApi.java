@@ -21,7 +21,6 @@ import android.graphics.Bitmap;
 
 import com.appglu.AsyncCallback;
 import com.appglu.StorageFile;
-import com.appglu.StorageOperations;
 import com.appglu.SyncOperations;
 import com.appglu.android.AppGlu;
 import com.appglu.android.AppGluAsyncCallbackTask;
@@ -41,9 +40,9 @@ public final class SyncApi {
 	
 	private SyncService syncService;
 	
-	public SyncApi(Context context, SyncOperations syncOperations, StorageOperations storageOperations, SyncRepository syncRepository) {
+	public SyncApi(Context context, SyncOperations syncOperations, SyncRepository syncRepository, SyncFileStorageService syncStorageService) {
 		this.context = context;
-		this.syncService = new SyncService(syncOperations, storageOperations, syncRepository);
+		this.syncService = new SyncService(syncOperations, syncRepository, syncStorageService);
 	}
 	
 	protected boolean doSyncDatabase() {

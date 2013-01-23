@@ -4,20 +4,22 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Locale;
 
-public abstract class Md5Utils {
+public abstract class HashUtils {
 	
-	public static final int BUFFER_SIZE = 4096;
+	public static final int BUFFER_SIZE = 8192;
 	
 	/**
      * Computes the MD5 hash of the data in the given input stream and returns
      * it as an array of bytes.
      */
     public static byte[] computeMd5Hash(InputStream is) throws IOException {
-        BufferedInputStream bis = new BufferedInputStream(is);
+        BufferedInputStream bis = new BufferedInputStream(is, BUFFER_SIZE);
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
             byte[] buffer = new byte[BUFFER_SIZE];
@@ -47,9 +49,60 @@ public abstract class Md5Utils {
      */
     public static boolean md5MatchesWithETag(byte[] contentMd5, String eTag) {
 		byte[] clientSideHash = contentMd5;
-		byte[] serverSideHash = Md5Utils.fromHex(eTag);
+		byte[] serverSideHash = HashUtils.fromHex(eTag);
 		
 		return Arrays.equals(clientSideHash, serverSideHash);
+    }
+    
+    /**
+     * Converts a string to a Hex-encoded string.
+     *
+     * @param data data to hex encode.
+     * @return hex-encoded string.
+     */
+    public static String toHexString(String data) {
+    	try {
+			return toHex(data.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			return toHex(data.getBytes());
+		}
+    }
+    
+    /**
+     * Converts a Hex-encoded data string to the original String data.
+     *
+     * @param hexData hex-encoded data to decode.
+     * @return decoded data from the hex string.
+     */
+    public static String fromHexString(String hexData) {
+    	byte[] hexBytes = fromHex(hexData);
+		try {
+			return new String(hexBytes, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return new String(hexBytes);
+		}
+    }
+    
+    /**
+     * Converts byte data to a Hex-encoded string.
+     *
+     * @param data data to hex encode.
+     * @return hex-encoded string.
+     */
+    public static String toHex(byte[] data) {
+        StringBuilder sb = new StringBuilder(data.length * 2);
+        for (int i = 0; i < data.length; i++) {
+            String hex = Integer.toHexString(data[i]);
+            if (hex.length() == 1) {
+                // Append leading zero.
+                sb.append("0");
+            } else if (hex.length() == 8) {
+                // Remove ff prefix from negative numbers.
+                hex = hex.substring(6);
+            }
+            sb.append(hex);
+        }
+        return sb.toString().toLowerCase(Locale.US);
     }
     
     /**

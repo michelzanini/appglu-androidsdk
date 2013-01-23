@@ -3,6 +3,8 @@ package com.appglu.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
@@ -16,9 +18,9 @@ import com.appglu.AppGluRestClientException;
 import com.appglu.StorageFile;
 import com.appglu.StorageOperations;
 import com.appglu.StorageStreamCallback;
+import com.appglu.impl.util.HashUtils;
 import com.appglu.impl.util.IOUtils;
 import com.appglu.impl.util.Md5DigestCalculatingInputStream;
-import com.appglu.impl.util.Md5Utils;
 import com.appglu.impl.util.StringUtils;
 
 public final class StorageTemplate implements StorageOperations {
@@ -29,10 +31,15 @@ public final class StorageTemplate implements StorageOperations {
 		this.downloadRestOperations = downloadRestOperations;
 	}
 	
-	private void validateStorageFileUrl(StorageFile file) {
-		if (file == null || StringUtils.isEmpty(file.getUrl())) {
+	private URI getStorageFileURI(StorageFile file) {
+		if (file == null || !file.hasUrl()) {
 			throw new AppGluRestClientException("StorageFile must not be null and must containg an URL");
 		}
+		try {
+            return new URI(file.getUrl());
+        } catch (URISyntaxException e) {
+        	throw new AppGluRestClientException("StorageFile must have a valid URL");
+        }
 	}
 
 	public byte[] downloadStorageFile(StorageFile file) throws AppGluRestClientException {
@@ -49,7 +56,7 @@ public final class StorageTemplate implements StorageOperations {
 	}
 
 	public void streamStorageFile(final StorageFile file, final StorageStreamCallback callback) throws AppGluRestClientException {
-		this.validateStorageFileUrl(file);
+		URI uri = this.getStorageFileURI(file);
 		
 		try {
 			RequestCallback requestCallback = new RequestCallback() {
@@ -67,7 +74,7 @@ public final class StorageTemplate implements StorageOperations {
 					byte[] contentMd5 = inputStream.getMd5Digest();
 					String eTag = StringUtils.removeDoubleQuotes(response.getHeaders().getETag());
 					
-					if (!Md5Utils.md5MatchesWithETag(contentMd5, eTag)) {
+					if (!HashUtils.md5MatchesWithETag(contentMd5, eTag)) {
 						throw new AppGluRestClientException("Unable to verify integrity of downloaded file. " +
 		                        "Client calculated content hash didn't match hash calculated by server");
 					}
@@ -76,7 +83,7 @@ public final class StorageTemplate implements StorageOperations {
 				}
 			};
 			
-			this.downloadRestOperations.execute(file.getUrl(), HttpMethod.GET, requestCallback, responseExtractor);
+			this.downloadRestOperations.execute(uri, HttpMethod.GET, requestCallback, responseExtractor);
 		} catch (RestClientException e) {
 			throw new AppGluRestClientException(e.getMessage(), e);
 		}

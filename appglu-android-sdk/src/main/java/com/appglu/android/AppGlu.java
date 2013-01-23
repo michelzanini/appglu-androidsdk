@@ -1,11 +1,10 @@
 package com.appglu.android;
 
-import java.io.File;
-
 import android.content.Context;
 
 import com.appglu.AsyncPushOperations;
 import com.appglu.AsyncSavedQueriesOperations;
+import com.appglu.AsyncStorageOperations;
 import com.appglu.PushOperations;
 import com.appglu.SavedQueriesOperations;
 import com.appglu.StorageOperations;
@@ -24,7 +23,7 @@ import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.sync.SQLiteSyncRepository;
 import com.appglu.android.sync.SyncApi;
 import com.appglu.android.sync.SyncDatabaseHelper;
-import com.appglu.android.sync.SyncFileStorageException;
+import com.appglu.android.sync.SyncFileStorageService;
 import com.appglu.android.sync.SyncRepository;
 import com.appglu.android.util.AppGluUtils;
 import com.appglu.impl.AppGluTemplate;
@@ -200,15 +199,20 @@ public final class AppGlu {
 		AppGluUtils.assertNotNull(syncDatabaseHelper, "SyncDatabaseHelper cannot be null");
 		
 		SyncOperations syncOperations = this.getAppGluTemplate().syncOperations();
-		StorageOperations storageOperations = this.getAppGluTemplate().storageOperations();
 		SyncRepository syncRepository = new SQLiteSyncRepository(syncDatabaseHelper);
 		
-		return new SyncApi(this.context, syncOperations, storageOperations, syncRepository);
+		StorageOperations storageOperations = this.getAppGluTemplate().storageOperations();
+		SyncFileStorageService syncStorageService = new SyncFileStorageService(this.context, storageOperations);
+		
+		return new SyncApi(this.context, syncOperations, syncRepository, syncStorageService);
 	}
 	
 	protected StorageApi getStorageApi() {
 		if (this.storageApi == null) {
-			this.storageApi = new StorageApi(this.getAppGluTemplate().storageOperations());
+			StorageOperations storageOperations = this.getAppGluTemplate().storageOperations();
+			AsyncStorageOperations asyncStorageOperations = this.getAppGluTemplate().asyncStorageOperations();
+			
+			this.storageApi = new StorageApi(storageOperations, asyncStorageOperations);
 		}
 		return this.storageApi;
 	}
@@ -217,14 +221,6 @@ public final class AppGlu {
 		return AppGluUtils.hasInternetConnection(context);
 	}
 	
-	protected File externalAppGluStorageFilesDir() {
-		File externalStorageDirectory = this.context.getExternalFilesDir("appglu_storage_files");
-		if (externalStorageDirectory == null) {
-			throw new SyncFileStorageException("External storage is not accessible");
-		}
-		return externalStorageDirectory;
-	}
-
 	//Public Methods
 	
 	public static synchronized void initialize(Context context, AppGluSettings settings) {
@@ -233,10 +229,6 @@ public final class AppGlu {
 	
 	public static boolean hasInternetConnection() {
 		return getRequiredInstance().checkInternetConnection();
-	}
-	
-	public static File getExternalAppGluStorageFilesDir() {
-		return getRequiredInstance().externalAppGluStorageFilesDir();
 	}
 	
 	public static boolean isUserAuthenticated() {
