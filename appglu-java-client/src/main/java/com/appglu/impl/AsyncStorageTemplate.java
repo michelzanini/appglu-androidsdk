@@ -6,7 +6,7 @@ import com.appglu.AsyncCallback;
 import com.appglu.AsyncStorageOperations;
 import com.appglu.StorageFile;
 import com.appglu.StorageOperations;
-import com.appglu.StorageStreamCallback;
+import com.appglu.InputStreamCallback;
 
 public final class AsyncStorageTemplate implements AsyncStorageOperations {
 	
@@ -27,10 +27,10 @@ public final class AsyncStorageTemplate implements AsyncStorageOperations {
 		});
 	}
 
-	public void streamStorageFileInBackground(final StorageFile file, final StorageStreamCallback callback, AsyncCallback<Void> downloadCallback) {
+	public void streamStorageFileInBackground(final StorageFile file, final InputStreamCallback inputStreamCallback, AsyncCallback<Void> downloadCallback) {
 		asyncExecutor.execute(downloadCallback, new Callable<Void>() {
 			public Void call() {
-				storageOperations.streamStorageFile(file, callback);
+				storageOperations.streamStorageFile(file, inputStreamCallback);
 				return null;
 			}
 		});

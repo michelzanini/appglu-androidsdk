@@ -20,7 +20,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import com.appglu.AppGluRestClientException;
 import com.appglu.StorageFile;
 import com.appglu.StorageOperations;
-import com.appglu.StorageStreamCallback;
+import com.appglu.InputStreamCallback;
 import com.appglu.impl.util.IOUtils;
 
 public class StorageTemplateTest extends AbstractAppGluApiTest {
@@ -54,7 +54,7 @@ public class StorageTemplateTest extends AbstractAppGluApiTest {
 		
 		byte[] response = this.storageOperations.downloadStorageFile(new StorageFile(URL));
 		
-		Assert.assertEquals("content", new String(response));
+		Assert.assertEquals(new String(CONTENT), new String(response));
 		
 		downloadMockServer.verify();
 	}
@@ -65,13 +65,13 @@ public class StorageTemplateTest extends AbstractAppGluApiTest {
 			.andExpect(method(HttpMethod.GET))
 			.andRespond(withStatus(HttpStatus.OK).body(CONTENT).headers(responseHeaders));
 		
-		this.storageOperations.streamStorageFile(new StorageFile(URL), new StorageStreamCallback() {
+		this.storageOperations.streamStorageFile(new StorageFile(URL), new InputStreamCallback() {
 			
 			public void doWithInputStream(InputStream fileStream) throws IOException {
 				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 				IOUtils.copy(fileStream, outputStream);
 				
-				Assert.assertEquals("content", new String(outputStream.toByteArray()));
+				Assert.assertEquals(new String(CONTENT), new String(outputStream.toByteArray()));
 			}
 		});
 		
@@ -99,7 +99,7 @@ public class StorageTemplateTest extends AbstractAppGluApiTest {
 	
 	@Test (expected = AppGluRestClientException.class)
 	public void streamStorageFile_invalidStorageFile() {
-		this.storageOperations.streamStorageFile(new StorageFile(), new StorageStreamCallback() {
+		this.storageOperations.streamStorageFile(new StorageFile(), new InputStreamCallback() {
 			
 			public void doWithInputStream(InputStream fileStream) throws IOException {
 				Assert.fail("Should not execute streamStorageFile because StorageFile is invalid");

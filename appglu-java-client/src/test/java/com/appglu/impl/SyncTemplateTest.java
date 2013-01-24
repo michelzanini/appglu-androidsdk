@@ -6,6 +6,9 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -18,21 +21,44 @@ import org.springframework.http.HttpStatus;
 import com.appglu.AppGluHttpClientException;
 import com.appglu.AppGluRestClientException;
 import com.appglu.ErrorCode;
+import com.appglu.InputStreamCallback;
 import com.appglu.RowChanges;
 import com.appglu.SyncOperation;
 import com.appglu.SyncOperations;
 import com.appglu.TableChanges;
 import com.appglu.TableVersion;
 import com.appglu.impl.json.MemoryTableChangesCallback;
+import com.appglu.impl.util.IOUtils;
 
 public class SyncTemplateTest extends AbstractAppGluApiTest {
 	
 	private SyncOperations syncOperations;
 	
+	private static final byte[] DOWNLOAD_CHANGES_CONTENT = "DOWNLOAD_CHANGES_CONTENT".getBytes();
+	
 	@Before
 	public void setup() {
 		super.setup();
 		syncOperations = appGluTemplate.syncOperations();
+	}
+	
+	@Test
+	public void changesForTable() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/sync/changes/logged_table?from_version=2"))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withStatus(HttpStatus.OK).body(compactedJson("data/sync_changes_for_table_response")).headers(responseHeaders));
+		
+		TableChanges loggedTableChanges = this.syncOperations.changesForTable("logged_table", 2);
+		
+		this.assertTable(loggedTableChanges, "logged_table", 9, 2);
+		
+		RowChanges firstRow = loggedTableChanges.getChanges().get(0);
+		this.assertRow(firstRow, 2, 1, "row1", 1, SyncOperation.INSERT);
+		
+		RowChanges secondRow = loggedTableChanges.getChanges().get(1);
+		this.assertRow(secondRow, 2, 2, "row2", 2, SyncOperation.UPDATE);
+		
+		mockServer.verify();
 	}
 	
 	@Test
@@ -166,21 +192,29 @@ public class SyncTemplateTest extends AbstractAppGluApiTest {
 	}
 	
 	@Test
-	public void changesForTable() {
-		mockServer.expect(requestTo("http://localhost/appglu/v1/sync/changes/logged_table?from_version=2"))
-			.andExpect(method(HttpMethod.GET))
-			.andRespond(withStatus(HttpStatus.OK).body(compactedJson("data/sync_changes_for_table_response")).headers(responseHeaders));
+	public void downloadChanges() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/sync/changes"))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(header("Content-Type", jsonMediaType.toString()))
+			.andExpect(content().string(compactedJson("data/sync_changes_for_tables_request")))
+			.andRespond(withStatus(HttpStatus.OK).body(DOWNLOAD_CHANGES_CONTENT).headers(responseHeaders));
 		
-		TableChanges loggedTableChanges = this.syncOperations.changesForTable("logged_table", 2);
+		TableVersion loggedTable = new TableVersion("logged_table");
+		TableVersion otherTable = new TableVersion("other_table", 1);
 		
-		this.assertTable(loggedTableChanges, "logged_table", 9, 2);
+		InputStreamCallback inputStream = new InputStreamCallback() {
+			
+			public void doWithInputStream(InputStream inputStream) throws IOException {
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				IOUtils.copy(inputStream, outputStream);
+				
+				Assert.assertEquals(new String(DOWNLOAD_CHANGES_CONTENT), new String(outputStream.toByteArray()));
+			}
+			
+		};
 		
-		RowChanges firstRow = loggedTableChanges.getChanges().get(0);
-		this.assertRow(firstRow, 2, 1, "row1", 1, SyncOperation.INSERT);
-		
-		RowChanges secondRow = loggedTableChanges.getChanges().get(1);
-		this.assertRow(secondRow, 2, 2, "row2", 2, SyncOperation.UPDATE);
-		
+		this.syncOperations.downloadChangesForTables(inputStream, loggedTable, otherTable);
+
 		mockServer.verify();
 	}
 	

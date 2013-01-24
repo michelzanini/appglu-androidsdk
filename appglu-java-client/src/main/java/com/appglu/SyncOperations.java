@@ -4,6 +4,8 @@ import java.util.List;
 
 public interface SyncOperations {
 	
+	TableChanges changesForTable(String tableName, long version) throws AppGluRestClientException;
+	
 	List<TableChanges> changesForTables(TableVersion... tables) throws AppGluRestClientException;
 	
 	List<TableChanges> changesForTables(List<TableVersion> tables) throws AppGluRestClientException;
@@ -12,7 +14,9 @@ public interface SyncOperations {
 	
 	void changesForTables(List<TableVersion> tables, TableChangesCallback tableChangesCallback) throws AppGluRestClientException;
 	
-	TableChanges changesForTable(String tableName, long version) throws AppGluRestClientException;
+	void downloadChangesForTables(InputStreamCallback inputStreamCallback, TableVersion... tables) throws AppGluRestClientException;
+	
+	void downloadChangesForTables(List<TableVersion> tables, InputStreamCallback inputStreamCallback) throws AppGluRestClientException;
 	
 	List<TableVersion> versionsForTables(String... tables) throws AppGluRestClientException;
 	

@@ -17,7 +17,7 @@ import org.springframework.web.client.RestOperations;
 import com.appglu.AppGluRestClientException;
 import com.appglu.StorageFile;
 import com.appglu.StorageOperations;
-import com.appglu.StorageStreamCallback;
+import com.appglu.InputStreamCallback;
 import com.appglu.impl.util.HashUtils;
 import com.appglu.impl.util.IOUtils;
 import com.appglu.impl.util.Md5DigestCalculatingInputStream;
@@ -45,7 +45,7 @@ public final class StorageTemplate implements StorageOperations {
 	public byte[] downloadStorageFile(StorageFile file) throws AppGluRestClientException {
 		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		
-		this.streamStorageFile(file, new StorageStreamCallback() {
+		this.streamStorageFile(file, new InputStreamCallback() {
 			
 			public void doWithInputStream(InputStream inputStream) throws IOException {
 				IOUtils.copy(inputStream, outputStream);
@@ -55,7 +55,7 @@ public final class StorageTemplate implements StorageOperations {
 		return outputStream.toByteArray();
 	}
 
-	public void streamStorageFile(final StorageFile file, final StorageStreamCallback callback) throws AppGluRestClientException {
+	public void streamStorageFile(final StorageFile file, final InputStreamCallback inputStreamCallback) throws AppGluRestClientException {
 		URI uri = this.getStorageFileURI(file);
 		
 		try {
@@ -69,7 +69,7 @@ public final class StorageTemplate implements StorageOperations {
 				public Object extractData(ClientHttpResponse response) throws IOException {
 					Md5DigestCalculatingInputStream inputStream = new Md5DigestCalculatingInputStream(response.getBody());
 					
-					callback.doWithInputStream(inputStream);
+					inputStreamCallback.doWithInputStream(inputStream);
 					
 					byte[] contentMd5 = inputStream.getMd5Digest();
 					String eTag = StringUtils.removeDoubleQuotes(response.getHeaders().getETag());

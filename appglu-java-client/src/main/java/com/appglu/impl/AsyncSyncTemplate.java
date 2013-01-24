@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 
 import com.appglu.AsyncCallback;
 import com.appglu.AsyncSyncOperations;
+import com.appglu.InputStreamCallback;
 import com.appglu.SyncOperations;
 import com.appglu.TableChangesCallback;
 import com.appglu.TableVersion;
@@ -20,6 +21,14 @@ public final class AsyncSyncTemplate implements AsyncSyncOperations {
 	public AsyncSyncTemplate(AsyncExecutor asyncExecutor, SyncOperations syncOperations) {
 		this.asyncExecutor = asyncExecutor;
 		this.syncOperations = syncOperations;
+	}
+	
+	public void changesForTableInBackground(final String tableName, final long version, AsyncCallback<TableChanges> callback) {
+		asyncExecutor.execute(callback, new Callable<TableChanges>() {
+			public TableChanges call() {
+				return syncOperations.changesForTable(tableName, version);
+			}
+		});
 	}
 
 	public void changesForTablesInBackground(AsyncCallback<List<TableChanges>> callback, TableVersion... tables) {
@@ -47,10 +56,15 @@ public final class AsyncSyncTemplate implements AsyncSyncOperations {
 		});
 	}
 
-	public void changesForTableInBackground(final String tableName, final long version, AsyncCallback<TableChanges> callback) {
-		asyncExecutor.execute(callback, new Callable<TableChanges>() {
-			public TableChanges call() {
-				return syncOperations.changesForTable(tableName, version);
+	public void downloadChangesForTables(InputStreamCallback inputStreamCallback, AsyncCallback<Void> asyncCallback, TableVersion... tables) {
+		this.downloadChangesForTables(Arrays.asList(tables), inputStreamCallback, asyncCallback);
+	}
+	
+	public void downloadChangesForTables(final List<TableVersion> tables, final InputStreamCallback inputStreamCallback, AsyncCallback<Void> asyncCallback) {
+		asyncExecutor.execute(asyncCallback, new Callable<Void>() {
+			public Void call() {
+				syncOperations.downloadChangesForTables(tables, inputStreamCallback);
+				return null;
 			}
 		});
 	}
