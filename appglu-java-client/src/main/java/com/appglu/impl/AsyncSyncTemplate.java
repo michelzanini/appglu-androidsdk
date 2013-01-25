@@ -1,5 +1,7 @@
 package com.appglu.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -56,14 +58,23 @@ public final class AsyncSyncTemplate implements AsyncSyncOperations {
 		});
 	}
 
-	public void downloadChangesForTables(InputStreamCallback inputStreamCallback, AsyncCallback<Void> asyncCallback, TableVersion... tables) {
-		this.downloadChangesForTables(Arrays.asList(tables), inputStreamCallback, asyncCallback);
+	public void downloadChangesForTablesInBackground(InputStreamCallback inputStreamCallback, AsyncCallback<Void> asyncCallback, TableVersion... tables) {
+		this.downloadChangesForTablesInBackground(Arrays.asList(tables), inputStreamCallback, asyncCallback);
 	}
 	
-	public void downloadChangesForTables(final List<TableVersion> tables, final InputStreamCallback inputStreamCallback, AsyncCallback<Void> asyncCallback) {
+	public void downloadChangesForTablesInBackground(final List<TableVersion> tables, final InputStreamCallback inputStreamCallback, AsyncCallback<Void> asyncCallback) {
 		asyncExecutor.execute(asyncCallback, new Callable<Void>() {
 			public Void call() {
 				syncOperations.downloadChangesForTables(tables, inputStreamCallback);
+				return null;
+			}
+		});
+	}
+	
+	public void parseTableChangesInBackground(final InputStream inputStream, final TableChangesCallback tableChangesCallback, AsyncCallback<Void> asyncCallback) {
+		asyncExecutor.execute(asyncCallback, new Callable<Void>() {
+			public Void call() throws IOException {
+				syncOperations.parseTableChanges(inputStream, tableChangesCallback);
 				return null;
 			}
 		});

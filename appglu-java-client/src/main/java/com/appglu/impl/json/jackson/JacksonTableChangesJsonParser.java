@@ -13,6 +13,7 @@ import com.appglu.RowChanges;
 import com.appglu.TableChangesCallback;
 import com.appglu.TableVersion;
 import com.appglu.impl.json.TableChangesJsonParser;
+import com.appglu.impl.util.IOUtils;
 import com.appglu.impl.util.StringUtils;
 
 public class JacksonTableChangesJsonParser implements TableChangesJsonParser {
@@ -27,9 +28,12 @@ public class JacksonTableChangesJsonParser implements TableChangesJsonParser {
 		JsonFactory jsonFactory = objectMapper.getJsonFactory();
 		JsonParser jsonParser = jsonFactory.createJsonParser(inputStream);
 		
-		this.doParse(jsonParser, tableChangesCallback);
-		
-		jsonParser.close();
+		try {
+			this.doParse(jsonParser, tableChangesCallback);
+		} finally {
+			jsonParser.close();
+			IOUtils.closeQuietly(inputStream);
+		}
 	}
 	
 	private void doParse(JsonParser jsonParser, TableChangesCallback tableChangesCallback) throws IOException {

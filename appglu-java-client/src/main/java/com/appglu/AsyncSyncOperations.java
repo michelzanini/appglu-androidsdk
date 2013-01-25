@@ -1,5 +1,6 @@
 package com.appglu;
 
+import java.io.InputStream;
 import java.util.List;
 
 public interface AsyncSyncOperations {
@@ -14,9 +15,11 @@ public interface AsyncSyncOperations {
 	
 	void changesForTablesInBackground(List<TableVersion> tables, TableChangesCallback tableChangesCallback, AsyncCallback<Void> asyncCallback);
 	
-	void downloadChangesForTables(InputStreamCallback inputStreamCallback, AsyncCallback<Void> asyncCallback, TableVersion... tables);
+	void downloadChangesForTablesInBackground(InputStreamCallback inputStreamCallback, AsyncCallback<Void> asyncCallback, TableVersion... tables);
 	
-	void downloadChangesForTables(List<TableVersion> tables, InputStreamCallback inputStreamCallback, AsyncCallback<Void> asyncCallback);
+	void downloadChangesForTablesInBackground(List<TableVersion> tables, InputStreamCallback inputStreamCallback, AsyncCallback<Void> asyncCallback);
+	
+	void parseTableChangesInBackground(InputStream inputStream, TableChangesCallback tableChangesCallback, AsyncCallback<Void> asyncCallback);
 	
 	void versionsForTablesInBackground(AsyncCallback<List<TableVersion>> callback, String... tables);
 	

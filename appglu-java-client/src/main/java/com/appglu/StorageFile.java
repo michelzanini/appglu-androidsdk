@@ -19,7 +19,7 @@ public class StorageFile implements Serializable {
 	
 	private String title;
 	
-	private int size;
+	private long size;
 	
 	private Date lastModified;
 	
@@ -27,7 +27,7 @@ public class StorageFile implements Serializable {
 	
 	private String eTag;
 	
-	private int directoryId;
+	private long directoryId;
 	
 	public StorageFile() {
 		
@@ -61,7 +61,7 @@ public class StorageFile implements Serializable {
 		return title;
 	}
 
-	public int getSize() {
+	public long getSize() {
 		return size;
 	}
 
@@ -77,11 +77,11 @@ public class StorageFile implements Serializable {
 		return eTag;
 	}
 
-	public int getDirectoryId() {
+	public long getDirectoryId() {
 		return directoryId;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -101,7 +101,7 @@ public class StorageFile implements Serializable {
 		this.title = title;
 	}
 
-	public void setSize(int size) {
+	public void setSize(long size) {
 		this.size = size;
 	}
 
@@ -117,7 +117,7 @@ public class StorageFile implements Serializable {
 		this.eTag = eTag;
 	}
 
-	public void setDirectoryId(int directoryId) {
+	public void setDirectoryId(long directoryId) {
 		this.directoryId = directoryId;
 	}
 	

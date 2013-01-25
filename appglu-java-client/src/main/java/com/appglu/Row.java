@@ -69,7 +69,12 @@ public class Row extends HashMap<String, Object> {
 
 	public Long getLong(String columnName) {
 		try {
-			return (Long) this.get(columnName);
+			Object number = this.get(columnName);
+			if (number instanceof Integer) {
+				Integer integer = (Integer) number;
+				return integer.longValue();
+			}
+			return (Long) number;
 		} catch (ClassCastException e) {
 			throw new DataTypeConversionException(e);
 		}
@@ -85,7 +90,9 @@ public class Row extends HashMap<String, Object> {
 	
 	public BigInteger getBigInteger(String columnName) {
 		try {
-			return (BigInteger) this.get(columnName);
+			Object number = this.get(columnName);
+			String numberAsString = String.valueOf(number);
+			return new BigInteger(numberAsString);
 		} catch (ClassCastException e) {
 			throw new DataTypeConversionException(e);
 		}

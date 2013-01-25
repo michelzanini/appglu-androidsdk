@@ -115,6 +115,10 @@ public final class SyncTemplate implements SyncOperations {
 			throw new AppGluRestClientException(e.getMessage(), e);
 		}
 	}
+	
+	public void parseTableChanges(InputStream inputStream, TableChangesCallback tableChangesCallback) throws IOException {
+		tableChangesJsonParser.parseTableChanges(inputStream, tableChangesCallback);
+	}
 
 	public List<TableVersion> versionsForTables(List<String> tables) throws AppGluRestClientException {
 		try {

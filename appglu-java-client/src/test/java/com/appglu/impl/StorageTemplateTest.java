@@ -67,9 +67,9 @@ public class StorageTemplateTest extends AbstractAppGluApiTest {
 		
 		this.storageOperations.streamStorageFile(new StorageFile(URL), new InputStreamCallback() {
 			
-			public void doWithInputStream(InputStream fileStream) throws IOException {
+			public void doWithInputStream(InputStream inputStream) throws IOException {
 				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				IOUtils.copy(fileStream, outputStream);
+				IOUtils.copy(inputStream, outputStream);
 				
 				Assert.assertEquals(new String(CONTENT), new String(outputStream.toByteArray()));
 			}
@@ -101,7 +101,7 @@ public class StorageTemplateTest extends AbstractAppGluApiTest {
 	public void streamStorageFile_invalidStorageFile() {
 		this.storageOperations.streamStorageFile(new StorageFile(), new InputStreamCallback() {
 			
-			public void doWithInputStream(InputStream fileStream) throws IOException {
+			public void doWithInputStream(InputStream inputStream) throws IOException {
 				Assert.fail("Should not execute streamStorageFile because StorageFile is invalid");
 			}
 		});

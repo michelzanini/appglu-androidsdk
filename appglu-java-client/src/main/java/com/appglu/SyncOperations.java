@@ -2,7 +2,9 @@ package com.appglu;
 
 import java.util.List;
 
-public interface SyncOperations {
+import com.appglu.impl.json.TableChangesJsonParser;
+
+public interface SyncOperations extends TableChangesJsonParser {
 	
 	TableChanges changesForTable(String tableName, long version) throws AppGluRestClientException;
 	

@@ -298,9 +298,13 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 		Assert.assertEquals(new Byte((byte) 2), row.getByte("byte"));
 		Assert.assertEquals(string, new String(row.getByteArray("byteArray")));
 		Assert.assertEquals(new Float(1.5f), row.getFloat("float"));
+		Assert.assertEquals(new Double(1.5f), row.getDouble("float"));
 		Assert.assertEquals(new Double(7.5d), row.getDouble("double"));
 		Assert.assertEquals(new Integer(10), row.getInt("integer"));
+		Assert.assertEquals(new Long(10), row.getLong("integer"));
 		Assert.assertEquals(new Long(21474836475L), row.getLong("long"));
+		Assert.assertEquals(new BigInteger("10"), row.getBigInteger("integer"));
+		Assert.assertEquals(new BigInteger("21474836475"), row.getBigInteger("long"));
 		Assert.assertEquals(new BigInteger("9223372036854775807123"), row.getBigInteger("bigInteger"));
 		Assert.assertEquals(string, row.getString("string"));
 		
