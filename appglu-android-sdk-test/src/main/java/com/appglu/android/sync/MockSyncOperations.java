@@ -9,11 +9,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.core.io.ClassPathResource;
 
 import com.appglu.AppGluRestClientException;
+import com.appglu.InputStreamCallback;
 import com.appglu.SyncOperations;
 import com.appglu.TableChanges;
 import com.appglu.TableChangesCallback;
 import com.appglu.TableVersion;
 import com.appglu.impl.json.TableChangesBody;
+import com.appglu.impl.json.TableChangesJsonParser;
 import com.appglu.impl.json.TableVersionBody;
 import com.appglu.impl.json.jackson.AppGluModule;
 import com.appglu.impl.json.jackson.JacksonTableChangesJsonParser;
@@ -26,11 +28,18 @@ public class MockSyncOperations implements SyncOperations {
 	private String changesForTablesJson;
 	private String versionsForTablesJson;
 	
+	private TableChangesJsonParser tableChangesJsonParser;
+	
 	public MockSyncOperations(String changesForTablesJson, String versionsForTablesJson) {
 		this.changesForTablesJson = changesForTablesJson;
 		this.versionsForTablesJson = versionsForTablesJson;
 		
-		objectMapper.registerModule(new AppGluModule());
+		this.objectMapper.registerModule(new AppGluModule());
+		this.tableChangesJsonParser = new JacksonTableChangesJsonParser(objectMapper);
+	}
+
+	public TableChanges changesForTable(String tableName, long version) throws AppGluRestClientException {
+		throw new UnsupportedOperationException("Not implemented by this mock");
 	}
 
 	public List<TableChanges> changesForTables(TableVersion... tables) throws AppGluRestClientException {
@@ -58,7 +67,20 @@ public class MockSyncOperations implements SyncOperations {
 		this.changesForTables(Arrays.asList(tables), tableChangesCallback);
 	}
 
-	public void changesForTables(List<TableVersion> tables, TableChangesCallback tableChangesCallback) throws AppGluRestClientException {
+	public void changesForTables(List<TableVersion> tables, final TableChangesCallback tableChangesCallback) throws AppGluRestClientException {
+		this.downloadChangesForTables(tables, new InputStreamCallback() {
+			
+			public void doWithInputStream(InputStream inputStream) throws IOException {
+				tableChangesJsonParser.parseTableChanges(inputStream, tableChangesCallback);
+			}
+		});
+	}
+	
+	public void downloadChangesForTables(InputStreamCallback inputStreamCallback, TableVersion... tables) throws AppGluRestClientException {
+		this.downloadChangesForTables(Arrays.asList(tables), inputStreamCallback);
+	}
+
+	public void downloadChangesForTables(List<TableVersion> tables, InputStreamCallback inputStreamCallback) throws AppGluRestClientException {
 		if (changesForTablesJson == null) {
 			return;
 		}
@@ -66,17 +88,12 @@ public class MockSyncOperations implements SyncOperations {
 		InputStream inputStream = null;
 		try {
 			inputStream = this.jsonInputStream(changesForTablesJson);
-			JacksonTableChangesJsonParser parser = new JacksonTableChangesJsonParser(objectMapper);
-			parser.parseTableChanges(inputStream, tableChangesCallback);
+			inputStreamCallback.doWithInputStream(inputStream);
 		} catch (IOException e) {
 			throw new AppGluRestClientException(e);
 		} finally {
 			IOUtils.closeQuietly(inputStream);
 		}
-	}
-
-	public TableChanges changesForTable(String tableName, long version) throws AppGluRestClientException {
-		throw new UnsupportedOperationException("Not implemented by this mock");
 	}
 
 	public List<TableVersion> versionsForTables(String... tables) throws AppGluRestClientException {
@@ -103,6 +120,10 @@ public class MockSyncOperations implements SyncOperations {
 	protected InputStream jsonInputStream(String filename) throws IOException {
 		ClassPathResource classPathResource = new ClassPathResource(filename + ".json", getClass());
 		return classPathResource.getInputStream();
+	}
+
+	public void parseTableChanges(InputStream inputStream, TableChangesCallback tableChangesCallback) throws IOException {
+		tableChangesJsonParser.parseTableChanges(inputStream, tableChangesCallback);
 	}
 
 }

@@ -131,10 +131,14 @@ public class SQLiteSyncRepository implements SyncRepository {
 		return files.get(0);
 	}
 	
-	protected List<StorageFile> getAllFiles() {
+	public List<StorageFile> getAllFiles() {
 		SQLiteDatabase database = this.getReadableDatabase();
 		
-		return this.queryForFiles(database, "select * from appglu_storage_files", new String[0]);
+		try {
+			return this.queryForFiles(database, "select * from appglu_storage_files", new String[0]);
+		} finally {
+			database.close();
+		}
 	}
 	
 	protected List<StorageFile> queryForFiles(SQLiteDatabase database, String sql, String[] selectionArgs) {
@@ -175,7 +179,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 		return files;
 	}
 
-	public void applyChangesWithTransaction(SyncRepositoryCallback repositoryCallback) {
+	public void applyChangesWithTransaction(SyncTransactionCallback transactionCallback) {
 		SQLiteDatabase database = this.getWritableDatabase();
 		
 		boolean foreignKeysWereEnabled = false;
@@ -188,9 +192,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 			
 			database.beginTransaction();
 			try {
-				repositoryCallback.syncData();
-				repositoryCallback.syncFiles(this.getAllFiles());
-				
+				transactionCallback.doInTransaction();
 				database.setTransactionSuccessful();
 			} finally {
 				database.endTransaction();

@@ -3,7 +3,7 @@ package com.appglu.android.sync;
 import com.appglu.AppGluRestClientException;
 import com.appglu.StorageFile;
 import com.appglu.StorageOperations;
-import com.appglu.StorageStreamCallback;
+import com.appglu.InputStreamCallback;
 
 public class MockStorageOperations implements StorageOperations {
 
@@ -11,7 +11,7 @@ public class MockStorageOperations implements StorageOperations {
 		return null;
 	}
 
-	public void streamStorageFile(StorageFile file, StorageStreamCallback callback) throws AppGluRestClientException {
+	public void streamStorageFile(StorageFile file, InputStreamCallback callback) throws AppGluRestClientException {
 		
 	}
 

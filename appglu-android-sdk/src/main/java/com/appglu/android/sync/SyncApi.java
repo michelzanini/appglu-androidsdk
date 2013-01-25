@@ -45,23 +45,31 @@ public final class SyncApi {
 		this.syncService = new SyncService(syncOperations, syncRepository, syncStorageService);
 	}
 	
-	protected boolean doSyncDatabase() {
-		return this.syncService.syncDatabase();
+	protected boolean downloadChanges() {
+		return syncService.downloadChanges();
 	}
 
-	protected boolean doSyncDatabaseAndFiles() {
-		return this.syncService.syncDatabaseAndFiles();
+	protected boolean downloadChangesAndFiles() {
+		return syncService.downloadChangesAndFiles();
+	}
+
+	protected boolean downloadChangesForTables(List<String> tables) {
+		return syncService.downloadChangesForTables(tables);
+	}
+
+	protected boolean downloadChangesAndFilesForTables(List<String> tables) {
+		return syncService.downloadChangesAndFilesForTables(tables);
+	}
+
+	protected boolean discardChanges() {
+		return syncService.discardChanges();
+	}
+
+	protected boolean applyChanges() {
+		return syncService.applyChanges();
 	}
 	
-	protected boolean doSyncTables(List<String> tables) {
-		return this.syncService.syncTables(tables);
-	}
-	
-	protected boolean doSyncTablesAndFiles(List<String> tables) {
-		return this.syncService.syncTablesAndFiles(tables);
-	}
-	
-	public File readFileFromFileStorage(StorageFile storageFile) {
+	protected File readFileFromFileStorage(StorageFile storageFile) {
 		return this.syncService.getFileFromFileStorage(storageFile);
 	}
 	
@@ -164,6 +172,7 @@ public final class SyncApi {
 		Intent intent = new Intent(this.context, SyncIntentService.class);
 		this.validateSyncIntent(intent);
 		
+		intent.putExtra(SyncIntentService.SYNC_OPERATION_SERIALIZABLE_EXTRA, request.getSyncRequestOperation());
 		intent.putExtra(SyncIntentService.SYNC_FILES_BOOLEAN_EXTRA, request.getSyncFiles());
 		
 		if (request.getTablesToSync() != null) {

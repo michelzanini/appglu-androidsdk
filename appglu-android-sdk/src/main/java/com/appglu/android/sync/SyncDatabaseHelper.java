@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	
+	protected static final String APPGLU_STORAGE_FILES_TABLE = "appglu_storage_files";
+	
 	private static final int MAX_APP_DATABASE_VERSION_IN_BITS = 20;
 	private static final int MAX_APP_DATABASE_VERSION_IN_DECIMAL = (1 << MAX_APP_DATABASE_VERSION_IN_BITS) - 1;
 	

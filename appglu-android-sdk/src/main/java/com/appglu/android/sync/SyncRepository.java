@@ -14,6 +14,8 @@ public interface SyncRepository extends TableChangesCallback {
 	
 	public StorageFile getStorageFileByIdOrUrl(long id, String url);
 	
-	public void applyChangesWithTransaction(SyncRepositoryCallback transactionCallback);
+	public List<StorageFile> getAllFiles();
+	
+	public void applyChangesWithTransaction(SyncTransactionCallback transactionCallback);
 	
 }

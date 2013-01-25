@@ -1,11 +1,14 @@
 package com.appglu.android.sync;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.appglu.InputStreamCallback;
 import com.appglu.StorageFile;
 import com.appglu.SyncOperations;
 import com.appglu.TableVersion;
@@ -55,7 +58,7 @@ public class SyncService {
 		return this.areTablesSynchronized(localTableVersions);
 	}
 
-	private boolean areTablesSynchronized(List<TableVersion> localTableVersions) {
+	protected boolean areTablesSynchronized(List<TableVersion> localTableVersions) {
 		if (localTableVersions.isEmpty()) {
 			return true;
 		}
@@ -85,96 +88,167 @@ public class SyncService {
 	}
 
 	public boolean syncDatabase() {
-		return this.syncDatabaseAndFiles(false);
+		boolean hasChanges = this.downloadChanges();
+		if (hasChanges) {
+			this.applyChanges();
+		}
+		return hasChanges;
 	}
 	
 	public boolean syncDatabaseAndFiles() {
-		return this.syncDatabaseAndFiles(true);
+		boolean hasChanges = this.downloadChangesAndFiles();
+		if (hasChanges) {
+			this.applyChanges();
+		}
+		return hasChanges;
 	}
 	
-	protected boolean syncDatabaseAndFiles(boolean syncFiles) {
+	public boolean syncTables(List<String> tables) {
+		boolean hasChanges = this.downloadChangesForTables(tables);
+		if (hasChanges) {
+			this.applyChanges();
+		}
+		return hasChanges;
+	}
+	
+	public boolean syncTablesAndFiles(List<String> tables) {
+		boolean hasChanges = this.downloadChangesAndFilesForTables(tables);
+		if (hasChanges) {
+			this.applyChanges();
+		}
+		return hasChanges;
+	}
+	
+	public boolean downloadChanges() {
+		return this.downloadChangesAndFiles(false);
+	}
+	
+	public boolean downloadChangesAndFiles() {
+		return this.downloadChangesAndFiles(true);
+	}
+	
+	public boolean downloadChangesForTables(List<String> tables) {
+		return this.downloadChangesAndFilesForTables(tables, false);
+	}
+	
+	public boolean downloadChangesAndFilesForTables(List<String> tables) {
+		return this.downloadChangesAndFilesForTables(tables, true);
+	}
+	
+	protected boolean downloadChangesAndFiles(boolean syncFiles) {
 		List<TableVersion> tableVersions = this.syncRepository.versionsForAllTables();
 		
 		if (this.areTablesSynchronized(tableVersions)) {
 			if (tableVersions.isEmpty()) {
-				this.logger.info("No tables to synchronize");
+				this.logger.info("No changes to download");
 			} else {
 				this.logger.info("Database is already synchronized");
 			}
 			return false;
 		} else {
-			this.fetchAndApplyChangesToTablesAndFiles(tableVersions, syncFiles);
+			this.downloadChangesAndSyncFiles(tableVersions, syncFiles);
 			return true;
 		}
 	}
 	
-	public boolean syncTables(List<String> tables) {
-		return this.syncTablesAndFiles(tables, false);
-	}
-	
-	public boolean syncTablesAndFiles(List<String> tables) {
-		return this.syncTablesAndFiles(tables, true);
-	}
-	
-	protected boolean syncTablesAndFiles(List<String> tables, boolean syncFiles) {
-		if (syncFiles && !tables.contains("appglu_storage_files")) {
-			tables.add("appglu_storage_files");
+	protected boolean downloadChangesAndFilesForTables(List<String> tables, boolean syncFiles) {
+		if (syncFiles && !tables.contains(SyncDatabaseHelper.APPGLU_STORAGE_FILES_TABLE)) {
+			tables.add(SyncDatabaseHelper.APPGLU_STORAGE_FILES_TABLE);
 		}
 		
 		List<TableVersion> tableVersions = this.syncRepository.versionsForTables(tables);
 		
 		if (this.areTablesSynchronized(tableVersions)) {
 			if (tableVersions.isEmpty()) {
-				this.logger.info("No tables to synchronize");
+				this.logger.info("No changes to download");
 			} else {
 				this.logger.info("Tables '" + tableVersions + "' are already synchronized");
 			}
 			return false;
 		} else {
-			this.fetchAndApplyChangesToTablesAndFiles(tableVersions, syncFiles);
+			this.downloadChangesAndSyncFiles(tableVersions, syncFiles);
 			return true;
 		}
 	}
 	
-	protected void fetchAndApplyChangesToTablesAndFiles(final List<TableVersion> tableVersions, final boolean syncFiles) {
-		this.logger.info("Synchronization started");
+	public boolean discardChanges() {
+		this.logger.info("Discarding changes");
+		
 		try {
-			if (tableVersions.isEmpty()) {
-				this.logger.info("No changes were applied because no local tables were found");
-				return;
-			}
+			this.syncStorageService.removeDownloadedChanges();
+			this.removeFilesThatAreNotBeingUsed();
 			
-			this.logger.info("Fetching and applying remote changes for tables " + tableVersions);
+			return true;
+		} catch (RuntimeException e) {
+			return false;
+		}
+	}
+
+	public boolean applyChanges() {
+		if (!this.syncStorageService.hasDownloadedChanges()) {
+			return false;
+		}
+		
+		this.syncData();
+		this.discardChanges();
+		
+		return true;
+	}
+	
+	protected void downloadChangesAndSyncFiles(List<TableVersion> tableVersions, boolean syncFiles) {
+		this.logger.info("Download started");
+		
+		try {
+			this.syncStorageService.removeDownloadedChanges();
 			
-			this.syncRepository.applyChangesWithTransaction(new SyncRepositoryCallback() {
-				public void syncData() {
-					syncOperations.changesForTables(tableVersions, syncRepository);
-					logger.info("Changes were applied with success");
-				}
-				public void syncFiles(List<StorageFile> files) {
-					if (syncFiles) {
-						downloadAndApplyChangesToFiles(files);
-					}
+			this.logger.info("Downloading remote changes for tables " + tableVersions);
+			
+			this.syncOperations.downloadChangesForTables(tableVersions, new InputStreamCallback() {
+				public void doWithInputStream(InputStream inputStream) throws IOException {
+					syncStorageService.writeDownloadedChangesToTemporaryFile(inputStream);
 				}
 			});
 			
+			if (syncFiles) {
+				this.syncFiles();
+			}
+			
+			this.syncStorageService.promoteTemporaryFile();
+			
+			this.logger.info("Changes were downloaded with success");
+			
 		} catch (RuntimeException e) {
-			this.logger.error("Synchronization failed with exception", e);
+			this.logger.error("Download failed with exception", e);
 			throw e;
 		} finally {
-			this.logger.info("Synchronization finished");
+			this.logger.info("Download finished");
 		}
 	}
 	
-	protected void downloadAndApplyChangesToFiles(List<StorageFile> files) {
-		if (files == null || files.isEmpty()) {
-			this.logger.info("No files were downloaded because database does not containg any files");
+	protected void syncFiles() {
+		if (!this.syncStorageService.hasTemporaryChanges()) {
+			throw new SyncFileStorageException("Error while saving downloaded changes to storage");
+		}
+		
+		StorageFileTableChangesCallback fileChangesCallback = new StorageFileTableChangesCallback();
+		
+		try {
+			InputStream inputStream = this.syncStorageService.getTemporaryChanges();
+			this.syncOperations.parseTableChanges(inputStream, fileChangesCallback);
+		} catch (IOException e) {
+			throw new SyncFileStorageException("Error while parsing storage files from downloaded table changes");
+		}
+		
+		List<StorageFile> parsedFiles = fileChangesCallback.getParsedFiles();
+		
+		if (parsedFiles.isEmpty()) {
+			this.logger.info("There are no new files to downloaded");
 			return;
 		}
 		
 		List<StorageFile> filesToBeDownloaded = new ArrayList<StorageFile>();
 		
-		for (StorageFile storageFile : files) {
+		for (StorageFile storageFile : parsedFiles) {
 			boolean needsToBeDownloaded = this.verifyIfStorageFileNeedsToBeDownloaded(storageFile);
 
 			if (needsToBeDownloaded && !filesToBeDownloaded.contains(storageFile)) {
@@ -187,21 +261,34 @@ public class SyncService {
 		} else {
 			this.downloadFiles(filesToBeDownloaded);
 		}
-		
-		List<String> filesToBeRemoved = new ArrayList<String>();
-		
-		for (String fileName : this.syncStorageService.allFilesOnStorage()) {
-			StorageFile file = this.syncStorageService.storageFileFromFileName(fileName);
+	}
+	
+	protected void syncData() {
+		this.logger.info("Synchronization started");
+		try {
 			
-			if (!files.contains(file)) {
-				filesToBeRemoved.add(fileName);
-			}
+			this.syncRepository.applyChangesWithTransaction(new SyncTransactionCallback() {
+				public void doInTransaction() {
+					applyChangesWithTransaction();
+				}
+			});
+			
+			logger.info("Changes were applied with success");
+			
+		} catch (RuntimeException e) {
+			this.logger.error("Synchronization failed with exception", e);
+			throw e;
+		} finally {
+			this.logger.info("Synchronization finished");
 		}
-		
-		if (filesToBeRemoved.isEmpty()) {
-			this.logger.info("No files were removed");
-		} else {
-			this.removeFiles(filesToBeRemoved);
+	}
+	
+	protected void applyChangesWithTransaction() {
+		try {
+			InputStream inputStream = syncStorageService.getDownloadedChanges();
+			syncOperations.parseTableChanges(inputStream, syncRepository);
+		} catch (IOException e) {
+			throw new SyncFileStorageException("Error while parsing storage changes from downloaded file");
 		}
 	}
 
@@ -236,6 +323,31 @@ public class SyncService {
 		}
 		
 		this.logger.info("All files were downloaded with success");
+	}
+	
+	protected void removeFilesThatAreNotBeingUsed() {
+		List<StorageFile> files = this.syncRepository.getAllFiles();
+		
+		if (files == null || files.isEmpty()) {
+			this.logger.info("No files removed because database does not containg any files");
+			return;
+		}
+		
+		List<String> filesToBeRemoved = new ArrayList<String>();
+		
+		for (String fileName : this.syncStorageService.allFilesOnStorage()) {
+			StorageFile file = this.syncStorageService.storageFileFromFileName(fileName);
+			
+			if (!files.contains(file)) {
+				filesToBeRemoved.add(fileName);
+			}
+		}
+		
+		if (filesToBeRemoved.isEmpty()) {
+			this.logger.info("No files were removed");
+		} else {
+			this.removeFiles(filesToBeRemoved);
+		}
 	}
 	
 	protected void removeFiles(List<String> filesToBeRemoved) {

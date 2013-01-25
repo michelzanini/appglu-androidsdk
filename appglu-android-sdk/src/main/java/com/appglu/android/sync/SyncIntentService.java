@@ -14,8 +14,11 @@ import com.appglu.AppGluHttpClientException;
 import com.appglu.AppGluHttpServerException;
 import com.appglu.AppGluRestClientException;
 import com.appglu.android.AppGlu;
+import com.appglu.android.sync.SyncIntentServiceRequest.SyncRequestOperation;
 
 public class SyncIntentService extends IntentService {
+	
+	public static final String SYNC_OPERATION_SERIALIZABLE_EXTRA = "SyncIntentService.SYNC_OPERATION_SERIALIZABLE_EXTRA";
 	
 	public static final String SYNC_FILES_BOOLEAN_EXTRA = "SyncIntentService.SYNC_FILES_BOOLEAN_EXTRA";
 	
@@ -63,7 +66,7 @@ public class SyncIntentService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		boolean changesWereApplied = false;
+		boolean successful = false;
 		
 		try {
 			if (!AppGlu.hasInternetConnection()) {
@@ -73,30 +76,35 @@ public class SyncIntentService extends IntentService {
 			
 			this.broadcastAction(PRE_EXECUTE_ACTION);
 			
+			SyncRequestOperation syncOperation = (SyncRequestOperation) intent.getSerializableExtra(SYNC_OPERATION_SERIALIZABLE_EXTRA);
 			ArrayList<String> tables = intent.getStringArrayListExtra(TABLES_STRING_ARRAY_EXTRA);
 			boolean syncFiles = intent.getBooleanExtra(SYNC_FILES_BOOLEAN_EXTRA, false);
 			
-			if (tables == null) {
-				if (syncFiles) {
-					changesWereApplied = AppGlu.syncApi().doSyncDatabaseAndFiles();
+			if (SyncRequestOperation.APPLY_CHANGES.equals(syncOperation)) {
+				successful = AppGlu.syncApi().applyChanges();
+			
+			} else if (SyncRequestOperation.DISCARD_CHANGES.equals(syncOperation)) {
+				successful = AppGlu.syncApi().discardChanges();
+			
+			} else if (SyncRequestOperation.DOWNLOAD_CHANGES.equals(syncOperation)) {
+				successful = this.downloadChangesAndFilesForTables(tables, syncFiles);
+			
+			} else if (SyncRequestOperation.DOWNLOAD_AND_APPLY_CHANGES.equals(syncOperation)) {
+				boolean hasChanges = this.downloadChangesAndFilesForTables(tables, syncFiles);
+				if (hasChanges) {
+					successful = AppGlu.syncApi().applyChanges();
 				} else {
-					changesWereApplied = AppGlu.syncApi().doSyncDatabase();
-				}
-			} else {
-				if (syncFiles) {
-					changesWereApplied = AppGlu.syncApi().doSyncTablesAndFiles(tables);
-				} else {
-					changesWereApplied = AppGlu.syncApi().doSyncTables(tables);
+					successful = false;
 				}
 			}
 			
-			this.broadcastResult(changesWereApplied);
+			this.broadcastResult(successful);
 	
 		} catch (Exception exception) {
 			this.broadcastException(exception);
 		} finally {
 			if (this.hasExecutingSyncNotificationExtra(intent)) {
-				if (changesWereApplied && this.hasChangesAppliedNotificationExtra(intent)) {
+				if (successful && this.hasChangesAppliedNotificationExtra(intent)) {
 					Notification notification = (Notification) intent.getParcelableExtra(CHANGES_APPLIED_NOTIFICATION_PARCELABLE_EXTRA);
 					this.sendNotification(notification, true);
 				} else {
@@ -106,6 +114,22 @@ public class SyncIntentService extends IntentService {
 		}
 		
 		this.broadcastAction(FINISH_ACTION);
+	}
+	
+	protected boolean downloadChangesAndFilesForTables(ArrayList<String> tables, boolean syncFiles) {
+		if (tables == null) {
+			if (syncFiles) {
+				return AppGlu.syncApi().downloadChangesAndFiles();
+			} else {
+				return AppGlu.syncApi().downloadChanges();
+			}
+		} else {
+			if (syncFiles) {
+				return AppGlu.syncApi().downloadChangesAndFilesForTables(tables);
+			} else {
+				return AppGlu.syncApi().downloadChangesForTables(tables);
+			}
+		}
 	}
 	
 	protected void sendNotification(Notification notification, boolean autoCancelNotification) {

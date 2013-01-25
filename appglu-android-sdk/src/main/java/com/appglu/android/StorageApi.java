@@ -5,7 +5,7 @@ import com.appglu.AsyncCallback;
 import com.appglu.AsyncStorageOperations;
 import com.appglu.StorageFile;
 import com.appglu.StorageOperations;
-import com.appglu.StorageStreamCallback;
+import com.appglu.InputStreamCallback;
 
 public final class StorageApi implements StorageOperations, AsyncStorageOperations {
 	
@@ -22,7 +22,7 @@ public final class StorageApi implements StorageOperations, AsyncStorageOperatio
 		return this.storageOperations.downloadStorageFile(file);
 	}
 
-	public void streamStorageFile(StorageFile file, StorageStreamCallback callback) throws AppGluRestClientException {
+	public void streamStorageFile(StorageFile file, InputStreamCallback callback) throws AppGluRestClientException {
 		this.storageOperations.streamStorageFile(file, callback);
 	}
 
@@ -30,7 +30,7 @@ public final class StorageApi implements StorageOperations, AsyncStorageOperatio
 		this.asyncStorageOperations.downloadStorageFileInBackground(file, downloadCallback);
 	}
 
-	public void streamStorageFileInBackground(StorageFile file, StorageStreamCallback callback, AsyncCallback<Void> downloadCallback) {
+	public void streamStorageFileInBackground(StorageFile file, InputStreamCallback callback, AsyncCallback<Void> downloadCallback) {
 		this.asyncStorageOperations.streamStorageFileInBackground(file, callback, downloadCallback);
 	}
 
