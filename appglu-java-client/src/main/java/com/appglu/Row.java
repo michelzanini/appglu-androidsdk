@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.appglu.impl.util.Base64;
+import com.appglu.impl.util.Base64Utils;
 import com.appglu.impl.util.DateUtils;
 import com.appglu.impl.util.StringUtils;
 
@@ -115,7 +115,7 @@ public class Row extends HashMap<String, Object> {
 			return new byte[0];
 		}
 		try {
-			return Base64.decode(string);
+			return Base64Utils.decode(string);
 		} catch (IOException e) {
 			throw new DataTypeConversionException(e);
 		}

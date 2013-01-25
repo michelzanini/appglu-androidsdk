@@ -9,7 +9,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.support.HttpRequestWrapper;
 
-import com.appglu.impl.util.Base64;
+import com.appglu.impl.util.Base64Utils;
 
 public class BasicAuthHttpRequestInterceptor implements ClientHttpRequestInterceptor {
 	
@@ -34,7 +34,7 @@ public class BasicAuthHttpRequestInterceptor implements ClientHttpRequestInterce
 
 			private void addBasicAuthHeader(HttpHeaders headers) {
 				String credentials = applicationKey + ":" + applicationSecret;
-				String basicHeaderValue = "Basic " + Base64.encodeBytes(credentials.getBytes());
+				String basicHeaderValue = "Basic " + Base64Utils.encodeBytes(credentials.getBytes());
 				headers.set("Authorization", basicHeaderValue);
 			}
 			
