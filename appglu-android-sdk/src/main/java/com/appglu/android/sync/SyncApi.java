@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -60,7 +61,11 @@ public final class SyncApi {
 	protected boolean downloadChangesAndFilesForTables(List<String> tables) {
 		return syncService.downloadChangesAndFilesForTables(tables);
 	}
-
+	
+	protected boolean hasDownloadedChanges() {
+		return syncService.hasDownloadedChanges();
+	}
+	
 	protected boolean discardChanges() {
 		return syncService.discardChanges();
 	}
@@ -69,8 +74,42 @@ public final class SyncApi {
 		return syncService.applyChanges();
 	}
 	
-	protected File readFileFromFileStorage(StorageFile storageFile) {
+	public File readFileFromFileStorage(StorageFile storageFile) {
 		return this.syncService.getFileFromFileStorage(storageFile);
+	}
+	
+	public boolean checkIfDatabaseIsSynchronized() {
+		return syncService.checkIfDatabaseIsSynchronized();
+	}
+	
+	public boolean checkIfTablesAreSynchronized(String... tables) {
+		return syncService.checkIfTablesAreSynchronized(Arrays.asList(tables));
+	}
+	
+	public boolean checkIfTablesAreSynchronized(List<String> tables) {
+		return syncService.checkIfTablesAreSynchronized(tables);
+	}
+	
+	public void checkIfDatabaseIsSynchronizedInBackground(AsyncCallback<Boolean> callback) {
+		AppGluAsyncCallbackTask<Boolean> asyncTask = new AppGluAsyncCallbackTask<Boolean>(callback, new Callable<Boolean>() {
+			public Boolean call() throws Exception {
+				return checkIfDatabaseIsSynchronized();
+			}
+		});
+		asyncTask.execute();
+	}
+	
+	public void checkIfTablesAreSynchronizedInBackground(AsyncCallback<Boolean> callback, String... tables) {
+		this.checkIfTablesAreSynchronizedInBackground(Arrays.asList(tables), callback);
+	}
+	
+	public void checkIfTablesAreSynchronizedInBackground(final List<String> tables, AsyncCallback<Boolean> callback) {
+		AppGluAsyncCallbackTask<Boolean> asyncTask = new AppGluAsyncCallbackTask<Boolean>(callback, new Callable<Boolean>() {
+			public Boolean call() throws Exception {
+				return checkIfTablesAreSynchronized(tables);
+			}
+		});
+		asyncTask.execute();
 	}
 	
 	public InputStream readInputStreamFromFileStorage(StorageFile storageFile) {
@@ -179,11 +218,11 @@ public final class SyncApi {
 			intent.putStringArrayListExtra(SyncIntentService.TABLES_STRING_ARRAY_EXTRA, new ArrayList<String>(request.getTablesToSync()));
 		}
 		
-		if (request.getExecutingSyncNotification() != null) {
-			intent.putExtra(SyncIntentService.EXECUTING_SYNC_NOTIFICATION_PARCELABLE_EXTRA, request.getExecutingSyncNotification());
+		if (request.getSyncServiceRunningNotification() != null) {
+			intent.putExtra(SyncIntentService.SYNC_SERVICE_RUNNING_NOTIFICATION_PARCELABLE_EXTRA, request.getSyncServiceRunningNotification());
 			
-			if (request.getChangesAppliedNotification() != null) {
-				intent.putExtra(SyncIntentService.CHANGES_APPLIED_NOTIFICATION_PARCELABLE_EXTRA, request.getChangesAppliedNotification());
+			if (request.getSyncServiceCompletedNotification() != null) {
+				intent.putExtra(SyncIntentService.SYNC_SERVICE_COMPLETED_NOTIFICATION_PARCELABLE_EXTRA, request.getSyncServiceCompletedNotification());
 			}
 		}
 		

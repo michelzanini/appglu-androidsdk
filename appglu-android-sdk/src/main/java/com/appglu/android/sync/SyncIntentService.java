@@ -14,9 +14,13 @@ import com.appglu.AppGluHttpClientException;
 import com.appglu.AppGluHttpServerException;
 import com.appglu.AppGluRestClientException;
 import com.appglu.android.AppGlu;
+import com.appglu.android.log.Logger;
+import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.sync.SyncIntentServiceRequest.SyncRequestOperation;
 
 public class SyncIntentService extends IntentService {
+	
+	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
 	
 	public static final String SYNC_OPERATION_SERIALIZABLE_EXTRA = "SyncIntentService.SYNC_OPERATION_SERIALIZABLE_EXTRA";
 	
@@ -24,13 +28,17 @@ public class SyncIntentService extends IntentService {
 	
 	public static final String TABLES_STRING_ARRAY_EXTRA = "SyncIntentService.TABLES_STRING_ARRAY_EXTRA";
 	
-	public static final String EXECUTING_SYNC_NOTIFICATION_PARCELABLE_EXTRA = "SyncIntentService.EXECUTING_SYNC_NOTIFICATION_PARCELABLE_EXTRA";
+	public static final String SYNC_SERVICE_RUNNING_NOTIFICATION_PARCELABLE_EXTRA = "SyncIntentService.SYNC_SERVICE_RUNNING_NOTIFICATION_PARCELABLE_EXTRA";
 	
-	public static final String CHANGES_APPLIED_NOTIFICATION_PARCELABLE_EXTRA = "SyncIntentService.CHANGES_APPLIED_NOTIFICATION_PARCELABLE_EXTRA";
+	public static final String SYNC_SERVICE_COMPLETED_NOTIFICATION_PARCELABLE_EXTRA = "SyncIntentService.SYNC_SERVICE_COMPLETED_NOTIFICATION_PARCELABLE_EXTRA";
 	
 	public static final String PRE_EXECUTE_ACTION = "SyncIntentService.ON_PRE_EXECUTE_ACTION";
 	
 	public static final String NO_INTERNET_CONNECTION_ACTION = "SyncIntentService.ON_NO_INTERNET_CONNECTION_ACTION";
+	
+	public static final String ON_TRANSACTION_START_ACTION = "SyncIntentService.ON_TRANSACTION_START_ACTION";
+	
+	public static final String ON_TRANSACTION_FINISH_ACTION = "SyncIntentService.ON_TRANSACTION_FINISH_ACTION";
 	
 	public static final String RESULT_ACTION = "SyncIntentService.RESULT_ACTION";
 	
@@ -50,18 +58,18 @@ public class SyncIntentService extends IntentService {
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
 		
-		if (this.hasExecutingSyncNotificationExtra(intent)) {
-			Notification notification = (Notification) intent.getParcelableExtra(EXECUTING_SYNC_NOTIFICATION_PARCELABLE_EXTRA);
+		if (this.hasSyncServiceRunningNotificationExtra(intent)) {
+			Notification notification = (Notification) intent.getParcelableExtra(SYNC_SERVICE_RUNNING_NOTIFICATION_PARCELABLE_EXTRA);
 			this.sendNotification(notification, false);
 		}
 	}
 
-	private boolean hasExecutingSyncNotificationExtra(Intent intent) {
-		return intent.hasExtra(EXECUTING_SYNC_NOTIFICATION_PARCELABLE_EXTRA);
+	private boolean hasSyncServiceRunningNotificationExtra(Intent intent) {
+		return intent.hasExtra(SYNC_SERVICE_RUNNING_NOTIFICATION_PARCELABLE_EXTRA);
 	}
 	
-	private boolean hasChangesAppliedNotificationExtra(Intent intent) {
-		return intent.hasExtra(CHANGES_APPLIED_NOTIFICATION_PARCELABLE_EXTRA);
+	private boolean hasSyncServiceCompletedNotificationExtra(Intent intent) {
+		return intent.hasExtra(SYNC_SERVICE_COMPLETED_NOTIFICATION_PARCELABLE_EXTRA);
 	}
 
 	@Override
@@ -69,30 +77,42 @@ public class SyncIntentService extends IntentService {
 		boolean successful = false;
 		
 		try {
-			if (!AppGlu.hasInternetConnection()) {
+			SyncRequestOperation syncOperation = (SyncRequestOperation) intent.getSerializableExtra(SYNC_OPERATION_SERIALIZABLE_EXTRA);
+			
+			boolean isApplyChanges = SyncRequestOperation.APPLY_CHANGES.equals(syncOperation);
+			boolean isDiscardChanges = SyncRequestOperation.DISCARD_CHANGES.equals(syncOperation);
+
+			boolean isDownloadChanges = SyncRequestOperation.DOWNLOAD_CHANGES.equals(syncOperation);
+			boolean isDownloadAndApplyChanges = SyncRequestOperation.DOWNLOAD_AND_APPLY_CHANGES.equals(syncOperation);
+
+			boolean requiresInternet = isDownloadChanges || isDownloadAndApplyChanges;
+			
+			if (requiresInternet && !AppGlu.hasInternetConnection()) {
 				this.broadcastAction(NO_INTERNET_CONNECTION_ACTION);
 				return;
 			}
 			
 			this.broadcastAction(PRE_EXECUTE_ACTION);
 			
-			SyncRequestOperation syncOperation = (SyncRequestOperation) intent.getSerializableExtra(SYNC_OPERATION_SERIALIZABLE_EXTRA);
 			ArrayList<String> tables = intent.getStringArrayListExtra(TABLES_STRING_ARRAY_EXTRA);
 			boolean syncFiles = intent.getBooleanExtra(SYNC_FILES_BOOLEAN_EXTRA, false);
 			
-			if (SyncRequestOperation.APPLY_CHANGES.equals(syncOperation)) {
-				successful = AppGlu.syncApi().applyChanges();
+			if (isApplyChanges) {
+				successful = this.applyChanges();
+			} 
 			
-			} else if (SyncRequestOperation.DISCARD_CHANGES.equals(syncOperation)) {
+			if (isDiscardChanges) {
 				successful = AppGlu.syncApi().discardChanges();
+			}
 			
-			} else if (SyncRequestOperation.DOWNLOAD_CHANGES.equals(syncOperation)) {
+			if (isDownloadChanges) {
 				successful = this.downloadChangesAndFilesForTables(tables, syncFiles);
+			}
 			
-			} else if (SyncRequestOperation.DOWNLOAD_AND_APPLY_CHANGES.equals(syncOperation)) {
+			if (isDownloadAndApplyChanges) {
 				boolean hasChanges = this.downloadChangesAndFilesForTables(tables, syncFiles);
 				if (hasChanges) {
-					successful = AppGlu.syncApi().applyChanges();
+					successful = this.applyChanges();
 				} else {
 					successful = false;
 				}
@@ -103,9 +123,9 @@ public class SyncIntentService extends IntentService {
 		} catch (Exception exception) {
 			this.broadcastException(exception);
 		} finally {
-			if (this.hasExecutingSyncNotificationExtra(intent)) {
-				if (successful && this.hasChangesAppliedNotificationExtra(intent)) {
-					Notification notification = (Notification) intent.getParcelableExtra(CHANGES_APPLIED_NOTIFICATION_PARCELABLE_EXTRA);
+			if (this.hasSyncServiceRunningNotificationExtra(intent)) {
+				if (successful && this.hasSyncServiceCompletedNotificationExtra(intent)) {
+					Notification notification = (Notification) intent.getParcelableExtra(SYNC_SERVICE_COMPLETED_NOTIFICATION_PARCELABLE_EXTRA);
 					this.sendNotification(notification, true);
 				} else {
 					this.cancelNotification();
@@ -114,6 +134,20 @@ public class SyncIntentService extends IntentService {
 		}
 		
 		this.broadcastAction(FINISH_ACTION);
+	}
+
+	protected boolean applyChanges() {
+		if (!AppGlu.syncApi().hasDownloadedChanges()) {
+			this.logger.info("No changes to apply");
+			return false;
+		}
+		
+		try {
+			this.broadcastAction(ON_TRANSACTION_START_ACTION);
+			return AppGlu.syncApi().applyChanges();
+		} finally {
+			this.broadcastAction(ON_TRANSACTION_FINISH_ACTION);
+		}
 	}
 	
 	protected boolean downloadChangesAndFilesForTables(ArrayList<String> tables, boolean syncFiles) {

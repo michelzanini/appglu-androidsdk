@@ -32,8 +32,9 @@ public class MemoryTableChangesCallback implements TableChangesCallback {
 		return tableChanges;
 	}
 
-	public void doWithTableVersion(TableVersion tableVersion, boolean hasChanges) {
+	public boolean doWithTableVersion(TableVersion tableVersion, boolean hasChanges) {
 		rowChangesByTable.put(tableVersion, new ArrayList<RowChanges>());
+		return true;
 	}
 
 	public void doWithRowChanges(TableVersion tableVersion, RowChanges rowChanges) {

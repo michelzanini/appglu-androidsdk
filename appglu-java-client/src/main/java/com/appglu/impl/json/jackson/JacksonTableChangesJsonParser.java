@@ -120,15 +120,20 @@ public class JacksonTableChangesJsonParser implements TableChangesJsonParser {
 		
 		if (jsonParser.getCurrentToken() == JsonToken.END_ARRAY) {
 			tableChangesCallback.doWithTableVersion(tableVersion, false);
-		} else {
-			tableChangesCallback.doWithTableVersion(tableVersion, true);
+			return;
 		}
+		
+		boolean processRowChangesForTable = tableChangesCallback.doWithTableVersion(tableVersion, true);
 		
 		while (jsonParser.getCurrentToken() != JsonToken.END_ARRAY) {
 			
 			if (jsonParser.getCurrentToken() == JsonToken.START_OBJECT) {
-				RowChanges rowChanges = (RowChanges) jsonParser.readValueAs(RowChanges.class);
-				tableChangesCallback.doWithRowChanges(tableVersion, rowChanges);
+				if (processRowChangesForTable) {
+					RowChanges rowChanges = (RowChanges) jsonParser.readValueAs(RowChanges.class);
+					tableChangesCallback.doWithRowChanges(tableVersion, rowChanges);
+				} else {
+					jsonParser.skipChildren();
+				}
 			}
 			
 			jsonParser.nextToken();

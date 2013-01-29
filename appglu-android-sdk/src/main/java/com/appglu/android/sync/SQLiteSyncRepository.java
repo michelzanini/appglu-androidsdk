@@ -206,7 +206,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 		}
 	}
 	
-	public void doWithTableVersion(TableVersion tableVersion, boolean hasChanges) {
+	public boolean doWithTableVersion(TableVersion tableVersion, boolean hasChanges) {
 		if (this.logger.isInfoEnabled()) {
 			if (hasChanges) {
 				this.logger.info("Applying remote changes to table '" + tableVersion.getTableName() + "'");
@@ -216,6 +216,9 @@ public class SQLiteSyncRepository implements SyncRepository {
 		}
 		
 		this.saveTableVersion(tableVersion);
+		
+		//process the changes of every table
+		return true;
 	}
 
 	public void doWithRowChanges(TableVersion tableVersion, RowChanges rowChanges) {

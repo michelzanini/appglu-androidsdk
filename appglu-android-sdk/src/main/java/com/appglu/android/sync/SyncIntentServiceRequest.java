@@ -9,8 +9,8 @@ public class SyncIntentServiceRequest {
 	
 	protected enum SyncRequestOperation {
 		DOWNLOAD_CHANGES,
-		APPLY_CHANGES,
 		DOWNLOAD_AND_APPLY_CHANGES,
+		APPLY_CHANGES,
 		DISCARD_CHANGES;
 	}
 	
@@ -20,9 +20,9 @@ public class SyncIntentServiceRequest {
 	
 	private final List<String> tablesToSync;
 	
-	private Notification executingSyncNotification;
+	private Notification syncServiceRunningNotification;
 	
-	private Notification changesAppliedNotification;
+	private Notification syncServiceCompletedNotification;
 	
 	protected SyncIntentServiceRequest(SyncRequestOperation syncOperation) {
 		this(syncOperation, false);
@@ -36,6 +36,30 @@ public class SyncIntentServiceRequest {
 		this.syncRequestOperation = syncOperation;
 		this.syncFiles = syncFiles;
 		this.tablesToSync = tablesToSync;
+	}
+	
+	public static SyncIntentServiceRequest downloadChanges() {
+		return new SyncIntentServiceRequest(SyncRequestOperation.DOWNLOAD_CHANGES, false);
+	}
+	
+	public static SyncIntentServiceRequest downloadChangesAndFiles() {
+		return new SyncIntentServiceRequest(SyncRequestOperation.DOWNLOAD_CHANGES, true);
+	}
+	
+	public static SyncIntentServiceRequest downloadChangesForTables(List<String> tables) {
+		return new SyncIntentServiceRequest(SyncRequestOperation.DOWNLOAD_CHANGES, false, tables);
+	}
+	
+	public static SyncIntentServiceRequest downloadChangesAndFilesForTables(List<String> tables) {
+		return new SyncIntentServiceRequest(SyncRequestOperation.DOWNLOAD_CHANGES, true, tables);
+	}
+	
+	public static SyncIntentServiceRequest downloadChangesForTables(String... tables) {
+		return new SyncIntentServiceRequest(SyncRequestOperation.DOWNLOAD_CHANGES, false, Arrays.asList(tables));
+	}
+	
+	public static SyncIntentServiceRequest downloadChangesAndFilesForTables(String... tables) {
+		return new SyncIntentServiceRequest(SyncRequestOperation.DOWNLOAD_CHANGES, true, Arrays.asList(tables));
 	}
 
 	public static SyncIntentServiceRequest syncDatabase() {
@@ -62,30 +86,6 @@ public class SyncIntentServiceRequest {
 		return new SyncIntentServiceRequest(SyncRequestOperation.DOWNLOAD_AND_APPLY_CHANGES, true, Arrays.asList(tables));
 	}
 	
-	public static SyncIntentServiceRequest downloadChanges() {
-		return new SyncIntentServiceRequest(SyncRequestOperation.DOWNLOAD_CHANGES, false);
-	}
-	
-	public static SyncIntentServiceRequest downloadChangesAndFiles() {
-		return new SyncIntentServiceRequest(SyncRequestOperation.DOWNLOAD_CHANGES, true);
-	}
-	
-	public static SyncIntentServiceRequest downloadChangesForTables(List<String> tables) {
-		return new SyncIntentServiceRequest(SyncRequestOperation.DOWNLOAD_CHANGES, false, tables);
-	}
-	
-	public static SyncIntentServiceRequest downloadChangesAndFilesForTables(List<String> tables) {
-		return new SyncIntentServiceRequest(SyncRequestOperation.DOWNLOAD_CHANGES, true, tables);
-	}
-	
-	public static SyncIntentServiceRequest downloadChangesForTables(String... tables) {
-		return new SyncIntentServiceRequest(SyncRequestOperation.DOWNLOAD_CHANGES, false, Arrays.asList(tables));
-	}
-	
-	public static SyncIntentServiceRequest downloadChangesAndFilesForTables(String... tables) {
-		return new SyncIntentServiceRequest(SyncRequestOperation.DOWNLOAD_CHANGES, true, Arrays.asList(tables));
-	}
-	
 	public static SyncIntentServiceRequest discardChanges() {
 		return new SyncIntentServiceRequest(SyncRequestOperation.DISCARD_CHANGES);
 	}
@@ -94,12 +94,12 @@ public class SyncIntentServiceRequest {
 		return new SyncIntentServiceRequest(SyncRequestOperation.APPLY_CHANGES);
 	}
 
-	public void setExecutingSyncNotification(Notification executingSyncNotification) {
-		this.executingSyncNotification = executingSyncNotification;
+	public void setSyncServiceRunningNotification(Notification syncServiceRunningNotification) {
+		this.syncServiceRunningNotification = syncServiceRunningNotification;
 	}
 
-	public void setChangesAppliedNotification(Notification changesAppliedNotification) {
-		this.changesAppliedNotification = changesAppliedNotification;
+	public void setSyncServiceCompletedNotification(Notification syncServiceCompletedNotification) {
+		this.syncServiceCompletedNotification = syncServiceCompletedNotification;
 	}
 	
 	protected SyncRequestOperation getSyncRequestOperation() {
@@ -114,12 +114,12 @@ public class SyncIntentServiceRequest {
 		return tablesToSync;
 	}
 
-	protected Notification getExecutingSyncNotification() {
-		return executingSyncNotification;
+	protected Notification getSyncServiceRunningNotification() {
+		return syncServiceRunningNotification;
 	}
 
-	protected Notification getChangesAppliedNotification() {
-		return changesAppliedNotification;
+	protected Notification getSyncServiceCompletedNotification() {
+		return syncServiceCompletedNotification;
 	}
 	
 }

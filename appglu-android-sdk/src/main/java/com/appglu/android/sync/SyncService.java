@@ -171,26 +171,39 @@ public class SyncService {
 		}
 	}
 	
+	public boolean hasDownloadedChanges() {
+		return this.syncStorageService.hasDownloadedChanges();
+	}
+	
 	public boolean discardChanges() {
-		this.logger.info("Discarding changes");
-		
-		try {
-			this.syncStorageService.removeDownloadedChanges();
-			this.removeFilesThatAreNotBeingUsed();
-			
-			return true;
-		} catch (RuntimeException e) {
+		if (!this.syncStorageService.hasDownloadedChanges()) {
+			this.logger.info("No changes to discard");
 			return false;
 		}
+		
+		this.logger.info("Discarding changes");
+		
+		this.syncStorageService.removeTemporaryChanges();
+		this.syncStorageService.removeDownloadedChanges();
+		
+		this.removeFilesThatAreNotBeingUsed();
+		
+		return true;
 	}
-
+	
 	public boolean applyChanges() {
 		if (!this.syncStorageService.hasDownloadedChanges()) {
+			this.logger.info("No changes to apply");
 			return false;
 		}
 		
 		this.syncData();
-		this.discardChanges();
+		
+		try {
+			this.removeFilesThatAreNotBeingUsed();
+		} catch (RuntimeException e) {
+			this.logger.warn("Error while removing unused files", e);
+		}
 		
 		return true;
 	}
@@ -209,6 +222,8 @@ public class SyncService {
 				}
 			});
 			
+			this.logger.info("Remote changes downloaded");
+			
 			if (syncFiles) {
 				this.syncFiles();
 			}
@@ -222,6 +237,40 @@ public class SyncService {
 			throw e;
 		} finally {
 			this.logger.info("Download finished");
+		}
+	}
+	
+	protected void syncData() {
+		this.logger.info("Synchronization started");
+		try {
+			
+			this.syncRepository.applyChangesWithTransaction(new SyncTransactionCallback() {
+				public void doInTransaction() {
+					applyChangesWithTransaction();
+				}
+			});
+			
+			logger.info("Changes were applied with success");
+			
+		} catch (RuntimeException e) {
+			this.logger.error("Synchronization failed with exception", e);
+			throw e;
+		} finally {
+			this.logger.info("Synchronization finished");
+		}
+	}
+	
+	protected void applyChangesWithTransaction() {
+		try {
+			InputStream inputStream = syncStorageService.getDownloadedChanges();
+			syncOperations.parseTableChanges(inputStream, syncRepository);
+		} catch (IOException e) {
+			throw new SyncFileStorageException("Error while parsing storage changes from downloaded file");
+		}
+		
+		boolean removed = syncStorageService.removeDownloadedChanges();
+		if (!removed) {
+			throw new SyncFileStorageException("Error while removing downloaded changes file");
 		}
 	}
 	
@@ -263,35 +312,6 @@ public class SyncService {
 		}
 	}
 	
-	protected void syncData() {
-		this.logger.info("Synchronization started");
-		try {
-			
-			this.syncRepository.applyChangesWithTransaction(new SyncTransactionCallback() {
-				public void doInTransaction() {
-					applyChangesWithTransaction();
-				}
-			});
-			
-			logger.info("Changes were applied with success");
-			
-		} catch (RuntimeException e) {
-			this.logger.error("Synchronization failed with exception", e);
-			throw e;
-		} finally {
-			this.logger.info("Synchronization finished");
-		}
-	}
-	
-	protected void applyChangesWithTransaction() {
-		try {
-			InputStream inputStream = syncStorageService.getDownloadedChanges();
-			syncOperations.parseTableChanges(inputStream, syncRepository);
-		} catch (IOException e) {
-			throw new SyncFileStorageException("Error while parsing storage changes from downloaded file");
-		}
-	}
-
 	protected boolean verifyIfStorageFileNeedsToBeDownloaded(StorageFile storageFile) {
 		File cachedFile = this.syncStorageService.getFileFromExternalStorage(storageFile);
 		
@@ -327,11 +347,6 @@ public class SyncService {
 	
 	protected void removeFilesThatAreNotBeingUsed() {
 		List<StorageFile> files = this.syncRepository.getAllFiles();
-		
-		if (files == null || files.isEmpty()) {
-			this.logger.info("No files removed because database does not containg any files");
-			return;
-		}
 		
 		List<String> filesToBeRemoved = new ArrayList<String>();
 		

@@ -160,20 +160,37 @@ public class SyncFileStorageService {
 		}
 	}
 	
-	public void removeTemporaryFileIfExists() {
+	public boolean removeTemporaryChanges() {
 		File temporaryFile = this.temporaryFile();
 		if (temporaryFile.exists()) {
-			temporaryFile.delete();
+			return temporaryFile.delete();
+		}
+		return false;
+	}
+	
+	public boolean hasTemporaryChanges() {
+		File temporaryFile = this.temporaryFile();
+		return temporaryFile.exists();
+	}
+	
+	public InputStream getTemporaryChanges() {
+		File temporaryFile = this.temporaryFile();
+		if (!temporaryFile.exists()) {
+			return null;
+		}
+		try {
+			return new FileInputStream(temporaryFile);
+		} catch (FileNotFoundException e) {
+			return null;
 		}
 	}
 	
-	public void removeDownloadedChanges() {
-		this.removeTemporaryFileIfExists();
-		
+	public boolean removeDownloadedChanges() {
 		File syncChangesFile = this.changesFile();
 		if (syncChangesFile.exists()) {
-			syncChangesFile.delete();
+			return syncChangesFile.delete();
 		}
+		return false;
 	}
 	
 	public boolean hasDownloadedChanges() {
@@ -193,21 +210,4 @@ public class SyncFileStorageService {
 		}
 	}
 	
-	public boolean hasTemporaryChanges() {
-		File temporaryFile = this.temporaryFile();
-		return temporaryFile.exists();
-	}
-	
-	public InputStream getTemporaryChanges() {
-		File temporaryFile = this.temporaryFile();
-		if (!temporaryFile.exists()) {
-			return null;
-		}
-		try {
-			return new FileInputStream(temporaryFile);
-		} catch (FileNotFoundException e) {
-			return null;
-		}
-	}
-
 }
