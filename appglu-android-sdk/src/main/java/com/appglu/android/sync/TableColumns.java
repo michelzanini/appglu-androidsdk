@@ -8,8 +8,18 @@ public class TableColumns extends HashMap<String, Column> {
 
 	private static final long serialVersionUID = 1L;
 	
+	private String tableName;
+	
 	private List<String> primaryKeys = new ArrayList<String>();
 	
+	public String getTableName() {
+		return tableName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
 	public String getSinglePrimaryKeyName() {
 		if (this.hasSinglePrimaryKey()) {
 			return primaryKeys.get(0);

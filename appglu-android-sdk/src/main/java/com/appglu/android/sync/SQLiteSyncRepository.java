@@ -43,6 +43,8 @@ public class SQLiteSyncRepository implements SyncRepository {
 	
 	private SyncDatabaseHelper syncDatabaseHelper;
 	
+	private ContentValuesRowMapper contentValuesRowMapper;
+	
 	public SQLiteSyncRepository(SyncDatabaseHelper syncDatabaseHelper) {
 		this.syncDatabaseHelper = syncDatabaseHelper;
 	}
@@ -53,6 +55,11 @@ public class SQLiteSyncRepository implements SyncRepository {
 	
 	private SQLiteDatabase getWritableDatabase() {
 		return this.syncDatabaseHelper.getWritableDatabase();
+	}
+	
+	protected void buildContentValuesRowMapper(String tableName) {
+		TableColumns tableColumns = this.columnsForTable(tableName);
+		this.contentValuesRowMapper = new ContentValuesRowMapper(tableColumns);
 	}
 	
 	public List<TableVersion> versionsForAllTables() {
@@ -207,14 +214,24 @@ public class SQLiteSyncRepository implements SyncRepository {
 	}
 	
 	public boolean doWithTableVersion(TableVersion tableVersion, boolean hasChanges) {
+		String tableName = tableVersion.getTableName();
+		
 		if (this.logger.isInfoEnabled()) {
 			if (hasChanges) {
 				this.logger.info("Applying remote changes to table '" + tableVersion.getTableName() + "'");
 			} else {
-				this.logger.info("Table '" + tableVersion.getTableName() + "' is already synchronized");
+				this.logger.info("Table '" + tableName + "' is already synchronized");
 			}
 		}
 		
+		this.buildContentValuesRowMapper(tableName);
+    	
+		TableColumns tableColumns = this.contentValuesRowMapper.getTableColumns();
+    	if (!tableColumns.hasSinglePrimaryKey()) {
+    		logger.warn("Ignoring changes to table '" + tableName + "' because it should have one and only one column as primary key");
+    		return false;
+    	}
+    	
 		this.saveTableVersion(tableVersion);
 		
 		//process the changes of every table
@@ -229,32 +246,47 @@ public class SQLiteSyncRepository implements SyncRepository {
 		Row row = rowChanges.getRow();
 		
 		if (row.isEmpty()) {
-			logger.warn("Ignoring changes to table '" + tableName + "' because they are empty");
+			logger.warn("Ignoring changes to table '" + tableName + "' because changes are empty");
+			return false;
+		}
+		
+		if (this.contentValuesRowMapper == null) {
+			logger.warn("Ignoring changes to table '" + tableName + "' contentValuesRowMapper was not initialized");
 			return false;
 		}
 		
 	    try {
-	    	TableColumns columns = this.columnsForTable(tableName);
+	    	TableColumns tableColumns = this.contentValuesRowMapper.getTableColumns();
 	    	
-	    	if (!columns.hasSinglePrimaryKey()) {
+	    	if (!tableColumns.hasSinglePrimaryKey()) {
 	    		logger.warn("Ignoring changes to table '" + tableName + "' because it should have one and only one column as primary key");
 	    		return false;
 	    	}
 	    	
-	    	ContentValuesRowMapper contentValuesRowMapper = new ContentValuesRowMapper(columns);
-    		ContentValues values = contentValuesRowMapper.mapRow(row);
-    		
+	    	ContentValues values = this.contentValuesRowMapper.mapRow(row);
+			
     		if (values.size() == 0) {
     			logger.warn("Ignoring changes to table '" + tableName + "' because there is no matching column to sync");
     			return false;
     		}
     		
-    		String primaryKeyName = columns.getSinglePrimaryKeyName();
+			String primaryKeyName = tableColumns.getSinglePrimaryKeyName();
     		Object primaryKeyValue = values.get(StringUtils.escapeColumn(primaryKeyName));
     		
+    		SyncOperation syncOperation = rowChanges.getSyncOperation();
+    		
+    		if (primaryKeyValue == null && syncOperation != SyncOperation.DELETE) {
+    			logger.warn("Ignoring changes to table '" + tableName + "' because the primary key value could not be found");
+    			return false;
+    		}
+    		
 			long syncKey = rowChanges.getSyncKey();
-			SyncOperation syncOperation = rowChanges.getSyncOperation();
-
+			
+			if (syncKey == 0) {
+    			logger.warn("Ignoring changes to table '" + tableName + "' because the sync key is zero");
+    			return false;
+    		}
+			
 			if (syncOperation == SyncOperation.INSERT) {
 				this.insertOperation(tableName, values);
 				this.saveSyncMetadata(syncKey, tableName, primaryKeyValue);
@@ -334,6 +366,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 	
 	protected TableColumns columnsForTable(String tableName) {
 		TableColumns tableColumns = new TableColumns();
+		tableColumns.setTableName(tableName);
 		
 		Cursor cursor = null;
 		
@@ -424,16 +457,12 @@ public class SQLiteSyncRepository implements SyncRepository {
 	}
 	
 	protected void saveSyncMetadata(long syncKey, String tableName, Object primaryKeyValue) {
-		ContentValues metadata = new ContentValues();
-		
-		metadata.put("sync_key", syncKey);
-		metadata.put("table_name", tableName);
-		metadata.put("primary_key", String.valueOf(primaryKeyValue));
-		
 		SQLiteDatabase database = this.getWritableDatabase();
-		database.replaceOrThrow("appglu_sync_metadata", null, metadata);
+		
+		Object[] params = new Object[] {syncKey, tableName, String.valueOf(primaryKeyValue)};
+		database.execSQL("insert or replace into appglu_sync_metadata (sync_key, table_name, primary_key) values (?,?,?)", params);
 	}
-	
+
 	protected void deleteSyncMetadata(long syncKey, String tableName) {
 		SQLiteDatabase database = this.getWritableDatabase();
 		database.delete("appglu_sync_metadata", "sync_key = ? and table_name = ?", new String[] { String.valueOf(syncKey), tableName });

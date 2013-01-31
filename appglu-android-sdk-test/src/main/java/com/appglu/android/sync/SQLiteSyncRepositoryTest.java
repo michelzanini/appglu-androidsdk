@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.appglu.StorageFile;
 import com.appglu.Row;
 import com.appglu.RowChanges;
+import com.appglu.SyncOperation;
 import com.appglu.TableVersion;
 import com.appglu.android.sync.Column;
 import com.appglu.android.sync.SQLiteSyncRepository;
@@ -43,16 +44,52 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 		this.assertTableVersions(tableVersions, 0, 1, 2);
 	}
 	
-	public void testExecuteSyncOperation_emptyRowChanges() {
-		RowChanges rowChanges = new RowChanges();
+	public void testExecuteSyncOperation() {
+		RowChanges rowChanges = this.getRowChanges();
 		
+		this.syncRepository.buildContentValuesRowMapper("other_table");
+		boolean succeed = this.syncRepository.executeSyncOperation("other_table", rowChanges);
+		Assert.assertTrue(succeed);
+	}
+	
+	public void testExecuteSyncOperation_nullContentValuesRowMapper() {
+		RowChanges rowChanges = this.getRowChanges();
+		
+		boolean succeed = this.syncRepository.executeSyncOperation("other_table", rowChanges);
+		Assert.assertFalse(succeed);
+	}
+	
+	public void testExecuteSyncOperation_emptySyncKey() {
+		RowChanges rowChanges = this.getRowChanges();
+		rowChanges.setSyncKey(0);
+		
+		this.syncRepository.buildContentValuesRowMapper("other_table");
+		boolean succeed = this.syncRepository.executeSyncOperation("other_table", rowChanges);
+		Assert.assertFalse(succeed);
+	}
+	
+	public void testExecuteSyncOperation_emptyPrimaryKey() {
+		RowChanges rowChanges = this.getRowChanges();
+		rowChanges.getRow().putNull("id");
+		
+		this.syncRepository.buildContentValuesRowMapper("other_table");
+		boolean succeed = this.syncRepository.executeSyncOperation("other_table", rowChanges);
+		Assert.assertFalse(succeed);
+	}
+	
+	public void testExecuteSyncOperation_emptyRow() {
+		RowChanges rowChanges = this.getRowChanges();
+		rowChanges.setRow(new Row());
+
+		this.syncRepository.buildContentValuesRowMapper("other_table");
 		boolean succeed = this.syncRepository.executeSyncOperation("other_table", rowChanges);
 		Assert.assertFalse(succeed);
 	}
 	
 	public void testExecuteSyncOperation_noPrimaryKey() {
 		RowChanges rowChanges = this.getRowChanges();
-		
+
+		this.syncRepository.buildContentValuesRowMapper("no_primary_key");
 		boolean succeed = this.syncRepository.executeSyncOperation("no_primary_key", rowChanges);
 		Assert.assertFalse(succeed);
 	}
@@ -60,6 +97,7 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 	public void testExecuteSyncOperation_composePrimaryKey() {
 		RowChanges rowChanges = this.getRowChanges();
 		
+		this.syncRepository.buildContentValuesRowMapper("compose_primary_key");
 		boolean succeed = this.syncRepository.executeSyncOperation("compose_primary_key", rowChanges);
 		Assert.assertFalse(succeed);
 	}
@@ -68,9 +106,10 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 		Row row = new Row();
 		row.put("foo", 1);
 		
-		RowChanges rowChanges = new RowChanges();
+		RowChanges rowChanges = this.getRowChanges();
 		rowChanges.setRow(row);
-		
+
+		this.syncRepository.buildContentValuesRowMapper("other_table");
 		boolean succeed = this.syncRepository.executeSyncOperation("other_table", rowChanges);
 		Assert.assertFalse(succeed);
 	}
@@ -78,11 +117,15 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 	private RowChanges getRowChanges() {
 		Row row = new Row();
 		
-		row.put("id", 1);
+		row.put("id", 10);
 		row.put("name", "name");
 		
 		RowChanges rowChanges = new RowChanges();
 		rowChanges.setRow(row);
+		
+		rowChanges.setSyncKey(1);
+		rowChanges.setSyncOperation(SyncOperation.INSERT);
+		
 		return rowChanges;
 	}
 	

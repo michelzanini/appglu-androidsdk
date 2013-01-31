@@ -15,12 +15,18 @@ public class ContentValuesRowMapper implements RowMapper<ContentValues> {
 	
 	private TableColumns tableColumns;
 	
+	private ContentValues values = new ContentValues();
+	
 	public ContentValuesRowMapper(TableColumns tableColumns) {
 		this.tableColumns = tableColumns;
 	}
-
+	
+	public TableColumns getTableColumns() {
+		return tableColumns;
+	}
+	
 	public ContentValues mapRow(Row row) throws RowMapperException {
-		ContentValues values = new ContentValues();
+		values.clear();
 		
 		for (Entry<String, Object> rowProperty : row.entrySet()) {
 			String columnName = rowProperty.getKey();

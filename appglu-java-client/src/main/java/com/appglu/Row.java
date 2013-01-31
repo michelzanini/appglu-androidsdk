@@ -185,6 +185,10 @@ public class Row extends HashMap<String, Object> {
 		}
 	}
 	
+	public void putNull(String key) {
+		this.put(key, (Object) null);
+	}
+	
 	public void put(String key, Row row) {
 		this.put(key, (Map<String, Object>) row);
 	}

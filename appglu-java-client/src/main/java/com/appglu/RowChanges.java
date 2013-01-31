@@ -2,13 +2,16 @@ package com.appglu;
 
 public class RowChanges {
 	
-	private Row row = new Row();
+	private Row row;
 	
 	private long syncKey;
 	
 	private SyncOperation syncOperation;
 
 	public Row getRow() {
+		if (row == null) {
+			row = new Row();
+		}
 		return row;
 	}
 
@@ -33,7 +36,7 @@ public class RowChanges {
 	}
 	
 	public void addRowProperty(String key, Object value) {
-		row.put(key, value);
+		getRow().put(key, value);
 	}
 
 	@Override
