@@ -44,6 +44,18 @@ public abstract class HashUtils {
     }
     
     /**
+     * Computes the MD5 hash of the given String and returns it as an array of
+     * bytes.
+     */
+    public static byte[] computeMd5Hash(String data) throws IOException {
+    	try {
+			return computeMd5Hash(data.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			return computeMd5Hash(data.getBytes());
+		}
+    }
+    
+    /**
      * Check if the MD5 hash of the given data matches with the eTag (hex of md5 returned by the server)
      * @return true if matches false if not
      */

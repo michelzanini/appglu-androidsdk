@@ -19,19 +19,27 @@ public final class AsyncStorageTemplate implements AsyncStorageOperations {
 		this.storageOperations = storageOperations;
 	}
 
-	public void downloadStorageFileInBackground(final StorageFile file, AsyncCallback<byte[]> downloadCallback) {
-		asyncExecutor.execute(downloadCallback, new Callable<byte[]>() {
-			public byte[] call() {
-				return storageOperations.downloadStorageFile(file);
-			}
-		});
-	}
-
 	public void streamStorageFileInBackground(final StorageFile file, final InputStreamCallback inputStreamCallback, AsyncCallback<Void> downloadCallback) {
 		asyncExecutor.execute(downloadCallback, new Callable<Void>() {
 			public Void call() {
 				storageOperations.streamStorageFile(file, inputStreamCallback);
 				return null;
+			}
+		});
+	}
+
+	public void streamStorageFileIfModifiedSinceInBackground(final StorageFile file, final InputStreamCallback inputStreamCallback, AsyncCallback<Boolean> downloadCallback) {
+		asyncExecutor.execute(downloadCallback, new Callable<Boolean>() {
+			public Boolean call() {
+				return storageOperations.streamStorageFileIfModifiedSince(file, inputStreamCallback);
+			}
+		});
+	}
+
+	public void streamStorageFileIfNoneMatchInBackground(final StorageFile file, final InputStreamCallback inputStreamCallback, AsyncCallback<Boolean> downloadCallback) {
+		asyncExecutor.execute(downloadCallback, new Callable<Boolean>() {
+			public Boolean call() {
+				return storageOperations.streamStorageFileIfNoneMatch(file, inputStreamCallback);
 			}
 		});
 	}

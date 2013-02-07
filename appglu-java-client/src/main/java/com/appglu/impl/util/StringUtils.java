@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import org.springframework.util.CollectionUtils;
 
-public class StringUtils {
+public abstract class StringUtils {
 	
 	public static String underscoreName(String name) {
 		if (StringUtils.isEmpty(name)) {
@@ -59,6 +59,13 @@ public class StringUtils {
 			return "";
 		}
 		return string.replace(';', ':');
+	}
+	
+	public static String addDoubleQuotes(String string) {
+		if (string == null) {
+			return "";
+		}
+		return "\"" + string + "\"";
 	}
 	
 	public static String removeDoubleQuotes(String string) {

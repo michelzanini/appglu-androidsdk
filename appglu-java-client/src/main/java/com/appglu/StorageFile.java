@@ -136,6 +136,10 @@ public class StorageFile implements Serializable {
 	public boolean hasETag() {
 		return StringUtils.isNotEmpty(eTag);
 	}
+	
+	public boolean hasLastModifiedDate() {
+		return lastModified != null;
+	}
 
 	@Override
 	public int hashCode() {

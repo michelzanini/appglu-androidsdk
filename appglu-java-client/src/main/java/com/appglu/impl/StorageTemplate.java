@@ -1,12 +1,11 @@
 package com.appglu.impl;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.RequestCallback;
@@ -15,11 +14,10 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
 import com.appglu.AppGluRestClientException;
+import com.appglu.InputStreamCallback;
 import com.appglu.StorageFile;
 import com.appglu.StorageOperations;
-import com.appglu.InputStreamCallback;
 import com.appglu.impl.util.HashUtils;
-import com.appglu.impl.util.IOUtils;
 import com.appglu.impl.util.Md5DigestCalculatingInputStream;
 import com.appglu.impl.util.StringUtils;
 
@@ -42,31 +40,53 @@ public final class StorageTemplate implements StorageOperations {
         }
 	}
 
-	public byte[] downloadStorageFile(StorageFile file) throws AppGluRestClientException {
-		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	public void streamStorageFile(StorageFile file, InputStreamCallback inputStreamCallback) throws AppGluRestClientException {
 		
-		this.streamStorageFile(file, new InputStreamCallback() {
-			
-			public void doWithInputStream(InputStream inputStream) throws IOException {
-				IOUtils.copy(inputStream, outputStream);
+		RequestCallback requestCallback = new RequestCallback() {
+			public void doWithRequest(ClientHttpRequest request) throws IOException {
+				
 			}
-		});
+		};
 		
-		return outputStream.toByteArray();
+		this.streamStorageFile(file, inputStreamCallback, requestCallback);
 	}
-
-	public void streamStorageFile(final StorageFile file, final InputStreamCallback inputStreamCallback) throws AppGluRestClientException {
+	
+	public boolean streamStorageFileIfModifiedSince(final StorageFile file, InputStreamCallback inputStreamCallback) throws AppGluRestClientException {
+		
+		RequestCallback requestCallback = new RequestCallback() {
+			public void doWithRequest(ClientHttpRequest request) throws IOException {
+				if (file.hasLastModifiedDate()) {
+					request.getHeaders().setIfModifiedSince(file.getLastModified().getTime());
+				}
+			}
+		};
+		
+		return this.streamStorageFile(file, inputStreamCallback, requestCallback);
+	}
+	
+	public boolean streamStorageFileIfNoneMatch(final StorageFile file, InputStreamCallback inputStreamCallback) throws AppGluRestClientException {
+		
+		RequestCallback requestCallback = new RequestCallback() {
+			public void doWithRequest(ClientHttpRequest request) throws IOException {
+				if (file.hasETag()) {
+					request.getHeaders().setIfNoneMatch(StringUtils.addDoubleQuotes(file.getETag()));
+				}
+			}
+		};
+		
+		return this.streamStorageFile(file, inputStreamCallback, requestCallback);
+	}
+	
+	protected boolean streamStorageFile(StorageFile file, final InputStreamCallback inputStreamCallback, RequestCallback requestCallback) throws AppGluRestClientException {
 		URI uri = this.getStorageFileURI(file);
 		
 		try {
-			RequestCallback requestCallback = new RequestCallback() {
-				public void doWithRequest(ClientHttpRequest request) throws IOException {
+			ResponseExtractor<Boolean> responseExtractor = new ResponseExtractor<Boolean>() {
+				public Boolean extractData(ClientHttpResponse response) throws IOException {
+					if (response.getStatusCode() == HttpStatus.NOT_MODIFIED) {
+						return false;
+					}
 					
-				}
-			};
-			
-			ResponseExtractor<Object> responseExtractor = new ResponseExtractor<Object>() {
-				public Object extractData(ClientHttpResponse response) throws IOException {
 					Md5DigestCalculatingInputStream inputStream = new Md5DigestCalculatingInputStream(response.getBody());
 					
 					inputStreamCallback.doWithInputStream(inputStream);
@@ -79,11 +99,11 @@ public final class StorageTemplate implements StorageOperations {
 		                        "Client calculated content hash didn't match hash calculated by server");
 					}
 					
-					return null;
+					return true;
 				}
 			};
 			
-			this.downloadRestOperations.execute(uri, HttpMethod.GET, requestCallback, responseExtractor);
+			return this.downloadRestOperations.execute(uri, HttpMethod.GET, requestCallback, responseExtractor);
 		} catch (RestClientException e) {
 			throw new AppGluRestClientException(e.getMessage(), e);
 		}
