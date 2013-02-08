@@ -168,7 +168,7 @@ public class StorageFile implements Serializable {
 
 	@Override
 	public String toString() {
-		return "StorageFile [name=" + name + ", url=" + url + ", eTag=" + eTag + "]";
+		return "StorageFile [id=" + id + ", url=" + url + ", eTag=" + eTag + "]";
 	}
 	
 }

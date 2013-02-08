@@ -3,6 +3,7 @@ package com.appglu.android;
 import com.appglu.UserSessionPersistence;
 import com.appglu.android.analytics.AnalyticsDispatcher;
 import com.appglu.android.analytics.AnalyticsSessionCallback;
+import com.appglu.android.cache.CacheManager;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.log.LoggerLevel;
 import com.appglu.android.sync.SyncDatabaseHelper;
@@ -29,6 +30,10 @@ public class AppGluSettings {
 	private UserSessionPersistence userSessionPersistence;
 	
 	private SyncDatabaseHelper defaultSyncDatabaseHelper;
+	
+	private CacheManager storageCacheManager;
+	
+	private long storageCacheTimeToLiveInMilliseconds;
 	
 	public AppGluSettings(String baseUrl, String applicationKey, String applicationSecret) {
 		this(baseUrl, applicationKey, applicationSecret, null);
@@ -96,6 +101,14 @@ public class AppGluSettings {
 	public void setDefaultSyncDatabaseHelper(SyncDatabaseHelper defaultSyncDatabaseHelper) {
 		this.defaultSyncDatabaseHelper = defaultSyncDatabaseHelper;
 	}
+	
+	public void setStorageCacheManager(CacheManager storageCacheManager) {
+		this.storageCacheManager = storageCacheManager;
+	}
+	
+	public void setStorageCacheTimeToLiveInMilliseconds(long storageCacheTimeToLiveInMilliseconds) {
+		this.storageCacheTimeToLiveInMilliseconds = storageCacheTimeToLiveInMilliseconds;
+	}
 
 	protected AnalyticsDispatcher getAnalyticsDispatcher() {
 		return this.analyticsDispatcher;
@@ -109,8 +122,16 @@ public class AppGluSettings {
 		return this.userSessionPersistence;
 	}
 	
-	public SyncDatabaseHelper getDefaultSyncDatabaseHelper() {
-		return defaultSyncDatabaseHelper;
+	protected SyncDatabaseHelper getDefaultSyncDatabaseHelper() {
+		return this.defaultSyncDatabaseHelper;
+	}
+	
+	protected CacheManager getStorageCacheManager() {
+		return this.storageCacheManager;
+	}
+	
+	protected long getStorageCacheTimeToLiveInMilliseconds() {
+		return storageCacheTimeToLiveInMilliseconds;
 	}
 
 	protected AppGluTemplate createAppGluTemplate() {

@@ -1,5 +1,7 @@
 package com.appglu.android.sync;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,7 +41,9 @@ public class SyncFileStorageService {
 			public void doWithInputStream(InputStream inputStream) throws IOException {
 				File destinationFile = getFileFromExternalStorage(storageFile);
 				
-				FileOutputStream outputStream = new FileOutputStream(destinationFile);
+				FileOutputStream fileOutputStream = new FileOutputStream(destinationFile);
+				BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream);
+				
 				IOUtils.copy(inputStream, outputStream);
 			}
 			
@@ -106,7 +110,8 @@ public class SyncFileStorageService {
 			return false;
 		}
 		try {
-			byte[] md5Hash = HashUtils.computeMd5Hash(new FileInputStream(cachedFile));
+			FileInputStream fileInputStream = new FileInputStream(cachedFile);
+			byte[] md5Hash = HashUtils.computeMd5Hash(new BufferedInputStream(fileInputStream));
 			return HashUtils.md5MatchesWithETag(md5Hash, eTag);
 		} catch (IOException e) {
 			throw new SyncFileStorageException(e);
@@ -148,12 +153,14 @@ public class SyncFileStorageService {
 		return new File(externalCacheDirectory, SYNC_CHANGES_FILE);
 	}
 	
-	public void writeDownloadedChangesToTemporaryFile(InputStream inputStream) throws IOException {
-		FileOutputStream outputStream = new FileOutputStream(this.temporaryFile());
+	public void writeTemporaryChanges(InputStream inputStream) throws IOException {
+		FileOutputStream fileOutputStream = new FileOutputStream(this.temporaryFile());
+		BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream);
+		
 		IOUtils.copy(inputStream, outputStream);
 	}
 
-	public void promoteTemporaryFile() {
+	public void promoteTemporaryChanges() {
 		File temporaryFile = this.temporaryFile();
 		if (temporaryFile.exists()) {
 			temporaryFile.renameTo(this.changesFile());
@@ -179,7 +186,8 @@ public class SyncFileStorageService {
 			return null;
 		}
 		try {
-			return new FileInputStream(temporaryFile);
+			FileInputStream fileInputStream = new FileInputStream(temporaryFile);
+			return new BufferedInputStream(fileInputStream);
 		} catch (FileNotFoundException e) {
 			return null;
 		}
@@ -204,7 +212,8 @@ public class SyncFileStorageService {
 			return null;
 		}
 		try {
-			return new FileInputStream(syncChangesFile);
+			FileInputStream fileInputStream = new FileInputStream(syncChangesFile);
+			return new BufferedInputStream(fileInputStream);
 		} catch (FileNotFoundException e) {
 			return null;
 		}

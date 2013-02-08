@@ -1,12 +1,18 @@
 package com.appglu.android.sync;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import android.graphics.Bitmap;
 
 import com.appglu.InputStreamCallback;
 import com.appglu.StorageFile;
@@ -15,6 +21,8 @@ import com.appglu.TableVersion;
 import com.appglu.android.AppGlu;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
+import com.appglu.android.util.AppGluUtils;
+import com.appglu.impl.util.IOUtils;
 
 public class SyncService {
 	
@@ -46,6 +54,69 @@ public class SyncService {
 		}
 		
 		return cachedFile;
+	}
+	
+	public InputStream readInputStreamFromFileStorage(StorageFile storageFile) {
+		File file = this.getFileFromFileStorage(storageFile);
+		
+		if (file == null) {
+			return null;
+		}
+		
+		try {
+			FileInputStream fileInputStream = new FileInputStream(file);
+			return new BufferedInputStream(fileInputStream);
+		} catch (FileNotFoundException e) {
+			return null;
+		}
+	}
+	
+	public byte[] readByteArrayFromFileStorage(StorageFile storageFile) {
+		InputStream inputStream = this.readInputStreamFromFileStorage(storageFile);
+		
+		if (inputStream == null) {
+			return null;
+		}
+		
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		
+		try {
+			IOUtils.copy(inputStream, outputStream);
+		} catch (IOException e) {
+			return null;
+		}
+		
+		return outputStream.toByteArray();
+	}
+	
+	public Bitmap readBitmapFromFileStorage(StorageFile storageFile) {
+		File file = this.getFileFromFileStorage(storageFile);
+		
+		if (file == null) {
+			return null;
+		}
+		
+		return AppGluUtils.decodeSampledBitmapFromFile(file);
+	}
+	
+	public Bitmap readBitmapFromFileStorage(StorageFile storageFile, int inSampleSize) {
+		File file = this.getFileFromFileStorage(storageFile);
+		
+		if (file == null) {
+			return null;
+		}
+		
+		return AppGluUtils.decodeSampledBitmapFromFile(file, inSampleSize);
+	}
+	
+	public Bitmap readBitmapFromFileStorage(StorageFile storageFile, int requestedWidth, int requestedHeight) {
+		File file = this.getFileFromFileStorage(storageFile);
+		
+		if (file == null) {
+			return null;
+		}
+		
+		return AppGluUtils.decodeSampledBitmapFromFile(file, requestedWidth, requestedHeight);
 	}
 	
 	public boolean checkIfDatabaseIsSynchronized() {
@@ -218,7 +289,7 @@ public class SyncService {
 			
 			this.syncOperations.downloadChangesForTables(tableVersions, new InputStreamCallback() {
 				public void doWithInputStream(InputStream inputStream) throws IOException {
-					syncStorageService.writeDownloadedChangesToTemporaryFile(inputStream);
+					syncStorageService.writeTemporaryChanges(inputStream);
 				}
 			});
 			
@@ -228,7 +299,7 @@ public class SyncService {
 				this.syncFiles();
 			}
 			
-			this.syncStorageService.promoteTemporaryFile();
+			this.syncStorageService.promoteTemporaryChanges();
 			
 			this.logger.info("Changes were downloaded with success");
 			

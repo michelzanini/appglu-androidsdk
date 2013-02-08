@@ -7,12 +7,16 @@ import com.appglu.InputStreamCallback;
 
 public class MockStorageOperations implements StorageOperations {
 
-	public byte[] downloadStorageFile(StorageFile file) throws AppGluRestClientException {
-		return null;
-	}
-
 	public void streamStorageFile(StorageFile file, InputStreamCallback callback) throws AppGluRestClientException {
 		
+	}
+
+	public boolean streamStorageFileIfModifiedSince(StorageFile file, InputStreamCallback inputStreamCallback) throws AppGluRestClientException {
+		return false;
+	}
+
+	public boolean streamStorageFileIfNoneMatch(StorageFile file, InputStreamCallback inputStreamCallback) throws AppGluRestClientException {
+		return false;
 	}
 
 }

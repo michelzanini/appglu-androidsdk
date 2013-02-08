@@ -1,10 +1,6 @@
 package com.appglu.android.sync;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,8 +24,6 @@ import com.appglu.android.AppGluAsyncCallbackTask;
 import com.appglu.android.AppGluNotProperlyConfiguredException;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
-import com.appglu.android.util.AppGluUtils;
-import com.appglu.impl.util.IOUtils;
 
 public final class SyncApi {
 	
@@ -45,6 +39,8 @@ public final class SyncApi {
 		this.context = context;
 		this.syncService = new SyncService(syncOperations, syncRepository, syncStorageService);
 	}
+	
+	/* Protected methods to access sync service */
 	
 	protected boolean downloadChanges() {
 		return syncService.downloadChanges();
@@ -74,9 +70,7 @@ public final class SyncApi {
 		return syncService.applyChanges();
 	}
 	
-	public File readFileFromFileStorage(StorageFile storageFile) {
-		return this.syncService.getFileFromFileStorage(storageFile);
-	}
+	/* Methods to check if database is synchronized */
 	
 	public boolean checkIfDatabaseIsSynchronized() {
 		return syncService.checkIfDatabaseIsSynchronized();
@@ -112,47 +106,33 @@ public final class SyncApi {
 		asyncTask.execute();
 	}
 	
+	/* Methods to return files from sync storage */
+	
+	public File readFileFromFileStorage(StorageFile storageFile) {
+		return this.syncService.getFileFromFileStorage(storageFile);
+	}
+	
 	public InputStream readInputStreamFromFileStorage(StorageFile storageFile) {
-		File file = this.readFileFromFileStorage(storageFile);
-		
-		if (file == null) {
-			return null;
-		}
-		
-		try {
-			return new FileInputStream(file);
-		} catch (FileNotFoundException e) {
-			return null;
-		}
+		return this.syncService.readInputStreamFromFileStorage(storageFile);
 	}
 	
 	public byte[] readByteArrayFromFileStorage(StorageFile storageFile) {
-		InputStream inputStream = this.readInputStreamFromFileStorage(storageFile);
-		
-		if (inputStream == null) {
-			return null;
-		}
-		
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		
-		try {
-			IOUtils.copy(inputStream, outputStream);
-		} catch (IOException e) {
-			return null;
-		}
-		
-		return outputStream.toByteArray();
+		return this.syncService.readByteArrayFromFileStorage(storageFile);
+	}
+	
+	public Bitmap readBitmapFromFileStorage(StorageFile storageFile) {
+		return this.syncService.readBitmapFromFileStorage(storageFile);
+	}
+	
+	public Bitmap readBitmapFromFileStorage(StorageFile storageFile, int inSampleSize) {
+		return this.syncService.readBitmapFromFileStorage(storageFile, inSampleSize);
 	}
 	
 	public Bitmap readBitmapFromFileStorage(StorageFile storageFile, int requestedWidth, int requestedHeight) {
-		File file = this.readFileFromFileStorage(storageFile);
-		
-		if (file == null) {
-			return null;
-		}
-		
-		return AppGluUtils.decodeSampledBitmapFromFile(file, requestedWidth, requestedHeight);
+		return this.syncService.readBitmapFromFileStorage(storageFile, requestedWidth, requestedHeight);
 	}
+	
+	/* Methods to return files from sync storage in a background thread */
 	
 	public void readFileFromFileStorageInBackground(final StorageFile storageFile, AsyncCallback<File> callback) {
 		AppGluAsyncCallbackTask<File> asyncTask = new AppGluAsyncCallbackTask<File>(callback, new Callable<File>() {
@@ -181,6 +161,24 @@ public final class SyncApi {
 		});
 		asyncTask.execute();
 	}
+	
+	public void readBitmapFromFileStorageInBackground(final StorageFile storageFile, AsyncCallback<Bitmap> callback) {
+		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+			public Bitmap call() throws Exception {
+				return readBitmapFromFileStorage(storageFile);
+			}
+		});
+		asyncTask.execute();
+	}
+	
+	public void readBitmapFromFileStorageInBackground(final StorageFile storageFile, final int inSampleSize, AsyncCallback<Bitmap> callback) {
+		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+			public Bitmap call() throws Exception {
+				return readBitmapFromFileStorage(storageFile, inSampleSize);
+			}
+		});
+		asyncTask.execute();
+	}
 
 	
 	public void readBitmapFromFileStorageInBackground(final StorageFile storageFile, final int requestedWidth, final int requestedHeight, AsyncCallback<Bitmap> callback) {
@@ -191,6 +189,8 @@ public final class SyncApi {
 		});
 		asyncTask.execute();
 	}
+	
+	/* Methods related to SyncIntentService */
 	
 	public boolean isSyncIntentServiceRunning() {
 		ActivityManager manager = (ActivityManager) this.context.getSystemService(Activity.ACTIVITY_SERVICE);

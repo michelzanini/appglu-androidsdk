@@ -10,15 +10,15 @@ import com.appglu.UserSessionPersistenceException;
 
 public class SharedPreferencesUserSessionPersistence implements UserSessionPersistence {
 	
-	static final String SHARED_PREFERENCES_KEY = "com.appglu.android.SharedPreferencesUserSessionPersistence.SHARED_PREFERENCES_KEY";
+	private static final String SHARED_PREFERENCES_KEY = "com.appglu.android.SharedPreferencesUserSessionPersistence.SHARED_PREFERENCES_KEY";
 	
-	static final String SESSION_ID_KEY = "com.appglu.android.SharedPreferencesUserSessionPersistence.SESSION_ID_KEY";
+	private static final String SESSION_ID_KEY = "com.appglu.android.SharedPreferencesUserSessionPersistence.SESSION_ID_KEY";
 	
-	static final String USER_EXIST_KEY = "com.appglu.android.SharedPreferencesUserSessionPersistence.USER_EXIST_KEY";
+	private static final String USER_EXIST_KEY = "com.appglu.android.SharedPreferencesUserSessionPersistence.USER_EXIST_KEY";
 	
-	static final String USER_ID_KEY = "com.appglu.android.SharedPreferencesUserSessionPersistence.USER_ID_KEY";
+	private static final String USER_ID_KEY = "com.appglu.android.SharedPreferencesUserSessionPersistence.USER_ID_KEY";
 	
-	static final String USER_USERNAME_KEY = "com.appglu.android.SharedPreferencesUserSessionPersistence.USER_USERNAME_KEY";
+	private static final String USER_USERNAME_KEY = "com.appglu.android.SharedPreferencesUserSessionPersistence.USER_USERNAME_KEY";
 	
 	private Context context;
 	

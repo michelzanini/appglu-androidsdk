@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.appglu.AsyncPushOperations;
 import com.appglu.AsyncSavedQueriesOperations;
-import com.appglu.AsyncStorageOperations;
 import com.appglu.PushOperations;
 import com.appglu.SavedQueriesOperations;
 import com.appglu.StorageOperations;
@@ -18,8 +17,12 @@ import com.appglu.android.analytics.AnalyticsRepository;
 import com.appglu.android.analytics.ApiAnalyticsDispatcher;
 import com.appglu.android.analytics.LogAnalyticsDispatcher;
 import com.appglu.android.analytics.SQLiteAnalyticsRepository;
+import com.appglu.android.cache.CacheManager;
+import com.appglu.android.cache.FileSystemCacheManager;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
+import com.appglu.android.storage.StorageApi;
+import com.appglu.android.storage.StorageService;
 import com.appglu.android.sync.SQLiteSyncRepository;
 import com.appglu.android.sync.SyncApi;
 import com.appglu.android.sync.SyncDatabaseHelper;
@@ -210,11 +213,22 @@ public final class AppGlu {
 	protected StorageApi getStorageApi() {
 		if (this.storageApi == null) {
 			StorageOperations storageOperations = this.getAppGluTemplate().storageOperations();
-			AsyncStorageOperations asyncStorageOperations = this.getAppGluTemplate().asyncStorageOperations();
+			StorageService storageService = new StorageService(storageOperations, this.createCacheManager());
 			
-			this.storageApi = new StorageApi(storageOperations, asyncStorageOperations);
+			long timeToLive = this.getSettings().getStorageCacheTimeToLiveInMilliseconds();
+			storageService.setCacheTimeToLiveInMilliseconds(timeToLive);
+			
+			this.storageApi = new StorageApi(storageService);
 		}
 		return this.storageApi;
+	}
+	
+	protected CacheManager createCacheManager() {
+		CacheManager cacheManager = this.getSettings().getStorageCacheManager();
+		if (cacheManager != null) {
+			return cacheManager;
+		}
+		return new FileSystemCacheManager(context);
 	}
 	
 	protected boolean checkInternetConnection() {
