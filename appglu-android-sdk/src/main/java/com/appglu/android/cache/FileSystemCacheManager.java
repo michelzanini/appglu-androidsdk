@@ -118,7 +118,7 @@ public class FileSystemCacheManager implements CacheManager {
 		}
 	}
 	
-	protected synchronized Date getLastModifiedDateFromSharedPreferences(String fileName) {
+	protected synchronized Date readLastModifiedDateFromSharedPreferences(String fileName) {
 		SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
 		long time = sharedPreferences.getLong(fileName, 0);
 		if (time == 0) {
@@ -127,7 +127,7 @@ public class FileSystemCacheManager implements CacheManager {
 		return new Date(time);
 	}
 	
-	protected synchronized boolean updateLastModifiedDateToSharedPreferences(String fileName) {
+	protected synchronized boolean writeLastModifiedDateToSharedPreferences(String fileName) {
 		Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE).edit();
     	editor.putLong(fileName, new Date().getTime());
     	return editor.commit();
@@ -139,7 +139,7 @@ public class FileSystemCacheManager implements CacheManager {
 	}
 
 	public synchronized Date lastModifiedDate(String fileName) {
-		Date dateFromPreferences = this.getLastModifiedDateFromSharedPreferences(fileName);
+		Date dateFromPreferences = this.readLastModifiedDateFromSharedPreferences(fileName);
 		
 		if (dateFromPreferences != null) {
 			return dateFromPreferences;
@@ -155,7 +155,7 @@ public class FileSystemCacheManager implements CacheManager {
 	public synchronized boolean updateLastModifiedDate(String fileName) {
 		File file = this.getCacheFile(fileName);
 		if (file.exists()) {
-			return this.updateLastModifiedDateToSharedPreferences(fileName);
+			return this.writeLastModifiedDateToSharedPreferences(fileName);
 		}
 		return false;
 	}
@@ -180,7 +180,7 @@ public class FileSystemCacheManager implements CacheManager {
 			BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream);
 			IOUtils.copy(inputStream, outputStream);
 			
-			this.updateLastModifiedDateToSharedPreferences(fileName);
+			this.writeLastModifiedDateToSharedPreferences(fileName);
 			
 			this.pruneFilesIfNecessary();
 			

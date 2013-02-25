@@ -15,6 +15,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.appglu.AsyncCallback;
 import com.appglu.StorageFile;
@@ -22,6 +24,7 @@ import com.appglu.SyncOperations;
 import com.appglu.android.AppGlu;
 import com.appglu.android.AppGluAsyncCallbackTask;
 import com.appglu.android.AppGluNotProperlyConfiguredException;
+import com.appglu.android.ImageViewAsyncCallback;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 
@@ -35,12 +38,18 @@ public final class SyncApi {
 	
 	private SyncService syncService;
 	
+	private static SyncApi lastUsedInstance;
+	
 	public SyncApi(Context context, SyncOperations syncOperations, SyncRepository syncRepository, SyncFileStorageService syncStorageService) {
 		this.context = context;
 		this.syncService = new SyncService(syncOperations, syncRepository, syncStorageService);
 	}
 	
-	/* Protected methods to access sync service */
+	/* Protected methods to be used by SyncIntentService */
+	
+	protected static SyncApi getLastUsedInstance() {
+		return lastUsedInstance;
+	}
 	
 	protected boolean downloadChanges() {
 		return syncService.downloadChanges();
@@ -190,6 +199,42 @@ public final class SyncApi {
 		asyncTask.execute();
 	}
 	
+	/* Methods to read an image from sync storage in background using an ImageView and ProgressBar to update the UI  */
+	
+	public void readBitmapToImageViewInBackground(final StorageFile storageFile, ImageView imageView, ProgressBar progressBar) {
+		ImageViewAsyncCallback callback = new ImageViewAsyncCallback(imageView, progressBar);
+		
+		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+			public Bitmap call() throws Exception {
+				return readBitmapFromFileStorage(storageFile);
+			}
+		});
+		asyncTask.execute();
+	}
+	
+	public void readBitmapToImageViewInBackground(final StorageFile storageFile, final int inSampleSize, ImageView imageView, ProgressBar progressBar) {
+		ImageViewAsyncCallback callback = new ImageViewAsyncCallback(imageView, progressBar);
+		
+		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+			public Bitmap call() throws Exception {
+				return readBitmapFromFileStorage(storageFile, inSampleSize);
+			}
+		});
+		asyncTask.execute();
+	}
+
+	
+	public void readBitmapToImageViewInBackground(final StorageFile storageFile, final int requestedWidth, final int requestedHeight, ImageView imageView, ProgressBar progressBar) {
+		ImageViewAsyncCallback callback = new ImageViewAsyncCallback(imageView, progressBar);
+		
+		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+			public Bitmap call() throws Exception {
+				return readBitmapFromFileStorage(storageFile, requestedWidth, requestedHeight);
+			}
+		});
+		asyncTask.execute();
+	}
+	
 	/* Methods related to SyncIntentService */
 	
 	public boolean isSyncIntentServiceRunning() {
@@ -203,31 +248,35 @@ public final class SyncApi {
 	}
 	
 	public void startSyncIntentService(SyncIntentServiceRequest request) {
-		if (this.isSyncIntentServiceRunning()) {
-			this.logger.info("SyncIntentService was not started because it is already running");
-			return;
-		}
-		
-		Intent intent = new Intent(this.context, SyncIntentService.class);
-		this.validateSyncIntent(intent);
-		
-		intent.putExtra(SyncIntentService.SYNC_OPERATION_SERIALIZABLE_EXTRA, request.getSyncRequestOperation());
-		intent.putExtra(SyncIntentService.SYNC_FILES_BOOLEAN_EXTRA, request.getSyncFiles());
-		
-		if (request.getTablesToSync() != null) {
-			intent.putStringArrayListExtra(SyncIntentService.TABLES_STRING_ARRAY_EXTRA, new ArrayList<String>(request.getTablesToSync()));
-		}
-		
-		if (request.getSyncServiceRunningNotification() != null) {
-			intent.putExtra(SyncIntentService.SYNC_SERVICE_RUNNING_NOTIFICATION_PARCELABLE_EXTRA, request.getSyncServiceRunningNotification());
-			
-			if (request.getSyncServiceCompletedNotification() != null) {
-				intent.putExtra(SyncIntentService.SYNC_SERVICE_COMPLETED_NOTIFICATION_PARCELABLE_EXTRA, request.getSyncServiceCompletedNotification());
+		synchronized (SyncApi.class) {
+			if (this.isSyncIntentServiceRunning()) {
+				this.logger.info("SyncIntentService was not started because it is already running");
+				return;
 			}
+			
+			Intent intent = new Intent(this.context, SyncIntentService.class);
+			this.validateSyncIntent(intent);
+			
+			intent.putExtra(SyncIntentService.SYNC_OPERATION_SERIALIZABLE_EXTRA, request.getSyncRequestOperation());
+			intent.putExtra(SyncIntentService.SYNC_FILES_BOOLEAN_EXTRA, request.getSyncFiles());
+			
+			if (request.getTablesToSync() != null) {
+				intent.putStringArrayListExtra(SyncIntentService.TABLES_STRING_ARRAY_EXTRA, new ArrayList<String>(request.getTablesToSync()));
+			}
+			
+			if (request.getSyncServiceRunningNotification() != null) {
+				intent.putExtra(SyncIntentService.SYNC_SERVICE_RUNNING_NOTIFICATION_PARCELABLE_EXTRA, request.getSyncServiceRunningNotification());
+				
+				if (request.getSyncServiceCompletedNotification() != null) {
+					intent.putExtra(SyncIntentService.SYNC_SERVICE_COMPLETED_NOTIFICATION_PARCELABLE_EXTRA, request.getSyncServiceCompletedNotification());
+				}
+			}
+			
+			lastUsedInstance = this;
+			
+			this.context.startService(intent);
+			this.logger.info("SyncIntentService has being started");
 		}
-		
-		this.context.startService(intent);
-		this.logger.info("SyncIntentService has being started");
 	}
 	
 	private void validateSyncIntent(Intent intent) {

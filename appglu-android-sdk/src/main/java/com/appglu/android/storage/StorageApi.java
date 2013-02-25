@@ -4,10 +4,13 @@ import java.io.InputStream;
 import java.util.concurrent.Callable;
 
 import android.graphics.Bitmap;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.appglu.AsyncCallback;
 import com.appglu.StorageFile;
 import com.appglu.android.AppGluAsyncCallbackTask;
+import com.appglu.android.ImageViewAsyncCallback;
 
 public final class StorageApi {
 	
@@ -65,6 +68,30 @@ public final class StorageApi {
 	}
 	
 	public void downloadAsBitmapInBackground(final String url, final int inSampleSize, AsyncCallback<Bitmap> callback) {
+		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+			public Bitmap call() throws Exception {
+				return downloadAsBitmap(url, inSampleSize);
+			}
+		});
+		asyncTask.execute();
+	}
+	
+	/* Methods to download an image in background using an ImageView and ProgressBar to update the UI */
+	
+	public void downloadToImageViewInBackground(final String url, ImageView imageView, ProgressBar progressBar) {
+		ImageViewAsyncCallback callback = new ImageViewAsyncCallback(imageView, progressBar);
+		
+		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+			public Bitmap call() throws Exception {
+				return downloadAsBitmap(url);
+			}
+		});
+		asyncTask.execute();
+	}
+	
+	public void downloadToImageViewInBackground(final String url, final int inSampleSize, ImageView imageView, ProgressBar progressBar) {
+		ImageViewAsyncCallback callback = new ImageViewAsyncCallback(imageView, progressBar);
+		
 		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return downloadAsBitmap(url, inSampleSize);

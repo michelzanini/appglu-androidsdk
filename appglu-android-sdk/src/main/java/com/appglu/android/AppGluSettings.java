@@ -31,7 +31,7 @@ public class AppGluSettings {
 	
 	private SyncDatabaseHelper defaultSyncDatabaseHelper;
 	
-	private CacheManager storageCacheManager;
+	private CacheManager defaultStorageCacheManager;
 	
 	private long storageCacheTimeToLiveInMilliseconds;
 	
@@ -102,8 +102,8 @@ public class AppGluSettings {
 		this.defaultSyncDatabaseHelper = defaultSyncDatabaseHelper;
 	}
 	
-	public void setStorageCacheManager(CacheManager storageCacheManager) {
-		this.storageCacheManager = storageCacheManager;
+	public void setDefaultStorageCacheManager(CacheManager storageCacheManager) {
+		this.defaultStorageCacheManager = storageCacheManager;
 	}
 	
 	public void setStorageCacheTimeToLiveInMilliseconds(long storageCacheTimeToLiveInMilliseconds) {
@@ -126,8 +126,8 @@ public class AppGluSettings {
 		return this.defaultSyncDatabaseHelper;
 	}
 	
-	protected CacheManager getStorageCacheManager() {
-		return this.storageCacheManager;
+	protected CacheManager getDefaultStorageCacheManager() {
+		return this.defaultStorageCacheManager;
 	}
 	
 	protected long getStorageCacheTimeToLiveInMilliseconds() {

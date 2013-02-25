@@ -223,8 +223,18 @@ public final class AppGlu {
 		return this.storageApi;
 	}
 	
+	protected StorageApi getStorageApi(CacheManager storageCacheManager) {
+		StorageOperations storageOperations = this.getAppGluTemplate().storageOperations();
+		StorageService storageService = new StorageService(storageOperations, storageCacheManager);
+		
+		long timeToLive = this.getSettings().getStorageCacheTimeToLiveInMilliseconds();
+		storageService.setCacheTimeToLiveInMilliseconds(timeToLive);
+		
+		return new StorageApi(storageService);
+	}
+	
 	protected CacheManager createCacheManager() {
-		CacheManager cacheManager = this.getSettings().getStorageCacheManager();
+		CacheManager cacheManager = this.getSettings().getDefaultStorageCacheManager();
 		if (cacheManager != null) {
 			return cacheManager;
 		}
@@ -291,6 +301,10 @@ public final class AppGlu {
 	
 	public static StorageApi storageApi() {
 		return getRequiredInstance().getStorageApi();
+	}
+	
+	public static StorageApi storageApi(CacheManager storageCacheManager) {
+		return getRequiredInstance().getStorageApi(storageCacheManager);
 	}
 	
 }

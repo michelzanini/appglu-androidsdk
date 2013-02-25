@@ -71,6 +71,13 @@ public class SyncIntentService extends IntentService {
 	private boolean hasSyncServiceCompletedNotificationExtra(Intent intent) {
 		return intent.hasExtra(SYNC_SERVICE_COMPLETED_NOTIFICATION_PARCELABLE_EXTRA);
 	}
+	
+	private SyncApi getSyncApiInstance() {
+		if (SyncApi.getLastUsedInstance() == null) {
+			return AppGlu.syncApi();
+		}
+		return SyncApi.getLastUsedInstance();
+	}
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
@@ -102,7 +109,7 @@ public class SyncIntentService extends IntentService {
 			} 
 			
 			if (isDiscardChanges) {
-				successful = AppGlu.syncApi().discardChanges();
+				successful = this.discardChanges();
 			}
 			
 			if (isDownloadChanges) {
@@ -137,31 +144,35 @@ public class SyncIntentService extends IntentService {
 	}
 
 	protected boolean applyChanges() {
-		if (!AppGlu.syncApi().hasDownloadedChanges()) {
+		if (!this.getSyncApiInstance().hasDownloadedChanges()) {
 			this.logger.info("No changes to apply");
 			return false;
 		}
 		
 		try {
 			this.broadcastAction(ON_TRANSACTION_START_ACTION);
-			return AppGlu.syncApi().applyChanges();
+			return this.getSyncApiInstance().applyChanges();
 		} finally {
 			this.broadcastAction(ON_TRANSACTION_FINISH_ACTION);
 		}
 	}
 	
+	protected boolean discardChanges() {
+		return this.getSyncApiInstance().discardChanges();
+	}
+	
 	protected boolean downloadChangesAndFilesForTables(ArrayList<String> tables, boolean syncFiles) {
 		if (tables == null) {
 			if (syncFiles) {
-				return AppGlu.syncApi().downloadChangesAndFiles();
+				return this.getSyncApiInstance().downloadChangesAndFiles();
 			} else {
-				return AppGlu.syncApi().downloadChanges();
+				return this.getSyncApiInstance().downloadChanges();
 			}
 		} else {
 			if (syncFiles) {
-				return AppGlu.syncApi().downloadChangesAndFilesForTables(tables);
+				return this.getSyncApiInstance().downloadChangesAndFilesForTables(tables);
 			} else {
-				return AppGlu.syncApi().downloadChangesForTables(tables);
+				return this.getSyncApiInstance().downloadChangesForTables(tables);
 			}
 		}
 	}
