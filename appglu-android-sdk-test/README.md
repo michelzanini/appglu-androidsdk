@@ -1,4 +1,3 @@
-AppGlu Android SDK - Test Cases
-===============================
+# AppGlu Android SDK - Test Cases
 
 Test cases for AppGlu Android SDK
