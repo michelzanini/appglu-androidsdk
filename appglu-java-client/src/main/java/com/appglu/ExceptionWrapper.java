@@ -1,6 +1,10 @@
 package com.appglu;
 
-public class ExceptionWrapper {
+import java.io.Serializable;
+
+public class ExceptionWrapper implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private Exception exception;
 

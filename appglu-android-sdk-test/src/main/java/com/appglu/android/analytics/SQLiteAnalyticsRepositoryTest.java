@@ -9,7 +9,7 @@ import junit.framework.Assert;
 import com.appglu.AnalyticsSession;
 import com.appglu.AnalyticsSessionEvent;
 
-public class SQLiteAnalyticsRepositoryTest extends SQLiteTest {
+public class SQLiteAnalyticsRepositoryTest extends AbstractAnalyticsSQLiteTest {
 
 	private SQLiteAnalyticsRepository analyticsRepository;
 	

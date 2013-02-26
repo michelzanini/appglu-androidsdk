@@ -1,9 +1,9 @@
 package com.appglu.impl;
 
-import static org.springframework.test.web.client.match.RequestMatchers.method;
-import static org.springframework.test.web.client.match.RequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.ResponseCreators.withBadRequest;
-import static org.springframework.test.web.client.response.ResponseCreators.withServerError;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 
 import org.junit.Assert;
 import org.junit.Before;

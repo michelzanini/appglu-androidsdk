@@ -16,6 +16,8 @@ public interface AppGluOperations {
 	
 	SyncOperations syncOperations();
 	
+	StorageOperations storageOperations();
+	
 	RestOperations restOperations();
 
 }

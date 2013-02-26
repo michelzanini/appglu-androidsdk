@@ -2,16 +2,26 @@ package com.appglu;
 
 import java.util.List;
 
-public interface SyncOperations {
+import com.appglu.impl.json.TableChangesJsonParser;
+
+public interface SyncOperations extends TableChangesJsonParser {
 	
-	List<VersionedTableChanges> changesForTables(VersionedTable... tables) throws AppGluRestClientException;
+	TableChanges changesForTable(String tableName, long version) throws AppGluRestClientException;
 	
-	List<VersionedTableChanges> changesForTables(List<VersionedTable> tables) throws AppGluRestClientException;
+	List<TableChanges> changesForTables(TableVersion... tables) throws AppGluRestClientException;
 	
-	VersionedTableChanges changesForTable(String tableName, long version) throws AppGluRestClientException;
+	List<TableChanges> changesForTables(List<TableVersion> tables) throws AppGluRestClientException;
 	
-	List<VersionedTable> versionsForTables(String... tables) throws AppGluRestClientException;
+	void changesForTables(TableChangesCallback tableChangesCallback, TableVersion... tables) throws AppGluRestClientException;
 	
-	List<VersionedTable> versionsForTables(List<String> tables) throws AppGluRestClientException;
+	void changesForTables(List<TableVersion> tables, TableChangesCallback tableChangesCallback) throws AppGluRestClientException;
+	
+	void downloadChangesForTables(InputStreamCallback inputStreamCallback, TableVersion... tables) throws AppGluRestClientException;
+	
+	void downloadChangesForTables(List<TableVersion> tables, InputStreamCallback inputStreamCallback) throws AppGluRestClientException;
+	
+	List<TableVersion> versionsForTables(String... tables) throws AppGluRestClientException;
+	
+	List<TableVersion> versionsForTables(List<String> tables) throws AppGluRestClientException;
 
 }

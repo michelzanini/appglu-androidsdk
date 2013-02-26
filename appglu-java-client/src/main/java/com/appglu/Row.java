@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.appglu.impl.util.Base64;
+import com.appglu.impl.util.Base64Utils;
 import com.appglu.impl.util.DateUtils;
 import com.appglu.impl.util.StringUtils;
 
@@ -69,7 +69,12 @@ public class Row extends HashMap<String, Object> {
 
 	public Long getLong(String columnName) {
 		try {
-			return (Long) this.get(columnName);
+			Object number = this.get(columnName);
+			if (number instanceof Integer) {
+				Integer integer = (Integer) number;
+				return integer.longValue();
+			}
+			return (Long) number;
 		} catch (ClassCastException e) {
 			throw new DataTypeConversionException(e);
 		}
@@ -85,7 +90,9 @@ public class Row extends HashMap<String, Object> {
 	
 	public BigInteger getBigInteger(String columnName) {
 		try {
-			return (BigInteger) this.get(columnName);
+			Object number = this.get(columnName);
+			String numberAsString = String.valueOf(number);
+			return new BigInteger(numberAsString);
 		} catch (ClassCastException e) {
 			throw new DataTypeConversionException(e);
 		}
@@ -108,7 +115,7 @@ public class Row extends HashMap<String, Object> {
 			return new byte[0];
 		}
 		try {
-			return Base64.decode(string);
+			return Base64Utils.decode(string);
 		} catch (IOException e) {
 			throw new DataTypeConversionException(e);
 		}
@@ -176,6 +183,10 @@ public class Row extends HashMap<String, Object> {
 		} catch (ClassCastException e) {
 			throw new DataTypeConversionException(e);
 		}
+	}
+	
+	public void putNull(String key) {
+		this.put(key, (Object) null);
 	}
 	
 	public void put(String key, Row row) {
