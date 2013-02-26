@@ -31,7 +31,3 @@ If you want to integrate AppGlu with an Android application please check out the
 AppGluTemplate appGluTemplate = new AppGluTemplate("https://api.appglu.com", "appKey", "appSecret");
 Row row = appGluTemplate.crudOperations().read("table", "id");
 ```
-
-
-
-
