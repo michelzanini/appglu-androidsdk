@@ -5,13 +5,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.appglu</groupId>
 	<artifactId>appglu-android-sdk-test</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>apk</packaging>
     <name>appglu-android-sdk-test</name>
     
     <properties>
         <platform.version>2.2.1</platform.version>
-        <appglu.android.sdk.version>1.0.0-SNAPSHOT</appglu.android.sdk.version>
+        <appglu.android.sdk.version>1.0.0</appglu.android.sdk.version>
     </properties>
 
     <dependencies>
