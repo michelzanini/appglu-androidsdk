@@ -21,11 +21,13 @@ public class AppGluTestRestClient {
 	
 	private UserOperations userOperations = appGluTemplate.userOperations();
 	
+	private SyncOperations syncOperations = appGluTemplate.syncOperations();
+	
 	public static void main(String[] args) {
 		AppGluTestRestClient restClient = new AppGluTestRestClient();
 		restClient.callApiEndpoints();
 	}
-	
+
 	public void callApiEndpoints() {
 		Object id = this.crud_create();
 		this.crud_update(id);
@@ -45,6 +47,10 @@ public class AppGluTestRestClient {
 		this.user_logout();
 		this.user_login();
 		this.user_refreshUserProfile();
+		
+		this.sync_changesForTables();
+		this.sync_changesForTable();
+		this.sync_versionsForTables();
 	}
 	
 	private Object crud_create() {
@@ -151,6 +157,24 @@ public class AppGluTestRestClient {
 	private void user_refreshUserProfile() {
 		userOperations.refreshUserProfile();
 		System.out.println("user_refreshUserProfile: executed");
+	}
+
+	private void sync_changesForTables() {
+		TableVersion loggedTable = new TableVersion("logged_table");
+		TableVersion otherTable = new TableVersion("other_table");
+		
+		List<TableChanges> changes = this.syncOperations.changesForTables(loggedTable, otherTable);
+		System.out.println("sync_changesForTables: " + changes);
+	}
+	
+	private void sync_changesForTable() {
+		TableChanges changes = this.syncOperations.changesForTable("logged_table", 2);
+		System.out.println("sync_changesForTable: " + changes);
+	}
+
+	private void sync_versionsForTables() {
+		List<TableVersion> versions = this.syncOperations.versionsForTables("logged_table", "other_table");
+		System.out.println("sync_versionsForTables: " + versions);
 	}
 
 }

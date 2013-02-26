@@ -7,7 +7,7 @@ import junit.framework.Assert;
 
 import com.appglu.AnalyticsSession;
 
-public class AnalyticsServiceTest extends SQLiteTest {
+public class AnalyticsServiceTest extends AbstractAnalyticsSQLiteTest {
 	
 	private SQLiteAnalyticsRepository analyticsRepository;
 	

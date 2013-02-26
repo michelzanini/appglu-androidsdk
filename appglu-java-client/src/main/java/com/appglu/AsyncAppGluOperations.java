@@ -12,6 +12,12 @@ public interface AsyncAppGluOperations {
 	
 	AsyncAnalyticsOperations asyncAnalyticsOperations();
 	
+	AsyncUserOperations asyncUserOperations();
+	
+	AsyncSyncOperations asyncSyncOperations();
+	
+	AsyncStorageOperations asyncStorageOperations();
+	
 	RestOperations restOperations();
 
 }

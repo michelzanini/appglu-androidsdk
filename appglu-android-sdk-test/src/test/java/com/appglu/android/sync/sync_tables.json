@@ -1,0 +1,32 @@
+{
+	"tables":[
+		{
+			"tableName":"logged_table",
+			"version":3,
+			"changes":[
+            	{
+					"id":4,
+					"name":"new row",
+					"appglu_key":6,
+					"appglu_sync_operation":"insert"
+         		},
+				{
+					"id":1,
+					"name":"row1 update",
+					"appglu_key":2,
+					"appglu_sync_operation":"update"
+				}
+			]
+		},
+		{
+			"tableName":"other_table",
+			"version":3,
+			"changes":[{
+				"id":null,
+				"name":null,
+				"appglu_key":1,
+				"appglu_sync_operation":"delete"
+			}]
+   		}
+	]
+}

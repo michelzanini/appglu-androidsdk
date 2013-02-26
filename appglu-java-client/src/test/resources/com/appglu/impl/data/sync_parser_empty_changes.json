@@ -1,0 +1,14 @@
+{
+	"tables":[
+		{
+			"tableName":"logged_table",
+			"version":9,
+			"changes":[]
+		},
+		{
+			"tableName":"other_table",
+			"version":1,
+			"changes":[]
+   		}
+	]
+}

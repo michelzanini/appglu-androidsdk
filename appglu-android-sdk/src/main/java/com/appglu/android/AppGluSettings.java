@@ -3,8 +3,10 @@ package com.appglu.android;
 import com.appglu.UserSessionPersistence;
 import com.appglu.android.analytics.AnalyticsDispatcher;
 import com.appglu.android.analytics.AnalyticsSessionCallback;
+import com.appglu.android.cache.CacheManager;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.log.LoggerLevel;
+import com.appglu.android.sync.SyncDatabaseHelper;
 import com.appglu.impl.AppGluTemplate;
 
 public class AppGluSettings {
@@ -15,6 +17,10 @@ public class AppGluSettings {
 	
 	private String applicationSecret;
 	
+	private String applicationEnvironment;
+	
+	private String applicationVersion;
+	
 	private boolean uploadAnalyticsSessionsToServer = true;
 	
 	private AnalyticsDispatcher analyticsDispatcher;
@@ -23,10 +29,21 @@ public class AppGluSettings {
 	
 	private UserSessionPersistence userSessionPersistence;
 	
+	private SyncDatabaseHelper defaultSyncDatabaseHelper;
+	
+	private CacheManager defaultStorageCacheManager;
+	
+	private long storageCacheTimeToLiveInMilliseconds;
+	
 	public AppGluSettings(String baseUrl, String applicationKey, String applicationSecret) {
+		this(baseUrl, applicationKey, applicationSecret, null);
+	}
+	
+	public AppGluSettings(String baseUrl, String applicationKey, String applicationSecret, String applicationEnvironment) {
 		this.baseUrl = baseUrl;
 		this.applicationKey = applicationKey;
 		this.applicationSecret = applicationSecret;
+		this.applicationEnvironment = applicationEnvironment;
 	}
 	
 	public String getBaseUrl() {
@@ -41,6 +58,18 @@ public class AppGluSettings {
 		return applicationSecret;
 	}
 	
+	public String getApplicationEnvironment() {
+		return applicationEnvironment;
+	}
+	
+	public String getApplicationVersion() {
+		return applicationVersion;
+	}
+
+	public void setApplicationVersion(String applicationVersion) {
+		this.applicationVersion = applicationVersion;
+	}
+
 	public LoggerLevel getLoggerLevel() {
 		return LoggerFactory.getLevel();
 	}
@@ -68,6 +97,18 @@ public class AppGluSettings {
 	public void setUserSessionPersistence(UserSessionPersistence userSessionPersistence) {
 		this.userSessionPersistence = userSessionPersistence;
 	}
+	
+	public void setDefaultSyncDatabaseHelper(SyncDatabaseHelper defaultSyncDatabaseHelper) {
+		this.defaultSyncDatabaseHelper = defaultSyncDatabaseHelper;
+	}
+	
+	public void setDefaultStorageCacheManager(CacheManager storageCacheManager) {
+		this.defaultStorageCacheManager = storageCacheManager;
+	}
+	
+	public void setStorageCacheTimeToLiveInMilliseconds(long storageCacheTimeToLiveInMilliseconds) {
+		this.storageCacheTimeToLiveInMilliseconds = storageCacheTimeToLiveInMilliseconds;
+	}
 
 	protected AnalyticsDispatcher getAnalyticsDispatcher() {
 		return this.analyticsDispatcher;
@@ -81,6 +122,18 @@ public class AppGluSettings {
 		return this.userSessionPersistence;
 	}
 	
+	protected SyncDatabaseHelper getDefaultSyncDatabaseHelper() {
+		return this.defaultSyncDatabaseHelper;
+	}
+	
+	protected CacheManager getDefaultStorageCacheManager() {
+		return this.defaultStorageCacheManager;
+	}
+	
+	protected long getStorageCacheTimeToLiveInMilliseconds() {
+		return storageCacheTimeToLiveInMilliseconds;
+	}
+
 	protected AppGluTemplate createAppGluTemplate() {
 		return new AppGluTemplate(this.getBaseUrl(), this.getApplicationKey(), this.getApplicationSecret());
 	}

@@ -1,0 +1,6 @@
+{
+	"tables":[
+		{"tableName":"logged_table","version":0},
+		{"tableName":"other_table","version":1}
+	]
+}

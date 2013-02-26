@@ -2,16 +2,32 @@ package com.appglu.android;
 
 import android.content.Context;
 
+import com.appglu.AsyncPushOperations;
+import com.appglu.AsyncSavedQueriesOperations;
+import com.appglu.PushOperations;
+import com.appglu.SavedQueriesOperations;
+import com.appglu.StorageOperations;
+import com.appglu.SyncOperations;
 import com.appglu.User;
 import com.appglu.UserSessionPersistence;
+import com.appglu.android.analytics.AnalyticsApi;
 import com.appglu.android.analytics.AnalyticsDatabaseHelper;
 import com.appglu.android.analytics.AnalyticsDispatcher;
 import com.appglu.android.analytics.AnalyticsRepository;
 import com.appglu.android.analytics.ApiAnalyticsDispatcher;
 import com.appglu.android.analytics.LogAnalyticsDispatcher;
 import com.appglu.android.analytics.SQLiteAnalyticsRepository;
+import com.appglu.android.cache.CacheManager;
+import com.appglu.android.cache.FileSystemCacheManager;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
+import com.appglu.android.storage.StorageApi;
+import com.appglu.android.storage.StorageService;
+import com.appglu.android.sync.SQLiteSyncRepository;
+import com.appglu.android.sync.SyncApi;
+import com.appglu.android.sync.SyncDatabaseHelper;
+import com.appglu.android.sync.SyncFileStorageService;
+import com.appglu.android.sync.SyncRepository;
 import com.appglu.android.util.AppGluUtils;
 import com.appglu.impl.AppGluTemplate;
 
@@ -45,6 +61,10 @@ public final class AppGlu {
 	
 	private UserApi userApi;
 	
+	private SyncApi syncApi;
+	
+	private StorageApi storageApi;
+	
 	protected AppGlu() {
 		
 	}
@@ -74,7 +94,7 @@ public final class AppGlu {
 		
 		this.appGluTemplate = settings.createAppGluTemplate();
 		this.appGluTemplate.setAsyncExecutor(new AsyncTaskExecutor());
-		this.appGluTemplate.setDefaultHeaders(this.deviceInstallation.createDefaultHeaders());
+		this.appGluTemplate.setDefaultHeaders(this.deviceInstallation.createDefaultHeaders(settings));
 		
 		UserSessionPersistence userSessionPersistence = this.settings.getUserSessionPersistence();
 		if (userSessionPersistence == null) {
@@ -115,14 +135,20 @@ public final class AppGlu {
 	
 	protected SavedQueriesApi getSavedQueriesApi() {
 		if (this.savedQueriesApi == null) {
-			this.savedQueriesApi = new SavedQueriesApi(this.getAppGluTemplate().savedQueriesOperations(), this.getAppGluTemplate().asyncSavedQueriesOperations());
+			SavedQueriesOperations savedQueriesOperations = this.getAppGluTemplate().savedQueriesOperations();
+			AsyncSavedQueriesOperations asyncSavedQueriesOperations = this.getAppGluTemplate().asyncSavedQueriesOperations();
+			
+			this.savedQueriesApi = new SavedQueriesApi(savedQueriesOperations, asyncSavedQueriesOperations);
 		}
 		return this.savedQueriesApi;
 	}
 	
 	protected PushApi getPushApi() {
 		if (this.pushApi == null) {
-			this.pushApi = new PushApi(this.getAppGluTemplate().pushOperations(), this.getAppGluTemplate().asyncPushOperations(), this.deviceInstallation);
+			PushOperations pushOperations = this.getAppGluTemplate().pushOperations();
+			AsyncPushOperations asyncPushOperations = this.getAppGluTemplate().asyncPushOperations();
+			
+			this.pushApi = new PushApi(pushOperations, asyncPushOperations, this.getDeviceInstallation());
 		}
 		return this.pushApi;
 	}
@@ -134,17 +160,17 @@ public final class AppGlu {
 			
 			AnalyticsDispatcher analyticsDispatcher = this.createAnalyticsDispatcher();
 			this.analyticsApi = new AnalyticsApi(analyticsDispatcher, analyticsRepository);
-			this.analyticsApi.setSessionCallback(this.settings.getAnalyticsSessionCallback());
+			this.analyticsApi.setSessionCallback(this.getSettings().getAnalyticsSessionCallback());
 		}
 		return this.analyticsApi;
 	}
 	
 	protected AnalyticsDispatcher createAnalyticsDispatcher() {
-		AnalyticsDispatcher analyticsDispatcher = this.settings.getAnalyticsDispatcher();
+		AnalyticsDispatcher analyticsDispatcher = this.getSettings().getAnalyticsDispatcher();
 		if (analyticsDispatcher != null) {
 			return analyticsDispatcher;
 		}
-		if (this.settings.isUploadAnalyticsSessionsToServer()) {
+		if (this.getSettings().isUploadAnalyticsSessionsToServer()) {
 			return new ApiAnalyticsDispatcher(this.getAppGluTemplate().analyticsOperations());
 		} else {
 			return new LogAnalyticsDispatcher();
@@ -158,16 +184,71 @@ public final class AppGlu {
 		return this.userApi;
 	}
 	
+	protected SyncApi getSyncApi() {
+		if (this.syncApi == null) {
+			SyncDatabaseHelper defaultSyncDatabaseHelper = this.getSettings().getDefaultSyncDatabaseHelper();
+			
+			if (defaultSyncDatabaseHelper == null) {
+				throw new AppGluNotProperlyConfiguredException("The 'defaultSyncDatabaseHelper' property was not set on AppGluSettings. " +
+					"It is required to set a default database helper on initialization.");
+			}
+			
+			this.syncApi = this.getSyncApi(defaultSyncDatabaseHelper);
+		}
+		return this.syncApi;
+	}
+	
+	protected SyncApi getSyncApi(SyncDatabaseHelper syncDatabaseHelper) {
+		AppGluUtils.assertNotNull(syncDatabaseHelper, "SyncDatabaseHelper cannot be null");
+		
+		SyncOperations syncOperations = this.getAppGluTemplate().syncOperations();
+		SyncRepository syncRepository = new SQLiteSyncRepository(syncDatabaseHelper);
+		
+		StorageOperations storageOperations = this.getAppGluTemplate().storageOperations();
+		SyncFileStorageService syncStorageService = new SyncFileStorageService(this.context, storageOperations);
+		
+		return new SyncApi(this.context, syncOperations, syncRepository, syncStorageService);
+	}
+	
+	protected StorageApi getStorageApi() {
+		if (this.storageApi == null) {
+			StorageOperations storageOperations = this.getAppGluTemplate().storageOperations();
+			StorageService storageService = new StorageService(storageOperations, this.createCacheManager());
+			
+			long timeToLive = this.getSettings().getStorageCacheTimeToLiveInMilliseconds();
+			storageService.setCacheTimeToLiveInMilliseconds(timeToLive);
+			
+			this.storageApi = new StorageApi(storageService);
+		}
+		return this.storageApi;
+	}
+	
+	protected StorageApi getStorageApi(CacheManager storageCacheManager) {
+		StorageOperations storageOperations = this.getAppGluTemplate().storageOperations();
+		StorageService storageService = new StorageService(storageOperations, storageCacheManager);
+		
+		long timeToLive = this.getSettings().getStorageCacheTimeToLiveInMilliseconds();
+		storageService.setCacheTimeToLiveInMilliseconds(timeToLive);
+		
+		return new StorageApi(storageService);
+	}
+	
+	protected CacheManager createCacheManager() {
+		CacheManager cacheManager = this.getSettings().getDefaultStorageCacheManager();
+		if (cacheManager != null) {
+			return cacheManager;
+		}
+		return new FileSystemCacheManager(context);
+	}
+	
 	protected boolean checkInternetConnection() {
 		return AppGluUtils.hasInternetConnection(context);
 	}
-
+	
 	//Public Methods
 	
-	public static void initialize(Context context, AppGluSettings settings) {
-		if (instance == null) {
-			getInstance().doInitialize(context, settings);
-		}
+	public static synchronized void initialize(Context context, AppGluSettings settings) {
+		getInstance().doInitialize(context, settings);
 	}
 	
 	public static boolean hasInternetConnection() {
@@ -208,6 +289,22 @@ public final class AppGlu {
 	
 	public static UserApi userApi() {
 		return getRequiredInstance().getUserApi();
+	}
+	
+	public static SyncApi syncApi() {
+		return getRequiredInstance().getSyncApi();
+	}
+	
+	public static SyncApi syncApi(SyncDatabaseHelper syncDatabaseHelper) {
+		return getRequiredInstance().getSyncApi(syncDatabaseHelper);
+	}
+	
+	public static StorageApi storageApi() {
+		return getRequiredInstance().getStorageApi();
+	}
+	
+	public static StorageApi storageApi(CacheManager storageCacheManager) {
+		return getRequiredInstance().getStorageApi(storageCacheManager);
 	}
 	
 }
