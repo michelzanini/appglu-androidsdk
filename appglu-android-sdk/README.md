@@ -18,11 +18,11 @@ This SDK is build on top of AppGLu Java Client adding Android specific funcional
 
 ## Manually
 
-1. Download and add the AppGlu Android SDK and AppGlu Java Client JARs to your classpath.
+1. Download and add the AppGlu Android SDK (appglu-android-sdk-1.0.0.jar) and AppGlu Java Client (appglu-java-client-1.0.0.jar) JARs to your classpath.
 2. Download and add the following dependencies:
 
-* [Spring Android REST Template](http://www.springsource.org/spring-android) (add spring-android-rest-template-1.0.x.jar and its dependencies)
-* [Jackson Json Parser](http://jackson.codehaus.org) (add jackson-mapper-asl-1.9.x.jar and its dependencies)
+* [Spring Android REST Template](http://www.springsource.org/spring-android) (add spring-android-rest-template-1.0.x.jar and spring-android-core-1.0.x.jar)
+* [Jackson Json Parser](http://jackson.codehaus.org) (add jackson-mapper-asl-1.9.x.jar and jackson-core-asl-1.9.x.jar)
 
 # Getting Started
 
