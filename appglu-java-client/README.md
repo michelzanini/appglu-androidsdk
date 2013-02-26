@@ -22,7 +22,7 @@ If you want to integrate AppGlu with an Android application please check out the
 1. Download and add the AppGlu Java client JAR to your classpath.
 2. Download and add the following dependencies:
 
-* [Spring REST Template](http://www.springsource.org) (add spring-web-3.2.x.jar and its dependencies)
+* [Spring REST Template](http://www.springsource.org/spring-framework) (add spring-web-3.2.x.jar and its dependencies)
 * [Jackson Json Parser](http://jackson.codehaus.org) (add jackson-mapper-asl-1.9.x.jar and its dependencies)
 
 # Getting Started
