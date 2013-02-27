@@ -28,7 +28,7 @@ Moreover, it adds Android specific functionality to APIs such as Analytics, Sync
 # Getting Started
 
 ```java
-AppGluSettings settings = new AppGluSettings("https://api.appglu.com", "appKey", "appSecret");
+AppGluSettings settings = new AppGluSettings("appKey", "appSecret");
 AppGlu.initialize(this, settings);
 
 Row row = AppGlu.crudApi().read("table", "id");
