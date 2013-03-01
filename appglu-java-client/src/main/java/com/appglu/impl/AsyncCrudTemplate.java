@@ -20,6 +20,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		this.crudOperations = crudOperations;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void createInBackground(final String tableName, final Row row, AsyncCallback<Object> primaryKeyCallback) {
 		asyncExecutor.execute(primaryKeyCallback, new Callable<Object>() {
 			public Object call() {
@@ -28,6 +31,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void readInBackground(final String tableName, final Object id, AsyncCallback<Row> rowCallback) {
 		asyncExecutor.execute(rowCallback, new Callable<Row>() {
 			public Row call() {
@@ -36,6 +42,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void readInBackground(final String tableName, final Object id, final boolean expandRelationships, AsyncCallback<Row> rowCallback) {
 		asyncExecutor.execute(rowCallback, new Callable<Row>() {
 			public Row call() {
@@ -44,6 +53,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void readAllInBackground(final String tableName, AsyncCallback<Rows> rowsCallback) {
 		asyncExecutor.execute(rowsCallback, new Callable<Rows>() {
 			public Rows call() {
@@ -52,6 +64,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void readAllInBackground(final String tableName, final boolean expandRelationships, AsyncCallback<Rows> rowsCallback) {
 		asyncExecutor.execute(rowsCallback, new Callable<Rows>() {
 			public Rows call() {
@@ -60,6 +75,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void readAllInBackground(final String tableName, final boolean expandRelationships, final ReadAllFilterArguments arguments, AsyncCallback<Rows> rowsCallback) {
 		asyncExecutor.execute(rowsCallback, new Callable<Rows>() {
 			public Rows call() {
@@ -68,6 +86,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void updateInBackground(final String tableName, final Object id, final Row row, AsyncCallback<Boolean> updateCallback) {
 		asyncExecutor.execute(updateCallback, new Callable<Boolean>() {
 			public Boolean call() {
@@ -76,6 +97,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void deleteInBackground(final String tableName, final Object id, AsyncCallback<Boolean> deleteCallback) {
 		asyncExecutor.execute(deleteCallback, new Callable<Boolean>() {
 			public Boolean call() {

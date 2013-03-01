@@ -19,6 +19,9 @@ public final class AsyncStorageTemplate implements AsyncStorageOperations {
 		this.storageOperations = storageOperations;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void streamStorageFileInBackground(final StorageFile file, final InputStreamCallback inputStreamCallback, AsyncCallback<Void> downloadCallback) {
 		asyncExecutor.execute(downloadCallback, new Callable<Void>() {
 			public Void call() {
@@ -28,6 +31,9 @@ public final class AsyncStorageTemplate implements AsyncStorageOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void streamStorageFileIfModifiedSinceInBackground(final StorageFile file, final InputStreamCallback inputStreamCallback, AsyncCallback<Boolean> downloadCallback) {
 		asyncExecutor.execute(downloadCallback, new Callable<Boolean>() {
 			public Boolean call() {
@@ -36,6 +42,9 @@ public final class AsyncStorageTemplate implements AsyncStorageOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void streamStorageFileIfNoneMatchInBackground(final StorageFile file, final InputStreamCallback inputStreamCallback, AsyncCallback<Boolean> downloadCallback) {
 		asyncExecutor.execute(downloadCallback, new Callable<Boolean>() {
 			public Boolean call() {

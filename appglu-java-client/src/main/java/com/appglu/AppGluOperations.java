@@ -2,6 +2,9 @@ package com.appglu;
 
 import org.springframework.web.client.RestOperations;
 
+/**
+ * TODO
+ */
 public interface AppGluOperations {
 
 	CrudOperations crudOperations();

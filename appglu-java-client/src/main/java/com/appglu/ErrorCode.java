@@ -1,5 +1,8 @@
 package com.appglu;
 
+/**
+ * TODO
+ */
 public enum ErrorCode {
 	
 	/* This code is not returned by the server - it is used only in the client side */

@@ -20,6 +20,9 @@ public final class AsyncAnalyticsTemplate implements AsyncAnalyticsOperations {
 		this.analyticsOperations = analyticsOperations;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void uploadSessionInBackground(final AnalyticsSession session, AsyncCallback<Void> callback) {
 		asyncExecutor.execute(callback, new Callable<Void>() {
 			public Void call() {
@@ -29,6 +32,9 @@ public final class AsyncAnalyticsTemplate implements AsyncAnalyticsOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void uploadSessionsInBackground(final List<AnalyticsSession> sessions, AsyncCallback<Void> callback) {
 		asyncExecutor.execute(callback, new Callable<Void>() {
 			public Void call() {

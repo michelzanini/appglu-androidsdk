@@ -6,6 +6,12 @@ import com.appglu.AsyncCallback;
 import com.appglu.QueryParams;
 import com.appglu.QueryResult;
 
+/**
+ * Simple wrapper around {@link SavedQueriesApi} to provide a more model driven way of executing saved queries.
+ * 
+ * @see SavedQueriesApi
+ * @since 1.0.0
+ */
 public class SavedQuery implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

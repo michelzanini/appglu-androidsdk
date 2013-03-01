@@ -9,6 +9,10 @@ import com.appglu.android.AppGlu;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 
+/**
+ * {@code ApiAnalyticsDispatcher} is a implementation that will send the events to the AppGlu server.
+ * @since 1.0.0
+ */
 public class ApiAnalyticsDispatcher implements AnalyticsDispatcher {
 	
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);

@@ -22,12 +22,18 @@ public final class AnalyticsTemplate implements AnalyticsOperations {
 		this.restOperations = restOperations;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void uploadSession(AnalyticsSession session) throws AppGluRestClientException {
 		List<AnalyticsSession> sessions = new ArrayList<AnalyticsSession>();
 		sessions.add(session);
 		this.uploadSessions(sessions);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void uploadSessions(List<AnalyticsSession> sessions) throws AppGluRestClientException {
 		try {
 			this.restOperations.postForObject(CREATE_SESSION_URL, new AnalyticsSessionsBody(sessions), String.class);
@@ -36,6 +42,9 @@ public final class AnalyticsTemplate implements AnalyticsOperations {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void uploadSessions(AnalyticsSession... sessions) throws AppGluRestClientException {
 		this.uploadSessions(Arrays.asList(sessions));
 	}

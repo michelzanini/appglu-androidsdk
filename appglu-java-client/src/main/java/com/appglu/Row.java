@@ -15,6 +15,9 @@ import com.appglu.impl.util.Base64Utils;
 import com.appglu.impl.util.DateUtils;
 import com.appglu.impl.util.StringUtils;
 
+/**
+ * TODO
+ */
 public class Row extends HashMap<String, Object> {
 	
 	private static final long serialVersionUID = 1L;

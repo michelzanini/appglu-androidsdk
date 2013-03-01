@@ -4,6 +4,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**
+ * TODO
+ * @since 1.0.0
+ */
 public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	
 	protected static final String APPGLU_STORAGE_FILES_TABLE = "appglu_storage_files";
@@ -18,15 +22,32 @@ public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	
 	private boolean foreignKeysEnabled;
 
+	/**
+	 * TODO
+	 * @param context
+	 * @param name
+	 * @param version
+	 */
 	public SyncDatabaseHelper(Context context, String name, int version) {
 		this(context, name, version, false);
 	}
 	
+	/**
+	 * TODO
+	 * @param context
+	 * @param name
+	 * @param version
+	 * @param enableForeignKeys
+	 */
 	public SyncDatabaseHelper(Context context, String name, int version, boolean enableForeignKeys) {
 		super(context, name, null, joinVersionNumbers(SYNC_DATABASE_VERSION, version));
 		this.foreignKeysEnabled = enableForeignKeys;
 	}
 	
+	/**
+	 * TODO
+	 * @return
+	 */
 	public boolean getForeignKeysEnabled() {
 		return foreignKeysEnabled;
 	}
@@ -58,19 +79,25 @@ public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	    }
 	}
 	
-	public void onCreateSyncDatabase(SQLiteDatabase db) {
+	private void onCreateSyncDatabase(SQLiteDatabase db) {
 		db.execSQL("CREATE TABLE appglu_storage_files (id INTEGER PRIMARY KEY NOT NULL, key VARCHAR, name VARCHAR, content_type VARCHAR, title VARCHAR, size INTEGER, last_modified DATETIME, url VARCHAR, e_tag VARCHAR, directory_id INTEGER);");
 		db.execSQL("CREATE TABLE appglu_table_versions (table_name VARCHAR PRIMARY KEY NOT NULL, version INTEGER NOT NULL DEFAULT 0);");
 		db.execSQL("CREATE TABLE appglu_sync_metadata (sync_key INTEGER PRIMARY KEY NOT NULL, table_name VARCHAR NOT NULL, primary_key VARCHAR NOT NULL);");
 		db.execSQL("CREATE INDEX appglu_storage_files_url ON appglu_storage_files (url);");
 	}
 	
-	public void onUpgradeSyncDatabase(SQLiteDatabase db, int oldVersion, int newVersion) {
+	private void onUpgradeSyncDatabase(SQLiteDatabase db, int oldVersion, int newVersion) {
 		
 	}
 	
+	/**
+	 * TODO
+	 */
 	public abstract void onCreateAppDatabase(SQLiteDatabase db);
 	
+	/**
+	 * TODO
+	 */
 	public abstract void onUpgradeAppDatabase(SQLiteDatabase db, int oldVersion, int newVersion);
 	
 	/* Utility methods */

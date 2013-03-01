@@ -1,5 +1,9 @@
 package com.appglu;
 
+/**
+ * TODO
+ */
+
 @SuppressWarnings("serial")
 public class RowMapperException extends AppGluRestClientException {
 	

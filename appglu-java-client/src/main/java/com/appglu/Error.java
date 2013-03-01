@@ -2,6 +2,9 @@ package com.appglu;
 
 import java.io.Serializable;
 
+/**
+ * TODO
+ */
 public class Error implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

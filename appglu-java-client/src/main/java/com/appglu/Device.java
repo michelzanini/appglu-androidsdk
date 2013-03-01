@@ -2,6 +2,9 @@ package com.appglu;
 
 import java.io.Serializable;
 
+/**
+ * Represents a unique device installation for the purpose of receiving push notifications.
+ */
 public class Device implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

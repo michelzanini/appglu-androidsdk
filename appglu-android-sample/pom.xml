@@ -11,7 +11,7 @@
 
     <properties>
         <platform.version>2.3.3</platform.version>
-        <appglu.android.sdk.version>1.0.0-SNAPSHOT</appglu.android.sdk.version>
+        <appglu.android.sdk.version>1.0.0</appglu.android.sdk.version>
     </properties>
     
     <dependencies>

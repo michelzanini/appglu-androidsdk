@@ -5,6 +5,17 @@ import java.util.Date;
 
 import android.content.Context;
 
+/**
+ * {@link CacheManager} implementation that will store the files on memory and disk together, forming a two-level cache.<br>
+ * When retrieving the file it will first look on memory, if not found it will try the disk.<br>
+ * The maximum number of items on memory and the maximum number of bytes used on disk can be defined if the constructor {@link #MemoryAndFileSystemCacheManager(Context, int, long)} is used.
+ * If {@link #MemoryAndFileSystemCacheManager(Context)} constructor is used then default values will be applied.
+ * 
+ * @see MemoryCacheManager
+ * @see FileSystemCacheManager
+ * 
+ * @since 1.0.0
+ */
 public class MemoryAndFileSystemCacheManager implements CacheManager {
 	
 	private MemoryCacheManager memoryCacheManager;

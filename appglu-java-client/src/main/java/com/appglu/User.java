@@ -2,6 +2,13 @@ package com.appglu;
 
 import java.io.Serializable;
 
+/**
+ * Represents a mobile application user.<br>
+ * When the {@code User} is authenticated, this object will be saved using a {@link UserSessionPersistence} implementation.
+ * 
+ * @see UserSessionPersistence
+ * @since 1.0.0
+ */
 public class User implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

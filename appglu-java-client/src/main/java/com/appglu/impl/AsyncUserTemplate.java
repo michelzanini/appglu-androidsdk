@@ -20,6 +20,9 @@ public final class AsyncUserTemplate implements AsyncUserOperations {
 		this.userOperations = userOperations;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void signupInBackground(final User user, AsyncCallback<AuthenticationResult> authenticationResultCallback) {
 		asyncExecutor.execute(authenticationResultCallback, new Callable<AuthenticationResult>() {
 			public AuthenticationResult call() {
@@ -28,6 +31,9 @@ public final class AsyncUserTemplate implements AsyncUserOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void loginInBackground(final String username, final String password, AsyncCallback<AuthenticationResult> authenticationResultCallback) {
 		asyncExecutor.execute(authenticationResultCallback, new Callable<AuthenticationResult>() {
 			public AuthenticationResult call() {
@@ -36,6 +42,9 @@ public final class AsyncUserTemplate implements AsyncUserOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void refreshUserProfileInBackground(AsyncCallback<Void> refreshCallback) {
 		asyncExecutor.execute(refreshCallback, new Callable<Void>() {
 			public Void call() {
@@ -45,6 +54,9 @@ public final class AsyncUserTemplate implements AsyncUserOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void logoutInBackground(AsyncCallback<Boolean> logoutCallback) {
 		asyncExecutor.execute(logoutCallback, new Callable<Boolean>() {
 			public Boolean call() {
@@ -53,6 +65,9 @@ public final class AsyncUserTemplate implements AsyncUserOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void readDataInBackground(AsyncCallback<Map<String, Object>> readDataCallback) {
 		asyncExecutor.execute(readDataCallback, new Callable<Map<String, Object>>() {
 			public Map<String, Object> call() {
@@ -61,6 +76,9 @@ public final class AsyncUserTemplate implements AsyncUserOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void writeDataInBackground(final Map<String, Object> data, AsyncCallback<Void> writeDataCallback) {
 		asyncExecutor.execute(writeDataCallback, new Callable<Void>() {
 			public Void call() {

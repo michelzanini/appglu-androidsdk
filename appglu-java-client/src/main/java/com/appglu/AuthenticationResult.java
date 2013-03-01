@@ -1,7 +1,18 @@
 package com.appglu;
 
-public class AuthenticationResult {
+import java.io.Serializable;
+
+/**
+ * Contains the result of a mobile application user sign up or log in.<br>
+ * If <code>succeed</code> is <code>false</code> then <code>error</code> will be not <code>null</code>.
+ * 
+ * @see UserOperations
+ * @since 1.0.0
+ */
+public class AuthenticationResult implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	private boolean succeed;
 	
 	private Error error;
@@ -18,9 +29,13 @@ public class AuthenticationResult {
 	public boolean succeed() {
 		return succeed;
 	}
-
+	
 	public Error getError() {
 		return error;
+	}
+	
+	public boolean hasError() {
+		return error != null;
 	}
 
 	public String toString() {

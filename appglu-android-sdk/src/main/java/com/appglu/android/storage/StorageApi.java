@@ -12,6 +12,10 @@ import com.appglu.StorageFile;
 import com.appglu.android.AppGluAsyncCallbackTask;
 import com.appglu.android.ImageViewAsyncCallback;
 
+/**
+ * TODO
+ * @since 1.0.0
+ */
 public final class StorageApi {
 	
 	private StorageService storageService;

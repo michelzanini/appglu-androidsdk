@@ -13,6 +13,11 @@ import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.impl.util.IOUtils;
 
+/**
+ * {@link CacheManager} implementation that will store the files on memory.<br>
+ * It is possible to set the maximum number of items on memory but calling {@link #setMaxCacheSizeInNumberOfItems(int)}. By default is {@link #DEFAULT_MAX_CACHE_SIZE_IN_NUMBER_OF_ITEMS}.<br>
+ * @since 1.0.0
+ */
 public class MemoryCacheManager implements CacheManager {
 	
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);

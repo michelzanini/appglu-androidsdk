@@ -28,6 +28,10 @@ import com.appglu.android.ImageViewAsyncCallback;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 
+/**
+ * TODO
+ * @since 1.0.0
+ */
 public final class SyncApi {
 	
 	public static final int NOTIFICATION_ID = Integer.MAX_VALUE;
@@ -45,37 +49,37 @@ public final class SyncApi {
 		this.syncService = new SyncService(syncOperations, syncRepository, syncStorageService);
 	}
 	
-	/* Protected methods to be used by SyncIntentService */
+	/* Methods to be used by SyncIntentService */
 	
-	protected static SyncApi getLastUsedInstance() {
+	/* package */ static SyncApi getLastUsedInstance() {
 		return lastUsedInstance;
 	}
 	
-	protected boolean downloadChanges() {
+	/* package */ boolean downloadChanges() {
 		return syncService.downloadChanges();
 	}
 
-	protected boolean downloadChangesAndFiles() {
+	/* package */ boolean downloadChangesAndFiles() {
 		return syncService.downloadChangesAndFiles();
 	}
 
-	protected boolean downloadChangesForTables(List<String> tables) {
+	/* package */ boolean downloadChangesForTables(List<String> tables) {
 		return syncService.downloadChangesForTables(tables);
 	}
 
-	protected boolean downloadChangesAndFilesForTables(List<String> tables) {
+	/* package */ boolean downloadChangesAndFilesForTables(List<String> tables) {
 		return syncService.downloadChangesAndFilesForTables(tables);
 	}
 	
-	protected boolean hasDownloadedChanges() {
+	/* package */ boolean hasDownloadedChanges() {
 		return syncService.hasDownloadedChanges();
 	}
 	
-	protected boolean discardChanges() {
+	/* package */ boolean discardChanges() {
 		return syncService.discardChanges();
 	}
 
-	protected boolean applyChanges() {
+	/* package */ boolean applyChanges() {
 		return syncService.applyChanges();
 	}
 	

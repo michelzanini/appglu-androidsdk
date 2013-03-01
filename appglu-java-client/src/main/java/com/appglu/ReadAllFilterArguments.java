@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 import com.appglu.impl.util.StringUtils;
 
+/**
+ * TODO
+ */
 public class ReadAllFilterArguments implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

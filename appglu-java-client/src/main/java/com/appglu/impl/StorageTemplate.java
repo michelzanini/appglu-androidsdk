@@ -40,6 +40,9 @@ public final class StorageTemplate implements StorageOperations {
         }
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void streamStorageFile(StorageFile file, InputStreamCallback inputStreamCallback) throws AppGluRestClientException {
 		
 		RequestCallback requestCallback = new RequestCallback() {
@@ -51,6 +54,9 @@ public final class StorageTemplate implements StorageOperations {
 		this.streamStorageFile(file, inputStreamCallback, requestCallback);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean streamStorageFileIfModifiedSince(final StorageFile file, InputStreamCallback inputStreamCallback) throws AppGluRestClientException {
 		
 		RequestCallback requestCallback = new RequestCallback() {
@@ -64,6 +70,9 @@ public final class StorageTemplate implements StorageOperations {
 		return this.streamStorageFile(file, inputStreamCallback, requestCallback);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean streamStorageFileIfNoneMatch(final StorageFile file, InputStreamCallback inputStreamCallback) throws AppGluRestClientException {
 		
 		RequestCallback requestCallback = new RequestCallback() {

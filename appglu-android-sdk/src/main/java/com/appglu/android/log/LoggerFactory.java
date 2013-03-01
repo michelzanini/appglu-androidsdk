@@ -3,6 +3,23 @@ package com.appglu.android.log;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Used to produce {@link Logger} instances.
+ * 
+ * <p>Using a String:<br>
+ * <code>
+ * Logger logger = LoggerFactory.getLogger("LOGGER_TAG");
+ * </code>
+ * 
+ * <p>Using a Class:<br>
+ * <code>
+ * Logger logger = LoggerFactory.getLogger(this.getClass());
+ * </code>
+ * 
+ * @see Logger
+ * @see LoggerLevel
+ * @since 1.0.0
+ */
 public class LoggerFactory {
 	
 	private static LoggerLevel level = LoggerLevel.INFO;

@@ -3,6 +3,7 @@ package com.appglu.impl;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,14 +15,19 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.support.HttpRequestWrapper;
 
+import com.appglu.impl.util.StringUtils;
+
 public class DefaultHeadersHttpRequestInterceptor implements ClientHttpRequestInterceptor {
 	
 	private String baseUrl;
 	
+	private String applicationEnvironment;
+	
 	private Map<String, List<String>> defaultHeaders = new HashMap<String, List<String>>();
 	
-	public DefaultHeadersHttpRequestInterceptor(String baseUrl) {
+	public DefaultHeadersHttpRequestInterceptor(String baseUrl, String applicationEnvironment) {
 		this.baseUrl = baseUrl;
+		this.applicationEnvironment = applicationEnvironment;
 	}
 	
 	public Map<String, List<String>> getDefaultHeaders() {
@@ -53,6 +59,11 @@ public class DefaultHeadersHttpRequestInterceptor implements ClientHttpRequestIn
 			@Override
 			public HttpHeaders getHeaders() {
 				HttpHeaders headers = super.getHeaders();
+				
+				if (StringUtils.isNotEmpty(applicationEnvironment)) {
+					headers.put("X-AppGlu-Environment", Arrays.asList(applicationEnvironment));
+				}
+				
 				headers.putAll(defaultHeaders);
 				return headers;
 			}

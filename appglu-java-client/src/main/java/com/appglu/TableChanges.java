@@ -3,6 +3,9 @@ package com.appglu;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TODO
+ */
 public class TableChanges {
 	
 	private String tableName;

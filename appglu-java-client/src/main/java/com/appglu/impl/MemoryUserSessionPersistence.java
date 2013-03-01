@@ -4,6 +4,14 @@ import com.appglu.User;
 import com.appglu.UserSessionPersistence;
 import com.appglu.UserSessionPersistenceException;
 
+/**
+ * Implementation of {@link UserSessionPersistence} strategy to keep track of the authenticated mobile application {@link User} using <strong>memory</strong>.<br>
+ * This implementation will only keep track of the {@link User} as long as the reference to this class is kept. If the reference is lost the {@link User} will be automatically logged out.<br>
+ * This implementation is only recommended for testing purposes.
+ * 
+ * @see UserSessionPersistence
+ * @since 1.0.0
+ */
 public class MemoryUserSessionPersistence implements UserSessionPersistence {
 	
 	private String currentSessionId;

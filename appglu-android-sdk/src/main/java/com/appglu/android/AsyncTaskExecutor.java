@@ -5,11 +5,19 @@ import java.util.concurrent.Callable;
 import com.appglu.AsyncCallback;
 import com.appglu.impl.AsyncExecutor;
 
+/**
+ * A {@link AsyncExecutor} implementation that uses {@link AppGluAsyncTask} to provide <strong>asynchronous</strong> execution.
+ * 
+ * @see AppGluAsyncTask
+ * @see AsyncExecutor
+ * 
+ * @since 1.0.0
+ */
 public class AsyncTaskExecutor implements AsyncExecutor {
 	
 	@Override
-	public <Result> void execute(final AsyncCallback<Result> asyncCallback, final Callable<Result> executorCallable) {
-		AppGluAsyncCallbackTask<Result> asyncTask = new AppGluAsyncCallbackTask<Result>(asyncCallback, executorCallable);
+	public <Result> void execute(final AsyncCallback<Result> asyncCallback, final Callable<Result> workerThreadCallback) {
+		AppGluAsyncCallbackTask<Result> asyncTask = new AppGluAsyncCallbackTask<Result>(asyncCallback, workerThreadCallback);
 		
 		if (AppGlu.hasInternetConnection()) {
 			asyncTask.execute();

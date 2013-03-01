@@ -9,6 +9,13 @@ import android.widget.ProgressBar;
 
 import com.appglu.AsyncCallback;
 
+/**
+ * {@link AsyncCallback} implementation to load image Bitmaps into a ImageView using a ProgressBar while the image is being loaded.<br>
+ * If you do not want a ProgressBar then while constructing the class send <code>null</code> on the <code>progressBar</code> parameter.
+ * 
+ * @see AsyncCallback
+ * @since 1.0.0
+ */
 public class ImageViewAsyncCallback extends AsyncCallback<Bitmap> {
 
 	private WeakReference<ImageView> imageViewReference;

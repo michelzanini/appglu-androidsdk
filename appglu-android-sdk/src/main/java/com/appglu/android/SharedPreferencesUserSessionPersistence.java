@@ -8,6 +8,12 @@ import com.appglu.User;
 import com.appglu.UserSessionPersistence;
 import com.appglu.UserSessionPersistenceException;
 
+/**
+ * Implementation of {@link UserSessionPersistence} strategy to keep track of the authenticated mobile application {@link User} using Android's <strong>SharedPreferences</strong> object.<br>
+ * 
+ * @see UserSessionPersistence
+ * @since 1.0.0
+ */
 public class SharedPreferencesUserSessionPersistence implements UserSessionPersistence {
 	
 	private static final String SHARED_PREFERENCES_KEY = "com.appglu.android.SharedPreferencesUserSessionPersistence.SHARED_PREFERENCES_KEY";

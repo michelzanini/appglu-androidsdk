@@ -34,7 +34,14 @@ import com.appglu.UserSessionPersistence;
 import com.appglu.impl.json.JsonMessageConverterSelector;
 import com.appglu.impl.util.StringUtils;
 
+/**
+ * TODO
+ */
 public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
+	
+	public static final String DEFAULT_BASE_URL = "https://api.appglu.com";
+	
+	public static final String DEFAULT_ENVIRONMENT = "production";
 	
 	private static final boolean ANDROID_ENVIRONMENT = ClassUtils.isPresent("android.os.Build", AppGluTemplate.class.getClassLoader());
 	
@@ -43,6 +50,8 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	private String applicationKey;
 	
 	private String applicationSecret;
+	
+	private String applicationEnvironment;
 	
 	private RestTemplate restTemplate;
 	
@@ -88,13 +97,38 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	
 	private UserSessionPersistence userSessionPersistence;
 	
+	/**
+	 * @param applicationKey a randomly generated unique key specific for each mobile application
+	 * @param applicationSecret the secret key used to authenticate this application
+	 */
+	public AppGluTemplate(String applicationKey, String applicationSecret) {
+		this(DEFAULT_BASE_URL, applicationKey, applicationSecret);
+	}
+	
+	/**
+	 * @param baseUrl the server URL to point to, if different from the default {@link AppGluTemplate#DEFAULT_BASE_URL}
+	 * @param applicationKey a randomly generated unique key specific for each mobile application
+	 * @param applicationSecret the secret key used to authenticate this application
+	 */
 	public AppGluTemplate(String baseUrl, String applicationKey, String applicationSecret) {
+		this(baseUrl, applicationKey, applicationSecret, DEFAULT_ENVIRONMENT);
+	}
+	
+	/**
+	 * @param baseUrl the server URL to point to, if different from the default {@link AppGluTemplate#DEFAULT_BASE_URL}
+	 * @param applicationKey a randomly generated unique key specific for each mobile application
+	 * @param applicationSecret the secret key used to authenticate this application
+	 * @param applicationEnvironment The environment name to be accessed. Normally set to "staging" or "production", if not set "production" is assumed
+	 */
+	public AppGluTemplate(String baseUrl, String applicationKey, String applicationSecret, String applicationEnvironment) {
 		if (StringUtils.isEmpty(baseUrl)) {
 			throw new IllegalArgumentException("Base URL cannot be empty");
 		}
+		
 		this.baseUrl = baseUrl;
 		this.applicationKey = applicationKey;
 		this.applicationSecret = applicationSecret;
+		this.applicationEnvironment = applicationEnvironment;
 		
 		this.userSessionPersistence = new MemoryUserSessionPersistence();
 
@@ -150,16 +184,32 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.userSessionRequestInterceptor.setUserSessionPersistence(this.userSessionPersistence);
 	}
 	
+	/**
+	 * @return the server URL the SDK is pointing to, by default is {@link AppGluTemplate#DEFAULT_BASE_URL}
+	 */
 	public String getBaseUrl() {
 		return baseUrl;
 	}
 
+	/**
+	 * @return a randomly generated unique key specific for each mobile application
+	 */
 	public String getApplicationKey() {
 		return applicationKey;
 	}
 
+	/**
+	 * @return the secret key used to authenticate this application
+	 */
 	public String getApplicationSecret() {
 		return applicationSecret;
+	}
+	
+	/**
+	 * @return environment name to be accessed, by default is {@link AppGluTemplate#DEFAULT_ENVIRONMENT}
+	 */
+	public String getApplicationEnvironment() {
+		return applicationEnvironment;
 	}
 
 	public CrudOperations crudOperations() {
@@ -302,7 +352,7 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	}
 
 	protected void configureHttpRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
-		this.defaultHeadersHttpRequestInterceptor = new DefaultHeadersHttpRequestInterceptor(this.getBaseUrl());
+		this.defaultHeadersHttpRequestInterceptor = new DefaultHeadersHttpRequestInterceptor(this.getBaseUrl(), this.getApplicationEnvironment());
 		this.basicAuthHttpRequestInterceptor = new BasicAuthHttpRequestInterceptor(this.getApplicationKey(), this.getApplicationSecret());
 		this.userSessionRequestInterceptor = new UserSessionRequestInterceptor(this.userSessionPersistence);
 		

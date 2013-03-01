@@ -2,6 +2,15 @@ package com.appglu.android.log;
 
 import android.util.Log;
 
+/**
+ * Implements the {@link Logger} interface by using an Android Log class.
+ * 
+ * @see Logger
+ * @see LoggerFactory
+ * @see LoggerLevel
+ * 
+ * @since 1.0.0
+ */
 public class AndroidLogger implements Logger {
 	
 	static final int TAG_MAX_LENGTH = 23;

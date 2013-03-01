@@ -2,6 +2,11 @@ package com.appglu.android;
 
 import android.os.AsyncTask;
 
+/**
+ * Extension of Android's <code>AsyncTask</code> to add {@link #onException(Exception)} and {@link #onFinished()} callbacks.
+ * 
+ * @since 1.0.0
+ */
 public abstract class AppGluAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
 	
 	private Exception exception;

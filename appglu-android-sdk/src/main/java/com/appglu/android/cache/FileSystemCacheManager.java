@@ -20,6 +20,12 @@ import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.impl.util.IOUtils;
 
+/**
+ * {@link CacheManager} implementation that will store the files on disk.<br>
+ * {@code FileSystemCacheManager} will first try the external storage, if it is available, if not it will use the internal storage.<br>
+ * It is possible to set the maximum number of bytes used on disk by calling {@link #setMaxCacheSizeInBytes(long)}. By default is {@link #DEFAULT_CACHE_SIZE_IN_BYTES}.
+ * @since 1.0.0
+ */
 public class FileSystemCacheManager implements CacheManager {
 	
 	private static final String SHARED_PREFERENCES_KEY = "com.appglu.android.cache.FileSystemCacheManager.SHARED_PREFERENCES_KEY";

@@ -7,6 +7,14 @@ import com.appglu.QueryParams;
 import com.appglu.QueryResult;
 import com.appglu.SavedQueriesOperations;
 
+/**
+ * {@code SavedQueriesApi} allow you to run your previously created SQLs on AppGlu and obtain the results.
+ * 
+ * @see AppGlu
+ * @see SavedQueriesOperations
+ * @see AsyncSavedQueriesOperations
+ * @since 1.0.0
+ */
 public final class SavedQueriesApi implements SavedQueriesOperations, AsyncSavedQueriesOperations {
 
 	private SavedQueriesOperations savedQueriesOperations;
@@ -18,18 +26,30 @@ public final class SavedQueriesApi implements SavedQueriesOperations, AsyncSaved
 		this.asyncSavedQueriesOperations = asyncSavedQueriesOperations;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public QueryResult runQuery(String queryName) throws AppGluRestClientException {
 		return savedQueriesOperations.runQuery(queryName);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public QueryResult runQuery(String queryName, QueryParams params) throws AppGluRestClientException {
 		return savedQueriesOperations.runQuery(queryName, params);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void runQueryInBackground(String queryName, AsyncCallback<QueryResult> queryResultCallback) {
 		asyncSavedQueriesOperations.runQueryInBackground(queryName, queryResultCallback);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void runQueryInBackground(String queryName, QueryParams params, AsyncCallback<QueryResult> queryResultCallback) {
 		asyncSavedQueriesOperations.runQueryInBackground(queryName, params, queryResultCallback);
 	}

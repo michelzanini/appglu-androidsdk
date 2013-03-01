@@ -19,10 +19,16 @@ public final class SavedQueriesTemplate implements SavedQueriesOperations {
 		this.restOperations = restOperations;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public QueryResult runQuery(String queryName) throws AppGluRestClientException {
 		return this.runQuery(queryName, null);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public QueryResult runQuery(String queryName, QueryParams params) throws AppGluRestClientException {
 		try {
 			return this.restOperations.postForObject(QUERY_RUN_URL, new QueryParamsBody(params), QueryResult.class, queryName);

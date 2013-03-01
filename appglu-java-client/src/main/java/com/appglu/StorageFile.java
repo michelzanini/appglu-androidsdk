@@ -5,6 +5,9 @@ import java.util.Date;
 
 import com.appglu.impl.util.StringUtils;
 
+/**
+ * TODO
+ */
 public class StorageFile implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

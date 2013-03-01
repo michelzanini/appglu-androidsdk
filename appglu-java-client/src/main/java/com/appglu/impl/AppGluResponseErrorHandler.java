@@ -18,6 +18,9 @@ import com.appglu.Error;
 import com.appglu.ErrorCode;
 import com.appglu.ErrorResponse;
 
+/**
+ * TODO
+ */
 public class AppGluResponseErrorHandler extends DefaultResponseErrorHandler {
 	
 	private HttpMessageConverter<Object> jsonMessageConverter;

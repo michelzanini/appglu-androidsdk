@@ -3,6 +3,9 @@ package com.appglu;
 import java.io.InputStream;
 import java.util.List;
 
+/**
+ * TODO
+ */
 public interface AsyncSyncOperations {
 	
 	void changesForTableInBackground(String tableName, long version, AsyncCallback<TableChanges> callback);

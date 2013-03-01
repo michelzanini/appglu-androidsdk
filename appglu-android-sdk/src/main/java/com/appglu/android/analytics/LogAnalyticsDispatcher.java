@@ -7,6 +7,10 @@ import com.appglu.android.AppGlu;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 
+/**
+ * {@code LogAnalyticsDispatcher} is a implementation that will only log the events to the console.
+ * @since 1.0.0
+ */
 public class LogAnalyticsDispatcher implements AnalyticsDispatcher {
 	
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);

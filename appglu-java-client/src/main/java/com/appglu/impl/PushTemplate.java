@@ -21,6 +21,9 @@ public final class PushTemplate implements PushOperations {
 		this.restOperations = restOperations;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void registerDevice(Device device) throws AppGluRestClientException {
 		try {
 			this.restOperations.put(DEVICE_REGISTRATION_URL, new DeviceBody(device));
@@ -29,6 +32,9 @@ public final class PushTemplate implements PushOperations {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Device readDevice(String token) throws AppGluRestClientException {
 		try {
 			DeviceBody deviceBody = this.restOperations.getForObject(DEVICE_TOKEN_URL, DeviceBody.class, token);
@@ -40,6 +46,9 @@ public final class PushTemplate implements PushOperations {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean removeDevice(String token) throws AppGluRestClientException {
 		try {
 			this.restOperations.delete(DEVICE_TOKEN_URL, token);

@@ -4,6 +4,9 @@ import java.util.List;
 
 import com.appglu.impl.json.TableChangesJsonParser;
 
+/**
+ * TODO
+ */
 public interface SyncOperations extends TableChangesJsonParser {
 	
 	TableChanges changesForTable(String tableName, long version) throws AppGluRestClientException;

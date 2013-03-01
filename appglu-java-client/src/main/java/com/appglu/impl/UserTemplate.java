@@ -54,6 +54,9 @@ public final class UserTemplate implements UserOperations {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public AuthenticationResult signup(User user) throws AppGluRestClientException {
 		try {
 			return authenticate(SIGN_UP_URL, new UserBody(user));
@@ -62,6 +65,9 @@ public final class UserTemplate implements UserOperations {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public AuthenticationResult login(String username, String password) throws AppGluRestClientException {
 		try{
 			return authenticate(LOGIN_URL, new UserBody(username, password));
@@ -70,6 +76,9 @@ public final class UserTemplate implements UserOperations {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void refreshUserProfile() throws AppGluRestClientException {
 		try {
 			ResponseEntity<UserBody> response = this.restOperations.exchange(ME_URL, HttpMethod.GET, null, UserBody.class);
@@ -82,6 +91,9 @@ public final class UserTemplate implements UserOperations {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean logout() throws AppGluRestClientException {
 		try {
 			this.restOperations.exchange(LOGOUT_URL, HttpMethod.POST, null, Void.class);
@@ -95,6 +107,9 @@ public final class UserTemplate implements UserOperations {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> readData() throws AppGluRestClientException {
 		try {
@@ -107,6 +122,9 @@ public final class UserTemplate implements UserOperations {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void writeData(Map<String, Object> data) throws AppGluRestClientException {
 		try {
 			this.restOperations.exchange(DATA_URL, HttpMethod.PUT, new HttpEntity<Map<String, Object>>(data), Void.class);
