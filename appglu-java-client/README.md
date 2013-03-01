@@ -28,6 +28,6 @@ If you want to integrate AppGlu with an Android application please check out the
 # Getting Started
 
 ```java
-AppGluTemplate appGluTemplate = new AppGluTemplate("https://api.appglu.com", "appKey", "appSecret");
+AppGluTemplate appGluTemplate = new AppGluTemplate("appKey", "appSecret");
 Row row = appGluTemplate.crudOperations().read("table", "id");
 ```

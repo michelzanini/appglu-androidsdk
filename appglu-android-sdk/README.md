@@ -2,7 +2,8 @@ AppGlu Android SDK
 ==================
 
 AppGlu SDK for Android devices. Requires Android 2.2 (API version 8) or above.
-This SDK is build on top of AppGlu Java Client adding Android specific funcionality to APIs such as Analytics, Syncronization and Storage.
+It simplifies the use of the AppGlu Java Client library on Android and adds asynchronous calls to APIs using AsyncTask.
+Moreover, it adds Android specific functionality to APIs such as Analytics, Sync and Storage.
 
 # Setup
 
@@ -27,7 +28,7 @@ This SDK is build on top of AppGlu Java Client adding Android specific funcional
 # Getting Started
 
 ```java
-AppGluSettings settings = new AppGluSettings("https://api.appglu.com", "appKey", "appSecret");
+AppGluSettings settings = new AppGluSettings("appKey", "appSecret");
 AppGlu.initialize(this, settings);
 
 Row row = AppGlu.crudApi().read("table", "id");
