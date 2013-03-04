@@ -8,8 +8,8 @@ import com.appglu.impl.AsyncExecutor;
 /**
  * A {@link AsyncExecutor} implementation that uses {@link AppGluAsyncTask} to provide <strong>asynchronous</strong> execution.
  * 
- * @see AppGluAsyncTask
- * @see AsyncExecutor
+ * @see com.appglu.android.AppGluAsyncTask
+ * @see com.appglu.impl.AsyncExecutor
  * 
  * @since 1.0.0
  */

@@ -10,9 +10,9 @@ import com.appglu.SavedQueriesOperations;
 /**
  * {@code SavedQueriesApi} allow you to run your previously created SQLs on AppGlu and obtain the results.
  * 
- * @see AppGlu
- * @see SavedQueriesOperations
- * @see AsyncSavedQueriesOperations
+ * @see com.appglu.android.AppGlu
+ * @see com.appglu.SavedQueriesOperations
+ * @see com.appglu.AsyncSavedQueriesOperations
  * @since 1.0.0
  */
 public final class SavedQueriesApi implements SavedQueriesOperations, AsyncSavedQueriesOperations {

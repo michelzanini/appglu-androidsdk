@@ -10,9 +10,9 @@ import com.appglu.PushOperations;
 /**
  * {@code PushApi} is used to register / unregister the device making it eligible to receive push notifications.<br>
  * 
- * @see AppGlu
- * @see PushOperations
- * @see AsyncPushOperations
+ * @see com.appglu.android.AppGlu
+ * @see com.appglu.PushOperations
+ * @see com.appglu.AsyncPushOperations
  * @since 1.0.0
  */
 public final class PushApi {

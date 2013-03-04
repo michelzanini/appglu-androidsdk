@@ -11,7 +11,7 @@ import com.appglu.UserSessionPersistenceException;
 /**
  * Implementation of {@link UserSessionPersistence} strategy to keep track of the authenticated mobile application {@link User} using Android's <strong>SharedPreferences</strong> object.<br>
  * 
- * @see UserSessionPersistence
+ * @see com.appglu.UserSessionPersistence
  * @since 1.0.0
  */
 public class SharedPreferencesUserSessionPersistence implements UserSessionPersistence {

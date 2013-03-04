@@ -4,6 +4,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+/**
+ * Create a sub-class of {@code SyncBroadcastReceiver} to receive broadcast events from {@link SyncIntentService}.<br>
+ * To register this <code>BroadcastReceiver</code> use a {@link SyncIntentFilter} like below:
+ * 
+ * <p><code>
+ * Activity.this.registerReceiver(syncBroadcastReceiver, new SyncIntentFilter());
+ * </code>
+ * 
+ * @see SyncIntentFilter
+ * @since 1.0.0
+ */
 public abstract class SyncBroadcastReceiver extends BroadcastReceiver {
 
 	@Override

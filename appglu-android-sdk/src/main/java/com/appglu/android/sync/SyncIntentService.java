@@ -18,6 +18,9 @@ import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.sync.SyncIntentServiceRequest.SyncRequestOperation;
 
+/**
+ * TODO
+ */
 public class SyncIntentService extends IntentService {
 	
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);

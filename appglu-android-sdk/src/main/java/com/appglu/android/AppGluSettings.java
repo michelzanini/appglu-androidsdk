@@ -30,6 +30,7 @@ import com.appglu.impl.AppGluTemplate;
  * AppGlu.initialize(this, settings);
  * </code>
  * 
+ * @see com.appglu.android.AppGlu
  * @since 1.0.0
  */
 public class AppGluSettings {

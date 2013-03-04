@@ -12,9 +12,9 @@ import com.appglu.UserOperations;
 /**
  * {@code UserApi} has methods to login / logout and sign up new mobile app users.<br>
  * 
- * @see AppGlu
- * @see UserOperations
- * @see AsyncUserOperations
+ * @see com.appglu.android.AppGlu
+ * @see com.appglu.UserOperations
+ * @see com.appglu.AsyncUserOperations
  * @since 1.0.0
  */
 public final class UserApi implements UserOperations, AsyncUserOperations {

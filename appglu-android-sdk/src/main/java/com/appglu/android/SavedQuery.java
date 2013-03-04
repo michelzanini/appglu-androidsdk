@@ -9,7 +9,7 @@ import com.appglu.QueryResult;
 /**
  * Simple wrapper around {@link SavedQueriesApi} to provide a more model driven way of executing saved queries.
  * 
- * @see SavedQueriesApi
+ * @see com.appglu.android.SavedQueriesApi
  * @since 1.0.0
  */
 public class SavedQuery implements Serializable {

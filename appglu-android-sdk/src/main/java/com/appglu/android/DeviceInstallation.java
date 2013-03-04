@@ -26,7 +26,7 @@ import com.appglu.impl.util.StringUtils;
  * For instance, the operating system name and version, the app name and version, the device model and manufacturer, etc...<br>
  * It is used mainly for analytics purposes.
  * 
- * @see AppGlu#deviceInstallation()
+ * @see com.appglu.android.AppGlu#deviceInstallation()
  * @since 1.0.0
  */
 public class DeviceInstallation {

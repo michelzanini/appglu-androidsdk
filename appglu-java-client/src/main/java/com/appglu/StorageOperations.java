@@ -1,12 +1,15 @@
 package com.appglu;
 
 /**
- * TODO
+ * {@code StorageOperations} has methods to download and cache files from AppGlu server.<br><br>
+ * 
+ * @see AsyncStorageOperations
+ * @since 1.0.0
  */
 public interface StorageOperations {
 
 	/**
-	 * Download a file from a URL specified in file.getUrl() and gives the stream to inputStreamCallback.doWithInputStream() method.
+	 * Download a file from a URL specified in file.getUrl() and gives the stream back to {@link InputStreamCallback#doWithInputStream(java.io.InputStream)}.
 	 * 
 	 * @param file StorageFile containing an URL
 	 * @param inputStreamCallback access to the raw InputStream
@@ -14,8 +17,8 @@ public interface StorageOperations {
 	void streamStorageFile(StorageFile file, InputStreamCallback inputStreamCallback) throws AppGluRestClientException;
 	
 	/**
-	 * Will use file.getLastModified() to send in If-Modified-Since header. 
-	 * If was not modified since then it will return false and inputStreamCallback.doWithInputStream() will not be called.
+	 * Will use file.getLastModified() to add a If-Modified-Since header.<br>
+	 * If the file was not modified since, then it will return <code>false</code> and {@link InputStreamCallback#doWithInputStream(java.io.InputStream)} will not be called.
 	 * 
 	 * @param file StorageFile containing an URL and a last modified date
 	 * @param inputStreamCallback access to the raw InputStream when the file was modified
@@ -24,8 +27,8 @@ public interface StorageOperations {
 	boolean streamStorageFileIfModifiedSince(StorageFile file, InputStreamCallback inputStreamCallback) throws AppGluRestClientException;
 	
 	/**
-	 * Will use file.getETag() to send in If-None-Match header. 
-	 * If the eTag matches will return false and inputStreamCallback.doWithInputStream() will not be called.
+	 * Will use file.getETag() to add a If-None-Match header.<br>
+	 * If the eTag matches with the server, then it will return <code>false</code> and {@link InputStreamCallback#doWithInputStream(java.io.InputStream)} will not be called.
 	 * 
 	 * @param file StorageFile containing an URL and a eTag
 	 * @param inputStreamCallback access to the raw InputStream when the file was modified

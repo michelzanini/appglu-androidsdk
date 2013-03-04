@@ -2,6 +2,16 @@ package com.appglu.android.sync;
 
 import android.content.IntentFilter;
 
+/**
+ * Use this {@code IntentFilter} to register a {@link SyncBroadcastReceiver} like below:
+ * 
+ * <p><code>
+ * Activity.this.registerReceiver(syncBroadcastReceiver, new SyncIntentFilter());
+ * </code>
+ * 
+ * @see SyncBroadcastReceiver
+ * @since 1.0.0
+ */
 public class SyncIntentFilter extends IntentFilter {
 
 	public SyncIntentFilter() {
