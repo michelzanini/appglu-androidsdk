@@ -19,7 +19,23 @@ import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.sync.SyncIntentServiceRequest.SyncRequestOperation;
 
 /**
- * TODO
+ * <p>This is the Android service responsible for executing the Sync operation with the AppGlu server.<br>
+ * <p>You must declare this service in your AndroidManifest.xml like bellow:
+ * 
+ * <p><code>
+ * &lt;service android:name="com.appglu.android.sync.SyncIntentService" /&gt;
+ * </code>
+ * 
+ * <p>To initiate the Sync operation you must use a {@link SyncIntentServiceRequest} and call {@link SyncApi#startSyncIntentService(SyncIntentServiceRequest)}:
+ * 
+ * <p><code>
+ * SyncIntentServiceRequest request = SyncIntentServiceRequest.syncDatabaseAndFiles();<br>
+ * AppGlu.syncApi().startSyncIntentService(request);
+ * </code>
+ * 
+ * @see SyncApi
+ * @see SyncIntentServiceRequest
+ * @since 1.0.0
  */
 public class SyncIntentService extends IntentService {
 	

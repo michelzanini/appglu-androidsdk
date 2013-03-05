@@ -3,7 +3,8 @@ package com.appglu;
 import org.springframework.http.HttpStatus;
 
 /**
- * TODO
+ * Represents an HTTP status error code of 500 (Generic Server Error).
+ * @since 1.0.0
  */
 
 @SuppressWarnings("serial")

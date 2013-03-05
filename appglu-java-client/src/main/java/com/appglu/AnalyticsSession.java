@@ -8,7 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO
+ * Represents a session of application usage. From the time the user has opened the app to the time it closes it.<br>
+ * A session can contain parameters and events and is used to collect mobile app usage statistics.
+ * 
+ * @see AnalyticsSessionEvent
+ * @since 1.0.0
  */
 public class AnalyticsSession implements Serializable {
 

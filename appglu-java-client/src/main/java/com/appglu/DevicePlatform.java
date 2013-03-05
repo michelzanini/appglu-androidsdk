@@ -1,5 +1,10 @@
 package com.appglu;
 
+/**
+ * Represents the operating system of the device. Can be {@link IOS} or {@link ANDROID}.
+ * 
+ * @since 1.0.0
+ */
 public enum DevicePlatform {
 	
 	IOS,

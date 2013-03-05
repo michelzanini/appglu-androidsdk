@@ -6,7 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * TODO
+ * Represents an event that happened during the usage of the app. An event could be, for example, the tap of a button or the appearance of a dialog, etc.<br>
+ * An event can contain parameters and is used to collect mobile app usage statistics.
+ * 
+ * @see AnalyticsSession
+ * @since 1.0.0
  */
 public class AnalyticsSessionEvent implements Serializable {
 	

@@ -6,7 +6,11 @@ import java.util.Date;
 import com.appglu.impl.util.StringUtils;
 
 /**
- * TODO
+ * Represents a file. Can be used either by the Storage or the Sync APIs.<br>
+ * 
+ * @see StorageOperations
+ * @see SyncOperations
+ * @since 1.0.0
  */
 public class StorageFile implements Serializable {
 	

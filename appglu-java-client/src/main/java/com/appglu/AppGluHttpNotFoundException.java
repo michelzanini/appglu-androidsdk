@@ -3,7 +3,9 @@ package com.appglu;
 import org.springframework.http.HttpStatus;
 
 /**
- * TODO
+ * Happens when the HTTP status error 400 is received.
+ * 
+ * @since 1.0.0
  */
 
 @SuppressWarnings("serial")

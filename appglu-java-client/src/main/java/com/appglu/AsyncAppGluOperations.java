@@ -2,8 +2,11 @@ package com.appglu;
 
 import org.springframework.web.client.RestOperations;
 
+
 /**
- * TODO
+ * Interface that describes all the <strong>asynchronous</strong> APIs available on AppGlu.
+ * @see AppGluOperations
+ * @since 1.0.0
  */
 public interface AsyncAppGluOperations {
 	

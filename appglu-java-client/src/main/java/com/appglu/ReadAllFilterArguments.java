@@ -5,7 +5,13 @@ import java.io.Serializable;
 import com.appglu.impl.util.StringUtils;
 
 /**
- * TODO
+ * <p>Used to specify filters to be applied when retrieving rows from the server.
+ * <p><code>limit</code> and <code>offset</code> are used to support pagination.<br>
+ * <code>filterColumn</code> and <code>filterQuery</code> are used to filter rows using a filter query.<br>
+ * <code>sortColumn</code> and <code>sortDirection</code> are used to sort the result.<br>
+ * 
+ * @see CrudOperations#readAll(String, boolean, ReadAllFilterArguments)
+ * @since 1.0.0
  */
 public class ReadAllFilterArguments implements Serializable {
 	

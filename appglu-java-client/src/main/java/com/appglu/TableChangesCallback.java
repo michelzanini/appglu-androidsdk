@@ -1,7 +1,10 @@
 package com.appglu;
 
 /**
- * TODO
+ * This callback will receive events while a JSON input stream is being parsed.<br>
+ * This JSON is the response of the Sync Changes API, containing all rows changed since the last time sync executed.
+ * 
+ * @since 1.0.0
  */
 public interface TableChangesCallback {
 	

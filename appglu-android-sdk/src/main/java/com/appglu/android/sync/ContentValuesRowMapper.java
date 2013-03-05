@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 
 import android.content.ContentValues;
 
-import com.appglu.DataTypeConversionException;
 import com.appglu.Row;
 import com.appglu.RowMapper;
 import com.appglu.RowMapperException;
@@ -56,18 +55,13 @@ public class ContentValuesRowMapper implements RowMapper<ContentValues> {
 				}
 				
 				if (column.getType().equals("date") || column.getType().equals("datetime")) {
-					try {
-						Date date = row.getDate(columnName);
-						if (date == null) {
-							values.putNull(escapedColumnName);
-						} else {
-							long time = date.getTime();
-							values.put(escapedColumnName, time);
-						}
-						continue;
-					} catch (DataTypeConversionException e) {
-						throw new RowMapperException(ContentValues.class, "Cannot convert " + columnName + " to date", e);
+					Date date = row.getDate(columnName);
+					if (date == null) {
+						values.putNull(escapedColumnName);
+					} else {
+						values.put(escapedColumnName, date.getTime());
 					}
+					continue;
 				}
 				
 				if (column.getType().equals("boolean")) {

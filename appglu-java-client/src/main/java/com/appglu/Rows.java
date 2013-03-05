@@ -5,7 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * <p>Contains a list of {@link Row} objects and the total number of rows that table has.<br>
+ * <p>The size of {@link #getRows()} if not always the same as {@link #getTotalRows()}.<br>
+ * Sometimes the number of rows returned are not all the rows of that table (usually happens when paginating trough the table data).<br>
+ * 
+ * @see Row
+ * @since 1.0.0
  */
 public class Rows implements Serializable {
 	

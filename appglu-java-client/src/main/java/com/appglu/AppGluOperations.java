@@ -3,7 +3,8 @@ package com.appglu;
 import org.springframework.web.client.RestOperations;
 
 /**
- * TODO
+ * Interface that describes all the APIs available on AppGlu.
+ * @since 1.0.0
  */
 public interface AppGluOperations {
 

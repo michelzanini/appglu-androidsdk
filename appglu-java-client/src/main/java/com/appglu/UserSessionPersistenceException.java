@@ -1,7 +1,9 @@
 package com.appglu;
 
 /**
- * TODO
+ * Happens when there is a problem saving or retrieving the {@link User} from a {@link UserSessionPersistence} implementation.
+ * 
+ * @since 1.0.0
  */
 
 @SuppressWarnings("serial")

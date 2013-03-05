@@ -29,8 +29,25 @@ import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 
 /**
- * {@code SyncApi} is used to synchronize the data in your local SQLite tables with the AppGlu server.<br>
+ * <p>{@code SyncApi} is used to synchronize the data in your local SQLite tables with the AppGlu server.<br>
+ * Before using {@code SyncApi} you must first create a SQLite database, extending {@link SyncDatabaseHelper}.<br>
  * 
+ * <p>There are two ways to provide a {@link SyncDatabaseHelper} instance to {@code SyncApi}:
+ * 
+ * <p><strong>1. Setting a default SQLite database helper on initialization:</strong>
+ * <p><code>
+ * AppGluSettings settings = new AppGluSettings("appKey", "appSecret");<br>
+ * settings.setDefaultSyncDatabaseHelper(new ExampleSyncDatabaseHelper(this));<br>
+ * 
+ * SyncApi syncApi = AppGlu.syncApi();
+ * </code>
+ * 
+ * <p><strong>2. Provide a SQLite database helper to {@link AppGlu#syncApi(SyncDatabaseHelper)}:</strong>
+ * <p><code>
+ * SyncApi syncApi = AppGlu.syncApi(new ExampleSyncDatabaseHelper(this));
+ * </code>
+ * 
+ * @see SyncDatabaseHelper
  * @see com.appglu.android.AppGlu
  * @see com.appglu.SyncOperations
  * @see com.appglu.AsyncSyncOperations

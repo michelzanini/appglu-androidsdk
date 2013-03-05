@@ -1,7 +1,8 @@
 package com.appglu;
 
 /**
- * TODO
+ * {@code RowChanges} contains the {@link SyncOperation} to be applied for this {@link Row}.<br>
+ * If the operation is {@link SyncOperation#INSERT} or {@link SyncOperation#UPDATE} then {@link #getRow()} will contain the data to be used for that insert or update.
  */
 public class RowChanges {
 	

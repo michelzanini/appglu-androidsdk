@@ -6,8 +6,8 @@ import java.util.List;
 import android.app.Notification;
 
 /**
- * Describes what the {@link SyncIntentService} is going to do.<br> 
- * You can choose between:<br>
+ * <p>Describes what the {@link SyncIntentService} is going to do during the Sync operation.<br> 
+ * <p>You can choose between:<br>
  * <ul>
  *    <li>Downloading the changes only or downloading and applying them immediately</li>
  *    <li>Downloading files as well or only the data</li>

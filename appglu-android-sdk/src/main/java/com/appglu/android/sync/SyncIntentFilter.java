@@ -3,7 +3,7 @@ package com.appglu.android.sync;
 import android.content.IntentFilter;
 
 /**
- * Use this {@code IntentFilter} to register a {@link SyncBroadcastReceiver} like below:
+ * Use this {@code IntentFilter} to register a {@link SyncBroadcastReceiver}.
  * 
  * <p><code>
  * Activity.this.registerReceiver(syncBroadcastReceiver, new SyncIntentFilter());

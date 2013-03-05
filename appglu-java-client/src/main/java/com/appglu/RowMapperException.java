@@ -1,39 +1,24 @@
 package com.appglu;
 
 /**
- * TODO
+ * Exception that can happen when mapping a {@link Row} object using a implementation of {@link RowMapper}.
+ * 
+ * @since 1.0.0
  */
 
 @SuppressWarnings("serial")
 public class RowMapperException extends AppGluRestClientException {
 	
-	private Class<?> mappedClass;
-	
-	public RowMapperException(Class<?> mappedClass, String msg) {
+	public RowMapperException(String msg) {
 		super(msg);
-		this.mappedClass = mappedClass;
 	}
 	
-	public RowMapperException(Class<?> mappedClass, Throwable e) {
+	public RowMapperException(Throwable e) {
 		super(e);
-		this.mappedClass = mappedClass;
 	}
 	
-	public RowMapperException(Class<?> mappedClass, String msg, Exception e) {
+	public RowMapperException(String msg, Exception e) {
 		super(msg, e);
-		this.mappedClass = mappedClass;
 	}
 
-	public Class<?> getMappedClass() {
-		return mappedClass;
-	}
-
-	@Override
-	public String getMessage() {
-		if (mappedClass == null) {
-			return super.getMessage();
-		}
-		return mappedClass.getName() + " - " + super.getMessage();
-	}
-	
 }

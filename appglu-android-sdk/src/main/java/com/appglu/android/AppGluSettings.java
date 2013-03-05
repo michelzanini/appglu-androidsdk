@@ -119,17 +119,10 @@ public class AppGluSettings {
 		return applicationEnvironment;
 	}
 	
-	/**
-	 * TODO
-	 */
 	public String getApplicationVersion() {
 		return applicationVersion;
 	}
 
-	/**
-	 * TODO
-	 * @param applicationVersion
-	 */
 	public void setApplicationVersion(String applicationVersion) {
 		this.applicationVersion = applicationVersion;
 	}

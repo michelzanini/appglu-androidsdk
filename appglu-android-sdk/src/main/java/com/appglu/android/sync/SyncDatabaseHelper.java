@@ -5,7 +5,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * TODO
+ * <p>{@code SyncDatabaseHelper} extends {@code android.database.sqlite.SQLiteOpenHelper} to provide custom functionality: it creates meta-data tables required to perform a Sync operation with the AppGlu server.<br>
+ * <p>Before having access to a {@link SyncApi} instance you will need to extend this class. By extending this class two methods will require overriding: {@link #onCreateAppDatabase(SQLiteDatabase)} and {@link #onUpgradeAppDatabase(SQLiteDatabase, int, int)}.<br> 
+ * 
+ * @see #onCreateAppDatabase(SQLiteDatabase)
+ * @see #onUpgradeAppDatabase(SQLiteDatabase, int, int)
+ * @see SyncApi
  * @since 1.0.0
  */
 public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
@@ -23,31 +28,27 @@ public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	private boolean foreignKeysEnabled;
 
 	/**
-	 * TODO
-	 * @param context
-	 * @param name
-	 * @param version
+	 * @param context an Activity or Application
+	 * @param name the database file name
+	 * @param version the database version used to manage migrations
+	 * @see #onUpgradeAppDatabase(SQLiteDatabase, int, int)
 	 */
 	public SyncDatabaseHelper(Context context, String name, int version) {
 		this(context, name, version, false);
 	}
 	
 	/**
-	 * TODO
-	 * @param context
-	 * @param name
-	 * @param version
-	 * @param enableForeignKeys
+	 * @param context an Activity or Application
+	 * @param name the database file name
+	 * @param version the database version used to manage migrations
+	 * @param enableForeignKeys if <code>true</code> foreign key constraints will be enforced. By default, constraints are not enforced
+	 * @see #onUpgradeAppDatabase(SQLiteDatabase, int, int)
 	 */
 	public SyncDatabaseHelper(Context context, String name, int version, boolean enableForeignKeys) {
 		super(context, name, null, joinVersionNumbers(SYNC_DATABASE_VERSION, version));
 		this.foreignKeysEnabled = enableForeignKeys;
 	}
 	
-	/**
-	 * TODO
-	 * @return
-	 */
 	public boolean getForeignKeysEnabled() {
 		return foreignKeysEnabled;
 	}
@@ -91,12 +92,23 @@ public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	/**
-	 * TODO
+     * <p>This method is similar to {@code android.database.sqlite.SQLiteOpenHelper#onCreate(SQLiteDatabase)}:<br>
+     * Called when the database is created for the first time. This is where the
+     * creation of tables and the initial population of the tables should happen.
+     * 
+     * @param db The database
 	 */
 	public abstract void onCreateAppDatabase(SQLiteDatabase db);
 	
 	/**
-	 * TODO
+	 * <p>This method is similar to {@code android.database.sqlite.SQLiteOpenHelper#onUpgrade(SQLiteDatabase, int, int)}:<br>
+     * Called when the database needs to be upgraded. The implementation
+     * should use this method to drop tables, add tables, or do anything else it
+     * needs to upgrade to the new schema version.
+     * 
+     * @param db The database
+     * @param oldVersion The old database version
+     * @param newVersion The new database version
 	 */
 	public abstract void onUpgradeAppDatabase(SQLiteDatabase db, int oldVersion, int newVersion);
 	

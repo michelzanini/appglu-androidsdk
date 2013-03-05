@@ -7,6 +7,11 @@ import com.appglu.AppGluHttpServerException;
 import com.appglu.AppGluHttpStatusCodeException;
 import com.appglu.AppGluRestClientException;
 
+/**
+ * Wraps an exception thrown by the {@link SyncApi} to provide a easy way of extracting error code and error messages.
+ * 
+ * @since 1.0.0
+ */
 public class SyncExceptionWrapper implements Serializable {
 	
 	public enum SyncErrorCode {

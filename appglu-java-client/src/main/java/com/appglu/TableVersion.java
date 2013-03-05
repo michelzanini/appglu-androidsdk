@@ -1,7 +1,9 @@
 package com.appglu;
 
 /**
- * TODO
+ * A table and it's version. A version of a table is incremented every time that table has a new, updated or deleted row.
+ * 
+ * @since 1.0.0
  */
 public class TableVersion {
 	

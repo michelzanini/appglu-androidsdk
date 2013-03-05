@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * Represents a unique device installation for the purpose of receiving push notifications.
+ * @since 1.0.0
  */
 public class Device implements Serializable {
 	

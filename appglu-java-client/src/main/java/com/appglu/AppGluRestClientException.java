@@ -1,7 +1,9 @@
 package com.appglu;
 
 /**
- * TODO
+ * The base exception for any exception that can be thrown by the Java AppGlu client.
+ * 
+ * @since 1.0.0
  */
 
 @SuppressWarnings("serial")

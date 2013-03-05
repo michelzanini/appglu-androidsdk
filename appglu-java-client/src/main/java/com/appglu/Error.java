@@ -3,7 +3,10 @@ package com.appglu;
 import java.io.Serializable;
 
 /**
- * TODO
+ * An {@code Error} object has a code and a message. When the AppGlu REST API returns an error, it is parsed and represented with this class.
+ * 
+ * @see AppGluHttpStatusCodeException
+ * @since 1.0.0
  */
 public class Error implements Serializable {
 	

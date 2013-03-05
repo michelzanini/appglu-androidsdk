@@ -3,7 +3,9 @@ package com.appglu;
 import java.io.Serializable;
 
 /**
- * TODO
+ * If an <strong>asynchronous</strong> method throws an exception, that exception is wrapped with {@code ExceptionWrapper} to provide a easy way of extracting error code and error messages.
+ * 
+ * @since 1.0.0
  */
 public class ExceptionWrapper implements Serializable {
 
@@ -24,7 +26,7 @@ public class ExceptionWrapper implements Serializable {
 			AppGluHttpStatusCodeException httpStatusCodeException = this.getHttpStatusCodeException();
 			return httpStatusCodeException.getStatusCode();
 		}
-		return AppGluHttpInternalServerErrorException.STATUS_CODE;
+		return null;
 	}
 	
 	public Error getError() {
@@ -32,16 +34,22 @@ public class ExceptionWrapper implements Serializable {
 			AppGluHttpStatusCodeException httpStatusCodeException = this.getHttpStatusCodeException();
 			return httpStatusCodeException.getError();
 		}
-		return AppGluHttpInternalServerErrorException.GENERIC_SERVER_ERROR;
+		return null;
 	}
 	
 	public ErrorCode getErrorCode() {
 		Error error = this.getError();
+		if (error == null) {
+			return null;
+		}
 		return error.getCode();
 	}
 	
 	public String getErrorMessage() {
 		Error error = this.getError();
+		if (error == null) {
+			return null;
+		}
 		return error.getMessage();
 	}
 	

@@ -1,7 +1,9 @@
 package com.appglu;
 
 /**
- * TODO
+ * A code identifying the error the server has returned. Use the code to search through AppGlu's documentation to find out more details about these error. 
+ * 
+ * @since 1.0.0
  */
 public enum ErrorCode {
 	

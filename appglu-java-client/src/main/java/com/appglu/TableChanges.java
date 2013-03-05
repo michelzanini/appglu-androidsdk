@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * Contains all the delta changes of a particular table. The changes are new, updated or deleted rows of this table, since the last time the sync has executed.
+ * 
+ * @since 1.0.0
  */
 public class TableChanges {
 	

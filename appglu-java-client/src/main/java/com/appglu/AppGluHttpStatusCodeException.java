@@ -1,7 +1,11 @@
 package com.appglu;
 
 /**
- * TODO
+ * Happens when an HTTP status error of the client or server series is received (anything between 400-499 or 500-599).
+ * 
+ * @see AppGluHttpClientException
+ * @see AppGluHttpServerException
+ * @since 1.0.0
  */
 
 @SuppressWarnings("serial")
