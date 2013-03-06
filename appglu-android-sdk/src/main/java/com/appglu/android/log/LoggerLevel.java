@@ -4,11 +4,11 @@ import android.util.Log;
 
 /**
  * Represents the level that the log message will be logged.<br>
- * Levels are used to filter log messages that are too specific. For example, when the {@code LoggerLevel} is INFO, then VERBOSE and DEBUG messages are not logged.<br>
+ * Levels are used to filter log messages that are too specific. For example, when the {@code LoggerLevel} is {@link #INFO}, then {@link #VERBOSE} and {@link #DEBUG} messages are not logged.<br>
  * 
- * <p>The default level to be used is {@link LoggerLevel#INFO} but that can be change by calling {@link LoggerFactory#setLevel(LoggerLevel)} or {@link com.appglu.android.AppGluSettings#setLoggerLevel(LoggerLevel)} before initializing {@link com.appglu.android.AppGlu}.
+ * <p>The default level to be used is {@link #INFO} but that can be change by calling {@link LoggerFactory#setLevel(LoggerLevel)} or {@link com.appglu.android.AppGluSettings#setLoggerLevel(LoggerLevel)} before initializing {@link com.appglu.android.AppGlu}.
  * 
- * @see {@link LoggerFactory}
+ * @see LoggerFactory
  * @since 1.0.0
  */
 public enum LoggerLevel {

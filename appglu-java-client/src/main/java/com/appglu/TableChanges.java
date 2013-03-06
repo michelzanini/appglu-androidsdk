@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Contains all the delta changes of a particular table. The changes are new, updated or deleted rows of this table, since the last time the sync has executed.
+ * Contains all the delta changes of a particular table. Changes are new, updated or deleted rows since the last time this table was synchronized.
  * 
  * @since 1.0.0
  */

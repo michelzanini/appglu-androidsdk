@@ -25,7 +25,7 @@ public class ClientHttpRequestFactorySelector {
 		return new SimpleClientHttpRequestFactory();
 	}
 	
-	public static class DefaultHttpClientRequestFactoryCreator {
+	private static class DefaultHttpClientRequestFactoryCreator {
 
 		public static ClientHttpRequestFactory createRequestFactory() {
 			return new HttpComponentsClientHttpRequestFactory(new DefaultHttpClient());
@@ -33,7 +33,7 @@ public class ClientHttpRequestFactorySelector {
 		
 	}
 	
-	public static class DecompressingHttpClientRequestFactoryCreator {
+	private static class DecompressingHttpClientRequestFactoryCreator {
 
 		public static ClientHttpRequestFactory createRequestFactory() {
 			DefaultHttpClient httpClient = new DefaultHttpClient();

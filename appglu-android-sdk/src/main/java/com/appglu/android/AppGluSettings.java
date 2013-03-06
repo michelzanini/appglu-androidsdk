@@ -177,7 +177,7 @@ public class AppGluSettings {
 	 * Changing the {@link com.appglu.UserSessionPersistence} implementation if you want to save the app {@link com.appglu.User} object to somewhere else.<br>
 	 * By default {@link com.appglu.android.SharedPreferencesUserSessionPersistence} is used and it will save the user data to a SharedPreferences object.
 	 * @see com.appglu.UserSessionPersistence
-	 * @see com.appglu.MemoryUserSessionPersistence
+	 * @see com.appglu.impl.MemoryUserSessionPersistence
 	 * @see com.appglu.android.SharedPreferencesUserSessionPersistence
 	 */
 	public void setUserSessionPersistence(UserSessionPersistence userSessionPersistence) {
@@ -185,7 +185,7 @@ public class AppGluSettings {
 	}
 	
 	/**
-	 * Defines the default SQLite database to be used by {@link com.appglu.android.SyncApi}.<br>
+	 * Defines the default SQLite database to be used by {@link com.appglu.android.sync.SyncApi}.<br>
 	 * You must extend {@link com.appglu.android.sync.SyncDatabaseHelper} instead of Android's SQLiteOpenHelper and implement it's methods.
 	 * @see com.appglu.android.sync.SyncDatabaseHelper
 	 */

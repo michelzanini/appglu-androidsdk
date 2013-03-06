@@ -35,7 +35,29 @@ import com.appglu.impl.json.JsonMessageConverterSelector;
 import com.appglu.impl.util.StringUtils;
 
 /**
- * TODO
+ * <strong>The central class for AppGlu Java Client SDK.</strong>
+ * 
+ * <p>This is always going to be the starting point for doing anything with the AppGlu Java Client SDK.<br>
+ * To initialized it, you will need your credentials to authenticate your account with AppGlu:
+ * 
+ * <p><code>
+ * AppGluTemplate appGluTemplate = new AppGluTemplate("appKey", "appSecret");
+ * </code>
+ * 
+ * <p>After {@code AppGluTemplate} is initialized you will have access to AppGlu operations classes. See the table below:
+ * 
+ * <p><table>
+ * <tr><th>Synchronous Operations</th><th>Asynchronous Operations</th><th>API class description</th></tr>
+ * <tr><td>{@link #crudOperations()}</td><td>{@link #asyncCrudOperations()}</td><td>{@link CrudOperations} contains create, read, update and delete operations to be applied on your tables</td></tr>
+ * <tr><td>{@link #savedQueriesOperations()}</td><td>{@link #asyncSavedQueriesOperations()}</td><td>{@link SavedQueriesOperations} allow you to run your previously created SQLs on AppGlu and obtain the results</td></tr>
+ * <tr><td>{@link #pushOperations()}</td><td>{@link #asyncPushOperations()}</td><td>{@link PushOperations} is used to register / unregister the device making it eligible to receive push notifications</td></tr>
+ * <tr><td>{@link #analyticsOperations()}</td><td>{@link #asyncAnalyticsOperations()}</td><td>{@link AnalyticsOperations} is used to log events to AppGlu allowing it to collect mobile app usage statistics</td></tr>
+ * <tr><td>{@link #userOperations()}</td><td>{@link #asyncUserOperations()}</td><td>{@link UserOperations} has methods to login / logout and sign up new mobile app users</td></tr>
+ * <tr><td>{@link #syncOperations()}</td><td>{@link #asyncSyncOperations()}</td><td>{@link SyncOperations} is used to synchronize the data in your local SQLite tables with the AppGlu server</td></tr>
+ * <tr><td>{@link #storageOperations()}</td><td>{@link #asyncStorageOperations()}</td><td>{@link StorageOperations} has methods to download and cache files from AppGlu server</td></tr>
+ * </table>
+ * 
+ * @since 1.0.0
  */
 public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	

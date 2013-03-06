@@ -83,6 +83,7 @@
 						</goals>
 						<configuration>
 							<includeDependencySources>true</includeDependencySources>
+							<stylesheetfile>${basedir}/src/javadoc/resources/stylesheet.css</stylesheetfile>
 							
 							<dependencySourceExcludes>
 				                <dependencySourceExclude>org.springframework.android:*</dependencySourceExclude>
