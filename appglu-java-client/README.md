@@ -5,6 +5,11 @@ Any Java application running on a JVM can be integrated with AppGlu using this l
 
 If you want to integrate AppGlu with an Android application please check out the [Android SDK](https://github.com/appglu/appglu-androidsdk/tree/master/appglu-android-sdk) that provides additional Android specific functionality.
 
+# Dependencies
+
+* [Spring REST Template](http://www.springsource.org/spring-framework) (spring-web-3.2.x.jar and its dependencies)
+* [Jackson Json Parser](http://jackson.codehaus.org) (jackson-mapper-asl-1.9.x.jar and its dependencies)
+
 # Setup
 
 ## Using Maven
@@ -19,11 +24,8 @@ If you want to integrate AppGlu with an Android application please check out the
 
 ## Manually
 
-1. Download and add the AppGlu Java client JAR to your classpath.
-2. Download and add the following dependencies:
-
-* [Spring REST Template](http://www.springsource.org/spring-framework) (add spring-web-3.2.x.jar and its dependencies)
-* [Jackson Json Parser](http://jackson.codehaus.org) (add jackson-mapper-asl-1.9.x.jar and its dependencies)
+1. Download the AppGlu Java Client distribution bundle (appglu-java-client-1.0.0-dist.zip) and extract it.
+2. Include all JAR files present on the lib folder to your classpath.
 
 # Getting Started
 

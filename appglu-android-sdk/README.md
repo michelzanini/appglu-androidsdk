@@ -5,6 +5,11 @@ AppGlu SDK for Android devices. Requires Android 2.2 (API version 8) or above.
 It simplifies the use of the AppGlu Java Client library on Android and adds asynchronous calls to APIs using AsyncTask.
 Moreover, it adds Android specific functionality to APIs such as Analytics, Sync and Storage.
 
+# Dependencies
+
+* [Spring Android REST Template](http://www.springsource.org/spring-android) (spring-android-rest-template-1.0.x.jar and spring-android-core-1.0.x.jar)
+* [Jackson Json Parser](http://jackson.codehaus.org) (jackson-mapper-asl-1.9.x.jar and jackson-core-asl-1.9.x.jar)
+
 # Setup
 
 ## Using Maven
@@ -19,11 +24,8 @@ Moreover, it adds Android specific functionality to APIs such as Analytics, Sync
 
 ## Manually
 
-1. Download and add the AppGlu Android SDK (appglu-android-sdk-1.0.0.jar) and AppGlu Java Client (appglu-java-client-1.0.0.jar) JARs to your classpath.
-2. Download and add the following dependencies:
-
-* [Spring Android REST Template](http://www.springsource.org/spring-android) (add spring-android-rest-template-1.0.x.jar and spring-android-core-1.0.x.jar)
-* [Jackson Json Parser](http://jackson.codehaus.org) (add jackson-mapper-asl-1.9.x.jar and jackson-core-asl-1.9.x.jar)
+1. Download the AppGlu Android SDK distribution bundle (appglu-android-sdk-1.0.0-dist.zip) and extract it.
+2. Include all JAR files present on the libs folder to your classpath.
 
 # Getting Started
 
