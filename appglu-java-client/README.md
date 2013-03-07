@@ -24,10 +24,8 @@ If you want to integrate AppGlu with an Android application please check out the
 
 ## Manually
 
-1. Download the AppGlu Java client bundle (appglu-java-client-1.0.0-bundle.zip) and extract it.
+1. Download the AppGlu Java Client distribution bundle (appglu-java-client-1.0.0-dist.zip) and extract it.
 2. Include all JAR files present on the lib folder to your classpath.
-
-
 
 # Getting Started
 
