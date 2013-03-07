@@ -122,12 +122,12 @@
 				<version>2.3</version>
 				<configuration>
 					<descriptors>
-		            	<descriptor>src/main/assembly/bundle.xml</descriptor>
+		            	<descriptor>src/main/assembly/dist.xml</descriptor>
 		            </descriptors>
 				</configuration>
 				<executions>
 					<execution>
-						<id>generate-bundle</id>
+						<id>generate-distribution</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>

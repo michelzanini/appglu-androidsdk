@@ -19,7 +19,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
 	
-	<id>bundle</id>
+	<id>dist</id>
 	
 	<formats>
 		<format>zip</format>
@@ -43,12 +43,30 @@
 			<source>target/${artifactId}-${version}-sources.jar</source>
 			<outputDirectory>/sources</outputDirectory>
 		</file>
+		<file>
+			<source>target/${artifactId}-${version}-sources.jar</source>
+			<outputDirectory>/sources</outputDirectory>
+		</file>
+		
+		<file>
+			<source>license.txt</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+		<file>
+			<source>notice.txt</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+		<file>
+			<source>README.md</source>
+			<destName>readme.txt</destName>
+			<outputDirectory>/</outputDirectory>
+		</file>
 	</files>
 	
 	<fileSets>
 	    <fileSet>
 	        <directory>target/apidocs</directory>
-	        <outputDirectory>/javadocs</outputDirectory>
+	        <outputDirectory>/docs/javadoc-api</outputDirectory>
 	    </fileSet>
 	</fileSets>
 	
