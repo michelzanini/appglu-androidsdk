@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 AppGlu, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.appglu.android.sync;
 
 import java.util.ArrayList;
@@ -18,6 +33,25 @@ import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.sync.SyncIntentServiceRequest.SyncRequestOperation;
 
+/**
+ * <p>This is the Android service responsible for executing the Sync operation with the AppGlu server.<br>
+ * <p>You must declare this service in your AndroidManifest.xml like bellow:
+ * 
+ * <p><code>
+ * &lt;service android:name="com.appglu.android.sync.SyncIntentService" /&gt;
+ * </code>
+ * 
+ * <p>To initiate the Sync operation you must use a {@link SyncIntentServiceRequest} and call {@link SyncApi#startSyncIntentService(SyncIntentServiceRequest)}:
+ * 
+ * <p><code>
+ * SyncIntentServiceRequest request = SyncIntentServiceRequest.syncDatabaseAndFiles();<br>
+ * AppGlu.syncApi().startSyncIntentService(request);
+ * </code>
+ * 
+ * @see SyncApi
+ * @see SyncIntentServiceRequest
+ * @since 1.0.0
+ */
 public class SyncIntentService extends IntentService {
 	
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);

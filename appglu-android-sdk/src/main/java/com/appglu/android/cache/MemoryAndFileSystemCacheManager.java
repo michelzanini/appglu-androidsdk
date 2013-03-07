@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 AppGlu, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.appglu.android.cache;
 
 import java.io.InputStream;
@@ -5,6 +20,17 @@ import java.util.Date;
 
 import android.content.Context;
 
+/**
+ * {@link CacheManager} implementation that will store the files on memory and disk together, forming a two-level cache.<br>
+ * When retrieving the file it will first look on memory, if not found it will try the disk.<br>
+ * The maximum number of items on memory and the maximum number of bytes used on disk can be defined if the constructor {@link #MemoryAndFileSystemCacheManager(Context, int, long)} is used.
+ * If {@link #MemoryAndFileSystemCacheManager(Context)} constructor is used then default values will be applied.
+ * 
+ * @see MemoryCacheManager
+ * @see FileSystemCacheManager
+ * 
+ * @since 1.0.0
+ */
 public class MemoryAndFileSystemCacheManager implements CacheManager {
 	
 	private MemoryCacheManager memoryCacheManager;

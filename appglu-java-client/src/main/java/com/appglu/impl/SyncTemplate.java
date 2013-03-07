@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 AppGlu, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.appglu.impl;
 
 import java.io.IOException;
@@ -48,6 +63,9 @@ public final class SyncTemplate implements SyncOperations {
 		this.tableChangesJsonParser = JsonMessageConverterSelector.getTableChangesJsonParser();
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public TableChanges changesForTable(String tableName, long version) throws AppGluRestClientException {
 		try {
 			return this.restOperations.getForObject(CHANGES_FOR_TABLE_URL, TableChanges.class, tableName, version);
@@ -56,6 +74,9 @@ public final class SyncTemplate implements SyncOperations {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public List<TableChanges> changesForTables(List<TableVersion> tables) throws AppGluRestClientException {
 		try {
 			TableVersionBody body = new TableVersionBody(tables);
@@ -66,14 +87,23 @@ public final class SyncTemplate implements SyncOperations {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public List<TableChanges> changesForTables(TableVersion... tables) throws AppGluRestClientException {
 		return this.changesForTables(Arrays.asList(tables));
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void changesForTables(TableChangesCallback tableChangesCallback, TableVersion... tables) throws AppGluRestClientException {
 		this.changesForTables(Arrays.asList(tables), tableChangesCallback);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void changesForTables(List<TableVersion> tables, final TableChangesCallback tableChangesCallback) throws AppGluRestClientException {
 		this.downloadChangesForTables(tables, new InputStreamCallback() {
 			
@@ -84,10 +114,16 @@ public final class SyncTemplate implements SyncOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void downloadChangesForTables(InputStreamCallback inputStreamCallback, TableVersion... tables) throws AppGluRestClientException {
 		this.downloadChangesForTables(Arrays.asList(tables), inputStreamCallback);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void downloadChangesForTables(final List<TableVersion> tables, final InputStreamCallback inputStreamCallback) throws AppGluRestClientException {
 		RequestCallback requestCallback = new RequestCallback() {
 			public void doWithRequest(ClientHttpRequest request) throws IOException {
@@ -116,10 +152,16 @@ public final class SyncTemplate implements SyncOperations {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void parseTableChanges(InputStream inputStream, TableChangesCallback tableChangesCallback) throws IOException {
 		tableChangesJsonParser.parseTableChanges(inputStream, tableChangesCallback);
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	public List<TableVersion> versionsForTables(List<String> tables) throws AppGluRestClientException {
 		try {
 			String tablesParameter = StringUtils.collectionToCommaDelimitedString(tables);
@@ -130,6 +172,9 @@ public final class SyncTemplate implements SyncOperations {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public List<TableVersion> versionsForTables(String... tables) throws AppGluRestClientException {
 		return this.versionsForTables(Arrays.asList(tables));
 	}

@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 AppGlu, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.appglu.impl;
 
 import java.util.ArrayList;
@@ -25,6 +40,9 @@ public final class CrudTemplate implements CrudOperations {
 		this.restOperations = restOperations;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public Object create(String tableName, Row row) throws AppGluRestClientException {
 		try {
 			RowBody primaryKey = this.restOperations.postForObject(CRUD_TABLE_URL, new RowBody(row), RowBody.class, tableName);
@@ -44,10 +62,16 @@ public final class CrudTemplate implements CrudOperations {
 		return primaryKey.get(keySet.get(0));
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public Row read(String tableName, Object id) throws AppGluRestClientException {
 		return this.read(tableName, id, false);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public Row read(String tableName, Object id, boolean expandRelationships) throws AppGluRestClientException {
 		try {
 			String url = CRUD_ENTITY_URL + ("?expand_relationships=" + expandRelationships);
@@ -60,14 +84,23 @@ public final class CrudTemplate implements CrudOperations {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public Rows readAll(String tableName) throws AppGluRestClientException {
 		return this.readAll(tableName, false);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public Rows readAll(String tableName, boolean expandRelationships) throws AppGluRestClientException {
 		return this.readAll(tableName, expandRelationships, new ReadAllFilterArguments());
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public Rows readAll(String tableName, boolean expandRelationships, ReadAllFilterArguments arguments) throws AppGluRestClientException {
 		try {
 			String readAllUrl = this.buildReadAllUrl(expandRelationships, arguments);
@@ -112,6 +145,9 @@ public final class CrudTemplate implements CrudOperations {
 		return url.toString();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean update(String tableName, Object id, Row row) throws AppGluRestClientException {
 		try {
 			this.restOperations.put(CRUD_ENTITY_URL, new RowBody(row), tableName, id);
@@ -123,6 +159,9 @@ public final class CrudTemplate implements CrudOperations {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean delete(String tableName, Object id) throws AppGluRestClientException {
 		try {
 			this.restOperations.delete(CRUD_ENTITY_URL, tableName, id);
