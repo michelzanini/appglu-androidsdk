@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 AppGlu, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.appglu.android;
 
 import java.util.Arrays;
@@ -20,6 +35,15 @@ import com.appglu.DevicePlatform;
 import com.appglu.android.util.AppGluUtils;
 import com.appglu.impl.util.StringUtils;
 
+/**
+ * Represents a installation of your app on a device. <br>
+ * Contains information like the UUID of the installation as well as device specific info.<br>
+ * For instance, the operating system name and version, the app name and version, the device model and manufacturer, etc...<br>
+ * It is used mainly for analytics purposes.
+ * 
+ * @see com.appglu.android.AppGlu#deviceInstallation()
+ * @since 1.0.0
+ */
 public class DeviceInstallation {
 	
 	static final String UUID_KEY = "com.appglu.android.DeviceInstallation.UUID_KEY";
@@ -56,42 +80,72 @@ public class DeviceInstallation {
 		this.replaceSemicolonForHeaders();
 	}
 
+	/**
+	 * @return unique identified number representing this installation
+	 */
 	public String getDeviceUUID() {
 		return deviceUUID;
 	}
 
+	/**
+	 * @return always return "android"
+	 */
 	public String getDeviceOS() {
 		return deviceOS;
 	}
 
+	/**
+	 * @return the Android OS version
+	 */
 	public String getDeviceOSVersion() {
 		return deviceOSVersion;
 	}
 
+	/**
+	 * @return your application name defined on AndroidManifest.xml
+	 */
 	public String getAppName() {
 		return appName;
 	}
 
+	/**
+	 * @return your application version defined on AndroidManifest.xml
+	 */
 	public String getAppVersion() {
 		return appVersion;
 	}
 
+	/**
+	 * @return your application package defined on AndroidManifest.xml
+	 */
 	public String getAppIdentifier() {
 		return appIdentifier;
 	}
 
+	/**
+	 * @return the model of the device that this application is running on
+	 */
 	public String getDeviceModel() {
 		return deviceModel;
 	}
 
+	/**
+	 * @return the manufacturer of the device that this application is running on
+	 */
 	public String getDeviceManufacturer() {
 		return deviceManufacturer;
 	}
 	
+	/**
+	 * @return the resolution of the device that this application is running on
+	 */
 	public String getDeviceResolution() {
 		return deviceResolution;
 	}
 	
+	/**
+	 * @return the language of the device that this application is running on
+	 */
 	public String getDeviceLanguage() {
 		return deviceLanguage;
 	}
@@ -162,9 +216,7 @@ public class DeviceInstallation {
 		httpHeaders.put("X-AppGlu-Client-App", Arrays.asList(this.createClientAppHeader()));
 		httpHeaders.put("X-AppGlu-Client-Device", Arrays.asList(this.createClientDeviceHeader()));
 		
-		if (StringUtils.isNotEmpty(settings.getApplicationEnvironment())) {
-			httpHeaders.put("X-AppGlu-Environment", Arrays.asList(settings.getApplicationEnvironment()));
-		}
+		/* X-AppGlu-Environment header is added by the Java Client, @see DefaultHeadersHttpRequestInterceptor */
 		
 		if (StringUtils.isNotEmpty(settings.getApplicationVersion())) {
 			httpHeaders.put("X-AppGlu-Client-Version", Arrays.asList(settings.getApplicationVersion()));

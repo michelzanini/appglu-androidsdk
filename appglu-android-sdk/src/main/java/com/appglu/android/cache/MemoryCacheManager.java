@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 AppGlu, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.appglu.android.cache;
 
 import java.io.ByteArrayInputStream;
@@ -13,6 +28,11 @@ import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.impl.util.IOUtils;
 
+/**
+ * {@link CacheManager} implementation that will store the files on memory.<br>
+ * It is possible to set the maximum number of items on memory but calling {@link #setMaxCacheSizeInNumberOfItems(int)}. By default is {@link #DEFAULT_MAX_CACHE_SIZE_IN_NUMBER_OF_ITEMS}.<br>
+ * @since 1.0.0
+ */
 public class MemoryCacheManager implements CacheManager {
 	
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);

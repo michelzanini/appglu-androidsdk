@@ -10,11 +10,10 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.springframework.util.ReflectionUtils.FieldFilter;
 
 import com.appglu.Column;
-import com.appglu.DataTypeConversionException;
 import com.appglu.Ignore;
 import com.appglu.Row;
 import com.appglu.RowMapper;
-import com.appglu.RowMapperException;
+import com.appglu.RowMapperTypeConversionException;
 import com.appglu.impl.util.StringUtils;
 
 public class ObjectRowMapper<T> implements RowMapper<T> {
@@ -32,8 +31,8 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
 				try {
 					doWithField(row, object, field);
-				} catch (DataTypeConversionException e) {
-					throw new RowMapperException(mappedClass, e);
+				} catch (RowMapperTypeConversionException e) {
+					throw new ObjectRowMapperException(mappedClass, e);
 				}
 			}
 		};
@@ -58,14 +57,14 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 	
 	protected T instantiate() throws IllegalStateException {
 		if (mappedClass.isInterface()) {
-			throw new RowMapperException(mappedClass, "Specified class is an interface");
+			throw new ObjectRowMapperException(mappedClass, "Specified class is an interface");
 		}
 		try {
 			return mappedClass.newInstance();
 		} catch (InstantiationException ex) {
-			throw new RowMapperException(mappedClass, "Is it an abstract class?", ex);
+			throw new ObjectRowMapperException(mappedClass, "Is it an abstract class?", ex);
 		} catch (IllegalAccessException ex) {
-			throw new RowMapperException(mappedClass, "Is there an empty and accessible constructor?", ex);
+			throw new ObjectRowMapperException(mappedClass, "Is there an empty and accessible constructor?", ex);
 		}
 	}
 	
@@ -82,7 +81,7 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 		}
 		
 		if (required && !row.containsKey(key)) {
-			throw new RowMapperException(mappedClass, "Column " + key + " is required but not present on the response");
+			throw new ObjectRowMapperException(mappedClass, "Column " + key + " is required but not present on the response");
 		}
 		
 		Class<?> type = field.getType();
@@ -113,7 +112,7 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 		} else if (type.equals(Date.class)) {
 			value = row.getDate(key);
 		} else {
-			throw new RowMapperException(mappedClass, "Not supported field of " + type + ". To ignore it, add the annotation @Ignore.");
+			throw new ObjectRowMapperException(mappedClass, "Not supported field of " + type + ". To ignore it, add the annotation @Ignore.");
 		}
 		
 		if (value != null) {

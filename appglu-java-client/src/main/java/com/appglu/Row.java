@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 AppGlu, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.appglu;
 
 import java.io.IOException;
@@ -15,6 +30,13 @@ import com.appglu.impl.util.Base64Utils;
 import com.appglu.impl.util.DateUtils;
 import com.appglu.impl.util.StringUtils;
 
+/**
+ * <p>Represents a row in the database. It extends <code>java.util.HashMap</code> where the keys are the column names and the values are objects.<br>
+ * <p>Casting methods are provided to convert these objects to the type you would except.<br>
+ * You can also associate a {@code Row} object with another {@code Row} object representing a relationship between two tables.<br>
+ * 
+ * @since 1.0.0
+ */
 public class Row extends HashMap<String, Object> {
 	
 	private static final long serialVersionUID = 1L;
@@ -23,7 +45,7 @@ public class Row extends HashMap<String, Object> {
 		try {
 			return (Boolean) this.get(columnName);
 		} catch (ClassCastException e) {
-			throw new DataTypeConversionException(e);
+			throw new RowMapperTypeConversionException(e.getMessage(), e);
 		}
 	}
 
@@ -55,7 +77,7 @@ public class Row extends HashMap<String, Object> {
 		try {
 			return (Double) this.get(columnName);
 		} catch (ClassCastException e) {
-			throw new DataTypeConversionException(e);
+			throw new RowMapperTypeConversionException(e.getMessage(), e);
 		}
 	}
 
@@ -63,7 +85,7 @@ public class Row extends HashMap<String, Object> {
 		try {
 			return (Integer) this.get(columnName);
 		} catch (ClassCastException e) {
-			throw new DataTypeConversionException(e);
+			throw new RowMapperTypeConversionException(e.getMessage(), e);
 		}
 	}
 
@@ -76,7 +98,7 @@ public class Row extends HashMap<String, Object> {
 			}
 			return (Long) number;
 		} catch (ClassCastException e) {
-			throw new DataTypeConversionException(e);
+			throw new RowMapperTypeConversionException(e.getMessage(), e);
 		}
 	}
 
@@ -84,7 +106,7 @@ public class Row extends HashMap<String, Object> {
 		try {
 			return (String) this.get(columnName);
 		} catch (ClassCastException e) {
-			throw new DataTypeConversionException(e);
+			throw new RowMapperTypeConversionException(e.getMessage(), e);
 		}
 	}
 	
@@ -94,7 +116,7 @@ public class Row extends HashMap<String, Object> {
 			String numberAsString = String.valueOf(number);
 			return new BigInteger(numberAsString);
 		} catch (ClassCastException e) {
-			throw new DataTypeConversionException(e);
+			throw new RowMapperTypeConversionException(e.getMessage(), e);
 		}
 	}
 
@@ -102,7 +124,7 @@ public class Row extends HashMap<String, Object> {
 		try {
 			return (BigDecimal) this.get(columnName);
 		} catch (ClassCastException e) {
-			throw new DataTypeConversionException(e);
+			throw new RowMapperTypeConversionException(e.getMessage(), e);
 		}
 	}
 	
@@ -117,7 +139,7 @@ public class Row extends HashMap<String, Object> {
 		try {
 			return Base64Utils.decode(string);
 		} catch (IOException e) {
-			throw new DataTypeConversionException(e);
+			throw new RowMapperTypeConversionException(e.getMessage(), e);
 		}
 	}
 
@@ -129,7 +151,7 @@ public class Row extends HashMap<String, Object> {
 		try {
 			return DateUtils.parseDate(string);
 		} catch (ParseException e) {
-			throw new DataTypeConversionException(e);
+			throw new RowMapperTypeConversionException(e.getMessage(), e);
 		}
 	}
 	
@@ -172,7 +194,7 @@ public class Row extends HashMap<String, Object> {
 		try {
 			return (Collection<Object>) relationship;
 		} catch (ClassCastException e) {
-			throw new DataTypeConversionException(e);
+			throw new RowMapperTypeConversionException(e.getMessage(), e);
 		}
 	}
 	
@@ -181,7 +203,7 @@ public class Row extends HashMap<String, Object> {
 		try {
 			return (Map<String, Object>) relationship;
 		} catch (ClassCastException e) {
-			throw new DataTypeConversionException(e);
+			throw new RowMapperTypeConversionException(e.getMessage(), e);
 		}
 	}
 	

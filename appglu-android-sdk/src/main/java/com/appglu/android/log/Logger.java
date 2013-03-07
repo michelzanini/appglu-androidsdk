@@ -1,5 +1,44 @@
+/*******************************************************************************
+ * Copyright 2013 AppGlu, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.appglu.android.log;
 
+/**
+ * Provides all type of methods for logging to the console at any {@link LoggerLevel}.<br>
+ * You can verify if a level is enabled for logging by calling the correspondent "isLevelEnabled" method. For example: {@link #isDebugEnabled()}.<br>
+ * There are two options for logging a message and two options for logging an exception for each {@link LoggerLevel}.<br>
+ * 
+ * <p>You can have access to a {@code Logger} instance by using a {@link LoggerFactory#getLogger(String)} method, like below:
+ * 
+ * <p><code>
+ * Logger logger = LoggerFactory.getLogger("LOGGER_TAG");
+ * </code>
+ * 
+ * <p>To have access to a {@code Logger} instance, you can also send a Class as a paramter to {@link LoggerFactory#getLogger(Class)}.<br>
+ * In this case the simple name of the class will be the log tag. For example:
+ * 
+ * <p><code>
+ * Logger logger = LoggerFactory.getLogger(this.getClass());
+ * </code>
+ * 
+ * <p>The default level to be used is {@link LoggerLevel#INFO} but that can be change by calling {@link LoggerFactory#setLevel(LoggerLevel)} or {@link com.appglu.android.AppGluSettings#setLoggerLevel(LoggerLevel)} before initializing {@link com.appglu.android.AppGlu}.
+ * 
+ * @see LoggerLevel
+ * @see LoggerFactory
+ * @since 1.0.0
+ */
 public interface Logger {
 
 	public String getTag();

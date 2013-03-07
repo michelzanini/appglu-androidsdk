@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 AppGlu, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.appglu.impl;
 
 import java.util.concurrent.Callable;
@@ -22,6 +37,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		this.crudOperations = crudOperations;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void createInBackground(final String tableName, final Row row, AsyncCallback<Object> primaryKeyCallback) {
 		asyncExecutor.execute(primaryKeyCallback, new Callable<Object>() {
 			public Object call() {
@@ -30,6 +48,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void readInBackground(final String tableName, final Object id, AsyncCallback<Row> rowCallback) {
 		asyncExecutor.execute(rowCallback, new Callable<Row>() {
 			public Row call() {
@@ -38,6 +59,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void readInBackground(final String tableName, final Object id, final boolean expandRelationships, AsyncCallback<Row> rowCallback) {
 		asyncExecutor.execute(rowCallback, new Callable<Row>() {
 			public Row call() {
@@ -46,6 +70,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void readAllInBackground(final String tableName, AsyncCallback<Rows> rowsCallback) {
 		asyncExecutor.execute(rowsCallback, new Callable<Rows>() {
 			public Rows call() {
@@ -54,6 +81,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void readAllInBackground(final String tableName, final boolean expandRelationships, AsyncCallback<Rows> rowsCallback) {
 		asyncExecutor.execute(rowsCallback, new Callable<Rows>() {
 			public Rows call() {
@@ -62,6 +92,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void readAllInBackground(final String tableName, final boolean expandRelationships, final ReadAllFilterArguments arguments, AsyncCallback<Rows> rowsCallback) {
 		asyncExecutor.execute(rowsCallback, new Callable<Rows>() {
 			public Rows call() {
@@ -70,6 +103,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void updateInBackground(final String tableName, final Object id, final Row row, AsyncCallback<Boolean> updateCallback) {
 		asyncExecutor.execute(updateCallback, new Callable<Boolean>() {
 			public Boolean call() {
@@ -78,6 +114,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void deleteInBackground(final String tableName, final Object id, AsyncCallback<Boolean> deleteCallback) {
 		asyncExecutor.execute(deleteCallback, new Callable<Boolean>() {
 			public Boolean call() {
@@ -86,6 +125,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public <T> void readInBackground(final Class<T> clazz, final Object id, AsyncCallback<T> objectCallback) throws AppGluRestClientException {
 		asyncExecutor.execute(objectCallback, new Callable<T>() {
 			public T call() {
@@ -94,6 +136,9 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public <T> void readInBackground(final Class<T> clazz, final Object id, final RowMapper<T> rowMapper, AsyncCallback<T> objectCallback) throws AppGluRestClientException {
 		asyncExecutor.execute(objectCallback, new Callable<T>() {
 			public T call() {

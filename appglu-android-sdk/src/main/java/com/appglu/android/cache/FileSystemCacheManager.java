@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 AppGlu, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.appglu.android.cache;
 
 import java.io.BufferedOutputStream;
@@ -20,6 +35,12 @@ import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.impl.util.IOUtils;
 
+/**
+ * {@link CacheManager} implementation that will store the files on disk.<br>
+ * {@code FileSystemCacheManager} will first try the external storage, if it is available, if not it will use the internal storage.<br>
+ * It is possible to set the maximum number of bytes used on disk by calling {@link #setMaxCacheSizeInBytes(long)}. By default is {@link #DEFAULT_CACHE_SIZE_IN_BYTES}.
+ * @since 1.0.0
+ */
 public class FileSystemCacheManager implements CacheManager {
 	
 	private static final String SHARED_PREFERENCES_KEY = "com.appglu.android.cache.FileSystemCacheManager.SHARED_PREFERENCES_KEY";
