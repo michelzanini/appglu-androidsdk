@@ -394,7 +394,7 @@ public class SyncService {
 		List<StorageFile> parsedFiles = fileChangesCallback.getParsedFiles();
 		
 		if (parsedFiles.isEmpty()) {
-			this.logger.info("There are no new files to downloaded");
+			this.logger.info("There are no new files to download");
 			return;
 		}
 		

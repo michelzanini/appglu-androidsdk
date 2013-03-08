@@ -15,14 +15,12 @@
  ******************************************************************************/
 package com.appglu.android.sample;
 
-import android.annotation.TargetApi;
 import android.app.Application;
-import android.os.Build;
-import android.os.StrictMode;
 
 import com.appglu.android.AppGlu;
 import com.appglu.android.AppGluSettings;
 import com.appglu.android.log.LoggerLevel;
+import com.appglu.impl.AppGluTemplate;
 
 public class SampleApplication extends Application {
 	
@@ -32,33 +30,11 @@ public class SampleApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		
-		this.enableStrictMode();
-		
-		AppGluSettings settings = new AppGluSettings("https://dashboard.appglu.com", "2856G3EX7p1042m", "YE79wRR2e81RW977AT563UP25o2ctd");
+		AppGluSettings settings = new AppGluSettings(AppGluTemplate.DEFAULT_BASE_URL, "a174f03ef1aafc159f6173eebaabdf331afda420", "K1397cge1j95647kU628gx74t75XdR", "staging");
+		settings.setDefaultSyncDatabaseHelper(new ProductsDatabaseHelper(this));
 		settings.setLoggerLevel(LoggerLevel.DEBUG);
 		
 		AppGlu.initialize(this, settings);
-	}
-	
-	/**
-	 * If device is superior to Gingerbread then enable strict mode to detect any error the SDK may have
-	 */
-	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
-	private void enableStrictMode() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-				.detectDiskReads()
-		        .detectDiskWrites()
-		        .detectNetwork()
-		        .penaltyLog()
-		        .build());
-			
-			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-		        .detectLeakedSqlLiteObjects()
-		        .penaltyLog()
-		        .penaltyDeath()
-		        .build());
-		}
 	}
 	
 }
