@@ -17,8 +17,7 @@
 
 <resources>
     <string name="app_name">AppGlu</string>
-    <string name="login">Login</string>
-    <string name="signup">Sign Up</string>
-    <string name="logout">Logout</string>
-    <string name="next_screen">Next Screen</string>
+    <string name="thumbnail">Product Thumbnail</string>
+    <string name="loading">Loading&#8230;</string>
+    <string name="refresh">Refresh</string>
 </resources>

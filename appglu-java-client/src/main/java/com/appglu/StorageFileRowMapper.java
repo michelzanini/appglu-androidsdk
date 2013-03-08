@@ -33,7 +33,8 @@ public class StorageFileRowMapper implements RowMapper<StorageFile> {
 		storageFile.setSize(row.getLong("size"));
 		storageFile.setLastModified(row.getDate("last_modified"));
 		storageFile.setUrl(row.getString("url"));
-		storageFile.setETag(row.getString("e_tag"));
+		storageFile.setETag(row.getString("etag"));
+		storageFile.setVersion(row.getString("version"));
 		storageFile.setDirectoryId(row.getLong("directory_id"));
 		
 		return storageFile;

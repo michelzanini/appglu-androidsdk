@@ -54,7 +54,7 @@ public class TableVersion {
 	public void setVersion(long version) {
 		this.version = version;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "[tableName=" + tableName + ", version=" + version + "]";
