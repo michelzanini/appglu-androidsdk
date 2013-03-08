@@ -30,7 +30,7 @@ public class SampleApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		
-		AppGluSettings settings = new AppGluSettings(AppGluTemplate.DEFAULT_BASE_URL, "a174f03ef1aafc159f6173eebaabdf331afda420", "K1397cge1j95647kU628gx74t75XdR", "staging");
+		AppGluSettings settings = new AppGluSettings("ENTER_APP_KEY", "ENTER_APP_SECRET");
 		settings.setDefaultSyncDatabaseHelper(new ProductsDatabaseHelper(this));
 		settings.setLoggerLevel(LoggerLevel.DEBUG);
 		
