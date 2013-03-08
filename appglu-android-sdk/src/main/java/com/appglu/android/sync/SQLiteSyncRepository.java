@@ -53,8 +53,9 @@ public class SQLiteSyncRepository implements SyncRepository {
 	private static final int FILE_SIZE_INDEX = 5;
 	private static final int FILE_LAST_MODIFIED_INDEX = 6;
 	private static final int FILE_URL_INDEX = 7;
-	private static final int FILE_E_TAG_INDEX = 8;
-	private static final int FILE_DIRECTORY_ID_INDEX = 9;
+	private static final int FILE_ETAG_INDEX = 8;
+	private static final int FILE_VERSION_INDEX = 9;
+	private static final int FILE_DIRECTORY_ID_INDEX = 10;
 	
 	private SyncDatabaseHelper syncDatabaseHelper;
 	
@@ -175,7 +176,7 @@ public class SQLiteSyncRepository implements SyncRepository {
 		    for (int i = 0; i < cursor.getCount(); i++) {
 		    	StorageFile file = new StorageFile();
 		    	
-		    	file.setId(cursor.getInt(FILE_ID_INDEX));
+		    	file.setId(cursor.getLong(FILE_ID_INDEX));
 		    	file.setKey(cursor.getString(FILE_KEY_INDEX));
 		    	file.setName(cursor.getString(FILE_NAME_INDEX));
 		    	file.setContentType(cursor.getString(FILE_CONTENT_TYPE_INDEX));
@@ -183,7 +184,8 @@ public class SQLiteSyncRepository implements SyncRepository {
 		    	file.setSize(cursor.getInt(FILE_SIZE_INDEX));
 		    	file.setLastModified(new Date(cursor.getLong(FILE_LAST_MODIFIED_INDEX)));
 		    	file.setUrl(cursor.getString(FILE_URL_INDEX));
-		    	file.setETag(cursor.getString(FILE_E_TAG_INDEX));
+		    	file.setETag(cursor.getString(FILE_ETAG_INDEX));
+		    	file.setVersion(cursor.getString(FILE_VERSION_INDEX));
 		    	file.setDirectoryId(cursor.getInt(FILE_DIRECTORY_ID_INDEX));
 		    	
 		    	files.add(file);

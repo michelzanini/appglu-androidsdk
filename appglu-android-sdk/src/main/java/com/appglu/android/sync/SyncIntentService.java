@@ -245,13 +245,15 @@ public class SyncIntentService extends IntentService {
 	}
 	
 	protected void broadcastException(Exception exception) {
+		logger.error(exception);
+		
 		SyncExceptionWrapper wrapper = new SyncExceptionWrapper(exception);
 		
 		Intent intent = new Intent();
 		intent.putExtra(EXCEPTION_WRAPPER_SERIALIZABLE_EXTRA, wrapper);
 		intent.setAction(EXCEPTION_ACTION);
 		
-		try {	
+		try {
 			this.sendBroadcast(intent);
 		} catch (RuntimeException e) {
 			this.broadcastNotSerializableException(wrapper);
