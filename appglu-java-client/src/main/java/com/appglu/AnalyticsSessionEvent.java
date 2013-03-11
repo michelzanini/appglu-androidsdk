@@ -34,8 +34,26 @@ public class AnalyticsSessionEvent implements Serializable {
 	private String name;
 	
 	private Date date;
+	
+	private String dataTable;
+	
+	private String dataId;
 
 	private Map<String, String> parameters;
+	
+	public AnalyticsSessionEvent() {
+		
+	}
+	
+	public AnalyticsSessionEvent(String name) {
+		this.name = name;
+	}
+	
+	public AnalyticsSessionEvent(String name, String dataTable, String dataId) {
+		this(name);
+		this.dataTable = dataTable;
+		this.dataId = dataId;
+	}
 
 	public String getName() {
 		return name;
@@ -51,6 +69,22 @@ public class AnalyticsSessionEvent implements Serializable {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+	
+	public String getDataTable() {
+		return dataTable;
+	}
+
+	public String getDataId() {
+		return dataId;
+	}
+
+	public void setDataTable(String dataTable) {
+		this.dataTable = dataTable;
+	}
+
+	public void setDataId(String dataId) {
+		this.dataId = dataId;
 	}
 
 	public Map<String, String> getParameters() {

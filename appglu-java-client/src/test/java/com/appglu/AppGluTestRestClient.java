@@ -170,6 +170,8 @@ public class AppGluTestRestClient {
 		AnalyticsSessionEvent event = new AnalyticsSessionEvent();
 		
 		event.setName("event");
+		event.setDataTable("dataTable");
+		event.setDataId("dataId");
 		event.setParameters(parameters);
 		
 		List<AnalyticsSessionEvent> events = new ArrayList<AnalyticsSessionEvent>();

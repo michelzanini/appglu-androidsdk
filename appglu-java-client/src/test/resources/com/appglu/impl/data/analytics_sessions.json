@@ -12,6 +12,8 @@
 				{
 					"name":"sessionEvent1",
 					"date":"2010-01-15T12:10:00+0000",
+					"dataTable":"table1",
+					"dataId":"id1",
 					"parameters":{
 						"event1ParameterName2":"event1ParameterValue2",
 						"event1ParameterName1":"event1ParameterValue1"
@@ -39,6 +41,8 @@
 				{
 					"name":"sessionEvent1",
 					"date":"2010-01-15T12:10:00+0000",
+					"dataTable":"table1",
+					"dataId":"id1",
 					"parameters":{
 						"event1ParameterName2":"event1ParameterValue2",
 						"event1ParameterName1":"event1ParameterValue1"

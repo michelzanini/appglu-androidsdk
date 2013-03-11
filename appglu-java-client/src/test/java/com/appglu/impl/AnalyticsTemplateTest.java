@@ -73,6 +73,8 @@ public class AnalyticsTemplateTest extends AbstractAppGluApiTest {
 		
 		eventOne.setName("sessionEvent1");
 		eventOne.setDate(date);
+		eventOne.setDataTable("table1");
+		eventOne.setDataId("id1");
 		eventOne.setParameters(eventParameters);
 		
 		AnalyticsSessionEvent eventTwo = new AnalyticsSessionEvent();

@@ -54,7 +54,7 @@ public class SQLiteAnalyticsRepositoryTest extends AbstractAnalyticsSQLiteTest {
 		this.assertClosedSession(sessionTwo);
 		this.assertSessionParameters(sessionTwo, null);
 		
-		List<AnalyticsSessionEvent> expectedEvents = events(event("event2", null), event("event3", parameters456()));
+		List<AnalyticsSessionEvent> expectedEvents = events(event("event2", "table_two", "id_two", null), event("event3", "table_three", "id_three", parameters456()));
 		this.assertSessionEvents(sessionTwo, expectedEvents);
 	}
 	
@@ -64,7 +64,7 @@ public class SQLiteAnalyticsRepositoryTest extends AbstractAnalyticsSQLiteTest {
 		
 		this.assertSessionParameters(sessionOne, parameters123());
 		
-		List<AnalyticsSessionEvent> expectedEvents = events(event("event1", parameters123()));
+		List<AnalyticsSessionEvent> expectedEvents = events(event("event1", "table_one", "id_one", parameters123()));
 		this.assertSessionEvents(sessionOne, expectedEvents);
 	}
 	
@@ -212,8 +212,11 @@ public class SQLiteAnalyticsRepositoryTest extends AbstractAnalyticsSQLiteTest {
 		Assert.assertEquals(3, this.countTable("session_events"));
 		
 		AnalyticsSessionEvent event = new AnalyticsSessionEvent();
+		
 		event.setName("name");
 		event.setDate(new Date());
+		event.setDataTable("newTable");
+		event.setDataId("newId");
 		
 		this.analyticsRepository.createEvent(3L, event);
 		
@@ -227,8 +230,11 @@ public class SQLiteAnalyticsRepositoryTest extends AbstractAnalyticsSQLiteTest {
 		Assert.assertEquals(3, this.countTable("session_events"));
 		
 		AnalyticsSessionEvent event = new AnalyticsSessionEvent();
+		
 		event.setName("name");
 		event.setDate(new Date());
+		event.setDataTable("newTable");
+		event.setDataId("newId");
 		event.setParameters(parameters123());
 		
 		this.analyticsRepository.createEvent(3L, event);
@@ -241,7 +247,10 @@ public class SQLiteAnalyticsRepositoryTest extends AbstractAnalyticsSQLiteTest {
 	
 	public void testSetEventParameter() {
 		AnalyticsSessionEvent event = new AnalyticsSessionEvent();
+		
 		event.setName("name");
+		event.setDataTable("newTable");
+		event.setDataId("newId");
 		event.setDate(new Date());
 		
 		long eventId = this.analyticsRepository.createEvent(3L, event);

@@ -20,7 +20,6 @@ import android.app.Application;
 import com.appglu.android.AppGlu;
 import com.appglu.android.AppGluSettings;
 import com.appglu.android.log.LoggerLevel;
-import com.appglu.impl.AppGluTemplate;
 
 public class SampleApplication extends Application {
 	
@@ -31,6 +30,7 @@ public class SampleApplication extends Application {
 		super.onCreate();
 		
 		AppGluSettings settings = new AppGluSettings("ENTER_APP_KEY", "ENTER_APP_SECRET");
+		
 		settings.setDefaultSyncDatabaseHelper(new ProductsDatabaseHelper(this));
 		settings.setLoggerLevel(LoggerLevel.DEBUG);
 		
