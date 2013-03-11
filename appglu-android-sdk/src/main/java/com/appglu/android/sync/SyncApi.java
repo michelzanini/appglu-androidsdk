@@ -37,8 +37,8 @@ import com.appglu.AsyncCallback;
 import com.appglu.StorageFile;
 import com.appglu.SyncOperations;
 import com.appglu.android.AppGlu;
-import com.appglu.android.AppGluAsyncCallbackTask;
 import com.appglu.android.AppGluNotProperlyConfiguredException;
+import com.appglu.android.AsyncTaskExecutor;
 import com.appglu.android.ImageViewAsyncCallback;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
@@ -148,13 +148,13 @@ public final class SyncApi {
 	 * Asynchronous version of {@link #checkIfDatabaseIsSynchronized()}.
 	 * @see #checkIfDatabaseIsSynchronized()
 	 */
-	public void checkIfDatabaseIsSynchronizedInBackground(AsyncCallback<Boolean> callback) {
-		AppGluAsyncCallbackTask<Boolean> asyncTask = new AppGluAsyncCallbackTask<Boolean>(callback, new Callable<Boolean>() {
+	public void checkIfDatabaseIsSynchronizedInBackground(AsyncCallback<Boolean> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor();
+		executor.execute(asyncCallback, new Callable<Boolean>() {
 			public Boolean call() throws Exception {
 				return checkIfDatabaseIsSynchronized();
 			}
 		});
-		asyncTask.execute();
 	}
 	
 	/**
@@ -169,13 +169,13 @@ public final class SyncApi {
 	 * Asynchronous version of {@link #checkIfTablesAreSynchronized(List)}.
 	 * @see #checkIfTablesAreSynchronized(List)
 	 */
-	public void checkIfTablesAreSynchronizedInBackground(final List<String> tables, AsyncCallback<Boolean> callback) {
-		AppGluAsyncCallbackTask<Boolean> asyncTask = new AppGluAsyncCallbackTask<Boolean>(callback, new Callable<Boolean>() {
+	public void checkIfTablesAreSynchronizedInBackground(final List<String> tables, AsyncCallback<Boolean> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor();
+		executor.execute(asyncCallback, new Callable<Boolean>() {
 			public Boolean call() throws Exception {
 				return checkIfTablesAreSynchronized(tables);
 			}
 		});
-		asyncTask.execute();
 	}
 	
 	/* Methods to return files from sync storage */
@@ -243,78 +243,78 @@ public final class SyncApi {
 	 * Asynchronous version of {@link #readFileFromFileStorage(StorageFile)}.
 	 * @see #readFileFromFileStorage(StorageFile)
 	 */
-	public void readFileFromFileStorageInBackground(final StorageFile storageFile, AsyncCallback<File> callback) {
-		AppGluAsyncCallbackTask<File> asyncTask = new AppGluAsyncCallbackTask<File>(callback, new Callable<File>() {
+	public void readFileFromFileStorageInBackground(final StorageFile storageFile, AsyncCallback<File> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<File>() {
 			public File call() throws Exception {
 				return readFileFromFileStorage(storageFile);
 			}
 		});
-		asyncTask.execute();
 	}
 
 	/**
 	 * Asynchronous version of {@link #readInputStreamFromFileStorage(StorageFile)}.
 	 * @see #readInputStreamFromFileStorage(StorageFile)
 	 */
-	public void readInputStreamFromFileStorageInBackground(final StorageFile storageFile, AsyncCallback<InputStream> callback) {
-		AppGluAsyncCallbackTask<InputStream> asyncTask = new AppGluAsyncCallbackTask<InputStream>(callback, new Callable<InputStream>() {
+	public void readInputStreamFromFileStorageInBackground(final StorageFile storageFile, AsyncCallback<InputStream> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<InputStream>() {
 			public InputStream call() throws Exception {
 				return readInputStreamFromFileStorage(storageFile);
 			}
 		});
-		asyncTask.execute();
 	}
 	
 	/**
 	 * Asynchronous version of {@link #readByteArrayFromFileStorage(StorageFile)}.
 	 * @see #readByteArrayFromFileStorage(StorageFile)
 	 */
-	public void readByteArrayFromFileStorageInBackground(final StorageFile storageFile, AsyncCallback<byte[]> callback) {
-		AppGluAsyncCallbackTask<byte[]> asyncTask = new AppGluAsyncCallbackTask<byte[]>(callback, new Callable<byte[]>() {
+	public void readByteArrayFromFileStorageInBackground(final StorageFile storageFile, AsyncCallback<byte[]> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<byte[]>() {
 			public byte[] call() throws Exception {
 				return readByteArrayFromFileStorage(storageFile);
 			}
 		});
-		asyncTask.execute();
 	}
 	
 	/**
 	 * Asynchronous version of {@link #readBitmapFromFileStorage(StorageFile)}.
 	 * @see #readBitmapFromFileStorage(StorageFile)
 	 */
-	public void readBitmapFromFileStorageInBackground(final StorageFile storageFile, AsyncCallback<Bitmap> callback) {
-		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+	public void readBitmapFromFileStorageInBackground(final StorageFile storageFile, AsyncCallback<Bitmap> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return readBitmapFromFileStorage(storageFile);
 			}
 		});
-		asyncTask.execute();
 	}
 	
 	/**
 	 * Asynchronous version of {@link #readBitmapFromFileStorage(StorageFile, int)}.
 	 * @see #readBitmapFromFileStorage(StorageFile, int)
 	 */
-	public void readBitmapFromFileStorageInBackground(final StorageFile storageFile, final int inSampleSize, AsyncCallback<Bitmap> callback) {
-		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+	public void readBitmapFromFileStorageInBackground(final StorageFile storageFile, final int inSampleSize, AsyncCallback<Bitmap> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return readBitmapFromFileStorage(storageFile, inSampleSize);
 			}
 		});
-		asyncTask.execute();
 	}
 
 	/**
 	 * Asynchronous version of {@link #readBitmapFromFileStorage(StorageFile, int, int)}.
 	 * @see #readBitmapFromFileStorage(StorageFile, int, int)
 	 */
-	public void readBitmapFromFileStorageInBackground(final StorageFile storageFile, final int requestedWidth, final int requestedHeight, AsyncCallback<Bitmap> callback) {
-		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+	public void readBitmapFromFileStorageInBackground(final StorageFile storageFile, final int requestedWidth, final int requestedHeight, AsyncCallback<Bitmap> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return readBitmapFromFileStorage(storageFile, requestedWidth, requestedHeight);
 			}
 		});
-		asyncTask.execute();
 	}
 	
 	/* Methods to read an image from sync storage in background using an ImageView and ProgressBar to update the UI  */
@@ -330,14 +330,14 @@ public final class SyncApi {
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromFile(File)
 	 */
 	public void readBitmapToImageViewInBackground(final StorageFile storageFile, ImageView imageView, ProgressBar progressBar) {
-		ImageViewAsyncCallback callback = new ImageViewAsyncCallback(imageView, progressBar);
+		ImageViewAsyncCallback asyncCallback = new ImageViewAsyncCallback(imageView, progressBar);
 		
-		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return readBitmapFromFileStorage(storageFile);
 			}
 		});
-		asyncTask.execute();
 	}
 	
 	/**
@@ -352,14 +352,14 @@ public final class SyncApi {
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromFile(File, int)
 	 */
 	public void readBitmapToImageViewInBackground(final StorageFile storageFile, final int inSampleSize, ImageView imageView, ProgressBar progressBar) {
-		ImageViewAsyncCallback callback = new ImageViewAsyncCallback(imageView, progressBar);
+		ImageViewAsyncCallback asyncCallback = new ImageViewAsyncCallback(imageView, progressBar);
 		
-		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return readBitmapFromFileStorage(storageFile, inSampleSize);
 			}
 		});
-		asyncTask.execute();
 	}
 
 	/**
@@ -375,14 +375,14 @@ public final class SyncApi {
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromFile(File, int, int)
 	 */
 	public void readBitmapToImageViewInBackground(final StorageFile storageFile, final int requestedWidth, final int requestedHeight, ImageView imageView, ProgressBar progressBar) {
-		ImageViewAsyncCallback callback = new ImageViewAsyncCallback(imageView, progressBar);
+		ImageViewAsyncCallback asyncCallback = new ImageViewAsyncCallback(imageView, progressBar);
 		
-		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return readBitmapFromFileStorage(storageFile, requestedWidth, requestedHeight);
 			}
 		});
-		asyncTask.execute();
 	}
 	
 	/* Methods related to SyncIntentService */

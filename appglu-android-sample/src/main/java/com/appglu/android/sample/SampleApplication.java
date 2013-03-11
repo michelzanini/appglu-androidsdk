@@ -29,7 +29,7 @@ public class SampleApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		
-		AppGluSettings settings = new AppGluSettings("ENTER_APP_KEY", "ENTER_APP_SECRET");
+		AppGluSettings settings = new AppGluSettings("a174f03ef1aafc159f6173eebaabdf331afda420", "K1397cge1j95647kU628gx74t75XdR", AppGluSettings.STAGING_ENVIRONMENT);
 		
 		settings.setDefaultSyncDatabaseHelper(new ProductsDatabaseHelper(this));
 		settings.setLoggerLevel(LoggerLevel.DEBUG);
