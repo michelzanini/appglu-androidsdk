@@ -78,17 +78,19 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	
 	public static final String DEFAULT_BASE_URL = "https://api.appglu.com";
 	
-	public static final String DEFAULT_ENVIRONMENT = "production";
+	public static final String PRODUCTION_ENVIRONMENT = "production";
+	
+	public static final String STAGING_ENVIRONMENT = "staging";
 	
 	private static final boolean ANDROID_ENVIRONMENT = ClassUtils.isPresent("android.os.Build", AppGluTemplate.class.getClassLoader());
-	
-	private String baseUrl;
 	
 	private String applicationKey;
 	
 	private String applicationSecret;
 	
 	private String applicationEnvironment;
+	
+	private String baseUrl;
 	
 	private RestTemplate restTemplate;
 	
@@ -139,33 +141,35 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	 * @param applicationSecret the secret key used to authenticate this application
 	 */
 	public AppGluTemplate(String applicationKey, String applicationSecret) {
-		this(DEFAULT_BASE_URL, applicationKey, applicationSecret);
+		this(applicationKey, applicationSecret, PRODUCTION_ENVIRONMENT);
 	}
 	
 	/**
-	 * @param baseUrl the server URL to point to, if different from the default {@link AppGluTemplate#DEFAULT_BASE_URL}
 	 * @param applicationKey a randomly generated unique key specific for each mobile application
 	 * @param applicationSecret the secret key used to authenticate this application
+	 * @param applicationEnvironment environment name to be accessed on the AppGlu server. 
+	 * Normally set to {@link #PRODUCTION_ENVIRONMENT} or {@link #STAGING_ENVIRONMENT}, if not set {@link #PRODUCTION_ENVIRONMENT} is assumed
 	 */
-	public AppGluTemplate(String baseUrl, String applicationKey, String applicationSecret) {
-		this(baseUrl, applicationKey, applicationSecret, DEFAULT_ENVIRONMENT);
+	public AppGluTemplate(String applicationKey, String applicationSecret, String applicationEnvironment) {
+		this(applicationKey, applicationSecret, applicationEnvironment, DEFAULT_BASE_URL);
 	}
 	
 	/**
-	 * @param baseUrl the server URL to point to, if different from the default {@link AppGluTemplate#DEFAULT_BASE_URL}
 	 * @param applicationKey a randomly generated unique key specific for each mobile application
 	 * @param applicationSecret the secret key used to authenticate this application
-	 * @param applicationEnvironment The environment name to be accessed. Normally set to "staging" or "production", if not set "production" is assumed
+	 * @param applicationEnvironment environment name to be accessed on the AppGlu server. 
+	 * Normally set to {@link #PRODUCTION_ENVIRONMENT} or {@link #STAGING_ENVIRONMENT}, if not set {@link #PRODUCTION_ENVIRONMENT} is assumed
+	 * @param baseUrl the server URL to point to, if different from the default {@link #DEFAULT_BASE_URL}
 	 */
-	public AppGluTemplate(String baseUrl, String applicationKey, String applicationSecret, String applicationEnvironment) {
+	public AppGluTemplate(String applicationKey, String applicationSecret, String applicationEnvironment, String baseUrl) {
 		if (StringUtils.isEmpty(baseUrl)) {
 			throw new IllegalArgumentException("Base URL cannot be empty");
 		}
 		
-		this.baseUrl = baseUrl;
 		this.applicationKey = applicationKey;
 		this.applicationSecret = applicationSecret;
 		this.applicationEnvironment = applicationEnvironment;
+		this.baseUrl = baseUrl;
 		
 		this.userSessionPersistence = new MemoryUserSessionPersistence();
 
@@ -222,13 +226,6 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	}
 	
 	/**
-	 * @return the server URL the SDK is pointing to, by default is {@link AppGluTemplate#DEFAULT_BASE_URL}
-	 */
-	public String getBaseUrl() {
-		return baseUrl;
-	}
-
-	/**
 	 * @return a randomly generated unique key specific for each mobile application
 	 */
 	public String getApplicationKey() {
@@ -247,6 +244,13 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	 */
 	public String getApplicationEnvironment() {
 		return applicationEnvironment;
+	}
+	
+	/**
+	 * @return the server URL the SDK is pointing to, by default is {@link AppGluTemplate#DEFAULT_BASE_URL}
+	 */
+	public String getBaseUrl() {
+		return baseUrl;
 	}
 
 	public CrudOperations crudOperations() {
