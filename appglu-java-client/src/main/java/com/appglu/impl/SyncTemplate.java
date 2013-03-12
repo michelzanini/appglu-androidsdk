@@ -57,10 +57,10 @@ public final class SyncTemplate implements SyncOperations {
 	
 	private TableChangesJsonParser tableChangesJsonParser;
 	
-	public SyncTemplate(RestOperations restOperations, HttpMessageConverter<Object> jsonMessageConverter) {
+	public SyncTemplate(RestOperations restOperations, HttpMessageConverter<Object> jsonMessageConverter, TableChangesJsonParser tableChangesJsonParser) {
 		this.restOperations = restOperations;
 		this.jsonMessageConverter = jsonMessageConverter;
-		this.tableChangesJsonParser = JsonMessageConverterSelector.getTableChangesJsonParser();
+		this.tableChangesJsonParser = tableChangesJsonParser;
 	}
 	
 	/**

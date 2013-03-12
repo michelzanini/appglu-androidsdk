@@ -23,7 +23,7 @@ import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
-@JsonPropertyOrder({"name", "date", "parameters"})
+@JsonPropertyOrder({"name", "date", "dataTable", "dataId", "parameters"})
 public abstract class AnalyticsSessionEventMixin {
 	
 	@JsonProperty("name")
@@ -31,6 +31,14 @@ public abstract class AnalyticsSessionEventMixin {
 	
 	@JsonProperty("date")
 	Date date;
+	
+	@JsonProperty("dataTable")
+	@JsonSerialize(include=Inclusion.NON_NULL)
+	String dataTable;
+	
+	@JsonProperty("dataId")
+	@JsonSerialize(include=Inclusion.NON_NULL)
+	String dataId;
 
 	@JsonProperty("parameters")
 	@JsonSerialize(include=Inclusion.NON_EMPTY)

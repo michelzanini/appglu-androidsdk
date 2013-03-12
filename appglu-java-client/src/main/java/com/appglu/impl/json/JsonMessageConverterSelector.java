@@ -54,7 +54,7 @@ public class JsonMessageConverterSelector {
 		
 		private static ObjectMapper cachedObjectMapper;
 		
-		private static ObjectMapper createObjectMapper() {
+		public static ObjectMapper createObjectMapper() {
 			if (cachedObjectMapper == null) {
 				ObjectMapper objectMapper = new ObjectMapper();
 				

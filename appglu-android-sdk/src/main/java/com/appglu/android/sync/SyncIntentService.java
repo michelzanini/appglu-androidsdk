@@ -97,7 +97,7 @@ public class SyncIntentService extends IntentService {
 			this.sendNotification(notification, false);
 		}
 	}
-
+	
 	private boolean hasSyncServiceRunningNotificationExtra(Intent intent) {
 		return intent.hasExtra(SYNC_SERVICE_RUNNING_NOTIFICATION_PARCELABLE_EXTRA);
 	}
@@ -130,6 +130,7 @@ public class SyncIntentService extends IntentService {
 			
 			if (requiresInternet && !AppGlu.hasInternetConnection()) {
 				this.broadcastAction(NO_INTERNET_CONNECTION_ACTION);
+				logger.info("SyncIntentService did not executed because it could not connect to the Internet");
 				return;
 			}
 			
@@ -175,6 +176,7 @@ public class SyncIntentService extends IntentService {
 		}
 		
 		this.broadcastAction(FINISH_ACTION);
+		logger.info("SyncIntentService has being stopped");
 	}
 
 	protected boolean applyChanges() {

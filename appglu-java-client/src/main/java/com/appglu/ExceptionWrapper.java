@@ -68,6 +68,10 @@ public class ExceptionWrapper implements Serializable {
 		return error.getMessage();
 	}
 	
+	public boolean isRestClientException() {
+		return exception instanceof AppGluRestClientException;
+	}
+	
 	public boolean isHttpStatusCodeException() {
 		return exception instanceof AppGluHttpStatusCodeException;
 	}
@@ -78,6 +82,10 @@ public class ExceptionWrapper implements Serializable {
 	
 	public boolean isHttpServerException() {
 		return exception instanceof AppGluHttpServerException;
+	}
+	
+	public AppGluRestClientException getRestClientException() {
+		return (AppGluRestClientException) this.exception;
 	}
 	
 	public AppGluHttpStatusCodeException getHttpStatusCodeException() {

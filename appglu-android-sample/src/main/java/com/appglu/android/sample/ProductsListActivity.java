@@ -59,7 +59,7 @@ public class ProductsListActivity extends AppGluAnalyticsListActivity {
 		};
 		
 		public void onResult(boolean changesWereApplied) {
-			logger.info("Sync process finished. Were any changes applied? " + changesWereApplied);
+			logger.info("Were any changes applied? " + changesWereApplied + ".");
 		}
 
 		public void onException(SyncExceptionWrapper exceptionWrapper) {
