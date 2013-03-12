@@ -15,6 +15,12 @@
  ******************************************************************************/
 package com.appglu.android;
 
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+
+import android.content.Context;
+import android.net.http.AndroidHttpClient;
+
 import com.appglu.UserSessionPersistence;
 import com.appglu.android.analytics.AnalyticsDispatcher;
 import com.appglu.android.analytics.AnalyticsSessionCallback;
@@ -266,8 +272,18 @@ public class AppGluSettings {
 	/**
 	 * This is an extension point that can be used if you wish to extend or customize the {@link com.appglu.impl.AppGluTemplate}.
 	 */
-	protected AppGluTemplate createAppGluTemplate() {
-		return new AppGluTemplate(this.getApplicationKey(), this.getApplicationSecret(), this.getApplicationEnvironment(), this.getBaseUrl());
+	protected AppGluTemplate createAppGluTemplate(final Context context) {
+		return new AppGluTemplate(this.getApplicationKey(), this.getApplicationSecret(), this.getApplicationEnvironment(), this.getBaseUrl()) {
+			
+			protected ClientHttpRequestFactory createClientHttpRequestFactory() {
+				return new HttpComponentsClientHttpRequestFactory(AndroidHttpClient.newInstance("Android-User-Agent", context));
+			}
+			
+			protected boolean shouldAddGzipRequestInterceptor() {
+				return true;
+			}
+			
+		};
 	}
 	
 }

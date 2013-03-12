@@ -19,6 +19,8 @@ import java.util.concurrent.Callable;
 
 import com.appglu.AsyncCallback;
 import com.appglu.ExceptionWrapper;
+import com.appglu.android.log.Logger;
+import com.appglu.android.log.LoggerFactory;
 
 /**
  * Adapt {@link com.appglu.android.AppGluAsyncTask} callbacks to a more user friendly version implemented in the {@link com.appglu.AsyncCallback} abstract class.<br>
@@ -29,6 +31,8 @@ import com.appglu.ExceptionWrapper;
  * @since 1.0.0
  */
 public class AppGluAsyncCallbackTask<Result> extends AppGluAsyncTask<Void, Void, Result> {
+	
+	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
 	
 	private AsyncCallback<Result> asyncCallback;
 	
@@ -54,6 +58,7 @@ public class AppGluAsyncCallbackTask<Result> extends AppGluAsyncTask<Void, Void,
 
 	protected void onException(Exception exception) {
 		super.onException(exception);
+		logger.error(exception);
 		asyncCallback.onException(new ExceptionWrapper(exception));
 	}
 

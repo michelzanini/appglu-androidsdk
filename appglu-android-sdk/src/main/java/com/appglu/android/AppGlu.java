@@ -187,7 +187,7 @@ public final class AppGlu {
 		this.settings = settings;
 		this.deviceInstallation = new DeviceInstallation(this.context);
 		
-		this.appGluTemplate = settings.createAppGluTemplate();
+		this.appGluTemplate = settings.createAppGluTemplate(this.context);
 		this.appGluTemplate.setAsyncExecutor(new AsyncTaskExecutor());
 		this.appGluTemplate.setDefaultHeaders(this.deviceInstallation.createDefaultHeaders(settings));
 		
