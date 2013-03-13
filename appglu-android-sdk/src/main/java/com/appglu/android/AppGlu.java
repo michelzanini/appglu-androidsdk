@@ -397,7 +397,8 @@ public final class AppGlu {
 	}
 	
 	/**
-	 * 
+	 * Asynchronous version of {@link #validateApplicationVersion()}.
+	 * @see #validateApplicationVersion()
 	 */
 	public static void validateApplicationVersionInBackground(AsyncCallback<VersionValidationResult> asyncCallback) {
 		getRequiredInstance().doValidateApplicationVersionInBackground(asyncCallback);
