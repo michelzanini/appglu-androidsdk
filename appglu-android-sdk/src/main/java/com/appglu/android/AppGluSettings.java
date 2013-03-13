@@ -276,7 +276,8 @@ public class AppGluSettings {
 		return new AppGluTemplate(this.getApplicationKey(), this.getApplicationSecret(), this.getApplicationEnvironment(), this.getBaseUrl()) {
 			
 			protected ClientHttpRequestFactory createClientHttpRequestFactory() {
-				return new HttpComponentsClientHttpRequestFactory(AndroidHttpClient.newInstance("Android-User-Agent", context));
+				AndroidHttpClient androidHttpClient = AndroidHttpClient.newInstance("Android-User-Agent", context);
+				return new HttpComponentsClientHttpRequestFactory(androidHttpClient);
 			}
 			
 			protected boolean shouldAddGzipRequestInterceptor() {

@@ -178,7 +178,29 @@ public final class SyncApi {
 		});
 	}
 	
-	/* Methods to return files from sync storage */
+	/* Method to return all files from sync storage */
+	
+	/**
+	 * Return all files that has previously being downloaded by the SyncIntentService.<br>
+	 */
+	public List<StorageFile> getAllFiles() {
+		return syncService.getAllFiles();
+	}
+	
+	/**
+	 * Asynchronous version of {@link #getAllFiles()}.
+	 * @see #getAllFiles()
+	 */
+	public void getAllFilesInBackground(AsyncCallback<List<StorageFile>> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<List<StorageFile>>() {
+			public List<StorageFile> call() throws Exception {
+				return getAllFiles();
+			}
+		});
+	}
+	
+	/* Methods to read files from sync storage */
 	
 	/**
 	 * Reads a file that has previously being downloaded by the SyncIntentService.<br>
@@ -237,7 +259,7 @@ public final class SyncApi {
 		return this.syncService.readBitmapFromFileStorage(storageFile, requestedWidth, requestedHeight);
 	}
 	
-	/* Methods to return files from sync storage in a background thread */
+	/* Methods to read files from sync storage in a background thread */
 	
 	/**
 	 * Asynchronous version of {@link #readFileFromFileStorage(StorageFile)}.
