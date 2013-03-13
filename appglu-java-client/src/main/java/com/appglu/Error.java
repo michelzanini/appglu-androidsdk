@@ -17,6 +17,8 @@ package com.appglu;
 
 import java.io.Serializable;
 
+import com.appglu.impl.util.StringUtils;
+
 /**
  * An {@code Error} object has a code and a message. When the AppGlu REST API returns an error, it is parsed and represented with this class.
  * 
@@ -31,6 +33,8 @@ public class Error implements Serializable {
 	
 	private String message;
 	
+	private String detail;
+	
 	public Error() {
 		super();
 	}
@@ -38,6 +42,12 @@ public class Error implements Serializable {
 	public Error(ErrorCode code, String message) {
 		this.code = code;
 		this.message = message;
+	}
+	
+	public Error(ErrorCode code, String message, String detail) {
+		this.code = code;
+		this.message = message;
+		this.detail = detail;
 	}
 
 	public ErrorCode getCode() {
@@ -47,9 +57,20 @@ public class Error implements Serializable {
 	public String getMessage() {
 		return message;
 	}
+	
+	public String getDetail() {
+		return detail;
+	}
+	
+	public boolean hasDetail() {
+		return StringUtils.isNotEmpty(detail);
+	}
 
 	@Override
 	public String toString() {
+		if (this.hasDetail()) {
+			return "Error [code=" + code + ", message=" + message + ", detail=" + detail + "]";
+		}
 		return "Error [code=" + code + ", message=" + message + "]";
 	}
 	
