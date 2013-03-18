@@ -60,14 +60,6 @@ public class ProductsListActivity extends AppGluAnalyticsListActivity {
 			logger.info("Were any changes applied? " + changesWereApplied + ".");
 		}
 
-		public void onTransactionStart() {
-			logger.info("onTransactionStart()");
-		}
-
-		public void onTransactionFinish() {
-			logger.info("onTransactionFinish()");
-		}
-
 		public void onException(SyncExceptionWrapper exceptionWrapper) {
 			String text = "An exception of type " + exceptionWrapper.getErrorCode() + " occured while executing the synchronization";
 			Toast.makeText(ProductsListActivity.this, text, Toast.LENGTH_LONG).show();
