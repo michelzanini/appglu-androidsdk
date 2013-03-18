@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.content.BroadcastReceiver;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,10 +34,9 @@ import com.appglu.android.AppGluAsyncTask;
 import com.appglu.android.analytics.activity.AppGluAnalyticsListActivity;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
-import com.appglu.android.sync.SyncBroadcastReceiver;
 import com.appglu.android.sync.SyncExceptionWrapper;
-import com.appglu.android.sync.SyncIntentFilter;
 import com.appglu.android.sync.SyncIntentServiceRequest;
+import com.appglu.android.sync.SyncListener;
 
 /**
  * Displays a list of {@link Product} objects in a ListView.<br>
@@ -52,14 +50,22 @@ public class ProductsListActivity extends AppGluAnalyticsListActivity {
 	
 	private SQLiteProductRepository productRepository;
 	
-	private BroadcastReceiver syncBroacastReceiver = new SyncBroadcastReceiver() {
+	private SyncListener syncListener = new SyncListener() {
 
 		public void onPreExecute() {
 			showLoadingView(true);
-		};
-		
+		}
+
 		public void onResult(boolean changesWereApplied) {
 			logger.info("Were any changes applied? " + changesWereApplied + ".");
+		}
+
+		public void onTransactionStart() {
+			logger.info("onTransactionStart()");
+		}
+
+		public void onTransactionFinish() {
+			logger.info("onTransactionFinish()");
 		}
 
 		public void onException(SyncExceptionWrapper exceptionWrapper) {
@@ -68,12 +74,12 @@ public class ProductsListActivity extends AppGluAnalyticsListActivity {
 			
 			logger.error(exceptionWrapper.getException());
 		}
-		
+
 		public void onNoInternetConnection() {
 			onFinish();
-		};
-		
-		/**
+		}
+
+		/*
 		 * Load local data no matter the sync was successful or not
 		 */
 		public void onFinish() {
@@ -102,12 +108,13 @@ public class ProductsListActivity extends AppGluAnalyticsListActivity {
 			}
 
 		});
+		
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		this.registerReceiver(this.syncBroacastReceiver, new SyncIntentFilter());
+		AppGlu.syncApi().registerSyncListener(syncListener);
 		
 		this.synchronizeWithAppGlu();
 	}
@@ -115,7 +122,7 @@ public class ProductsListActivity extends AppGluAnalyticsListActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		this.unregisterReceiver(this.syncBroacastReceiver);
+		AppGlu.syncApi().unregisterSyncListener(syncListener);
 	}
 	
 	@Override
