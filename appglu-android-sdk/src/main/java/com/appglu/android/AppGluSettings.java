@@ -147,10 +147,22 @@ public class AppGluSettings {
 		return baseUrl;
 	}
 	
+	/**
+	 * Returns the application version to be validated when calling {@link AppGlu#validateApplicationVersion()}.<br>
+	 * If <code>null</code> is returned, the version sent to the server will be the 'versionName' property of your AndroidManifest.xml.
+	 * @see #setApplicationVersion(String)
+	 * @see AppGlu#validateApplicationVersion()
+	 */
 	public String getApplicationVersion() {
 		return applicationVersion;
 	}
 
+	/**
+	 * {@link AppGlu#validateApplicationVersion()} validates if your application version is compatible with the version defined as minimum on the AppGlu server.<br>
+	 * By default, the version sent to the server will be the 'versionName' property of your AndroidManifest.xml.<br>
+	 * If you want another version to be validated with the server, you can use this method to set it before calling {@link AppGlu#initialize(Context, AppGluSettings)}.
+	 * @see AppGlu#validateApplicationVersion()
+	 */
 	public void setApplicationVersion(String applicationVersion) {
 		this.applicationVersion = applicationVersion;
 	}
@@ -276,7 +288,8 @@ public class AppGluSettings {
 		return new AppGluTemplate(this.getApplicationKey(), this.getApplicationSecret(), this.getApplicationEnvironment(), this.getBaseUrl()) {
 			
 			protected ClientHttpRequestFactory createClientHttpRequestFactory() {
-				return new HttpComponentsClientHttpRequestFactory(AndroidHttpClient.newInstance("Android-User-Agent", context));
+				AndroidHttpClient androidHttpClient = AndroidHttpClient.newInstance("Android-User-Agent", context);
+				return new HttpComponentsClientHttpRequestFactory(androidHttpClient);
 			}
 			
 			protected boolean shouldAddGzipRequestInterceptor() {

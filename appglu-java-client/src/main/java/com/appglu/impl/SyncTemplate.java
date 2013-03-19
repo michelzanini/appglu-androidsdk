@@ -38,7 +38,6 @@ import com.appglu.SyncOperations;
 import com.appglu.TableChanges;
 import com.appglu.TableChangesCallback;
 import com.appglu.TableVersion;
-import com.appglu.impl.json.JsonMessageConverterSelector;
 import com.appglu.impl.json.TableChangesBody;
 import com.appglu.impl.json.TableChangesJsonParser;
 import com.appglu.impl.json.TableVersionBody;

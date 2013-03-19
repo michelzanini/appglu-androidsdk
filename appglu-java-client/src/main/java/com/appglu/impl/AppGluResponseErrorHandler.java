@@ -24,6 +24,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
 import com.appglu.AppGluHttpClientException;
+import com.appglu.AppGluHttpIncompatibleClientVersionException;
 import com.appglu.AppGluHttpInvalidUserSignupException;
 import com.appglu.AppGluHttpNotFoundException;
 import com.appglu.AppGluHttpServerException;
@@ -56,6 +57,10 @@ public class AppGluResponseErrorHandler extends DefaultResponseErrorHandler {
 		
 		if (error.getCode() == ErrorCode.APP_USER_USERNAME_ALREADY_USED) {
 			throw new AppGluHttpInvalidUserSignupException(statusCode.value(), error);
+		}
+		
+		if (error.getCode() == ErrorCode.INCOMPATIBLE_CLIENT_VERSION) {
+			throw new AppGluHttpIncompatibleClientVersionException(error);
 		}
 		
 		switch (statusCode.series()) {

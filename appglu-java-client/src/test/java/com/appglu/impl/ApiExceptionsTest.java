@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.springframework.http.HttpMethod;
 
 import com.appglu.AppGluHttpClientException;
+import com.appglu.AppGluHttpIncompatibleClientVersionException;
 import com.appglu.AppGluHttpServerException;
 import com.appglu.CrudOperations;
 import com.appglu.Error;
@@ -52,8 +53,30 @@ public class ApiExceptionsTest extends AbstractAppGluApiTest {
 			Assert.fail("Should had caused a exception");
 		} catch (AppGluHttpClientException e) {
 			Error error = e.getError();
+			
 			Assert.assertEquals(ErrorCode.EMPTY_REQUEST_BODY, error.getCode());
 			Assert.assertEquals("The request body is empty.", error.getMessage());
+			Assert.assertNull(error.getDetail());
+		}
+		
+		mockServer.verify();
+	}
+	
+	@Test
+	public void incompatibleClientVersion() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/2"))
+			.andExpect(method(HttpMethod.DELETE))
+			.andRespond(withBadRequest().body(compactedJson("data/error_incompatible_client_version")).headers(responseHeaders));
+		
+		try {
+			crudOperations.delete("user", 2);
+			Assert.fail("Should had caused a exception");
+		} catch (AppGluHttpIncompatibleClientVersionException e) {
+			Error error = e.getError();
+			
+			Assert.assertEquals(ErrorCode.INCOMPATIBLE_CLIENT_VERSION, error.getCode());
+			Assert.assertEquals("Your client version is incompatible with the actual version. Please update it before making any new API call.", error.getMessage());
+			Assert.assertEquals("http://www.updateyourversion.com", error.getDetail());
 		}
 		
 		mockServer.verify();
@@ -70,8 +93,10 @@ public class ApiExceptionsTest extends AbstractAppGluApiTest {
 			Assert.fail("Should had caused a exception");
 		} catch (AppGluHttpServerException e) {
 			Error error = e.getError();
+			
 			Assert.assertEquals(ErrorCode.GENERIC_SERVER_ERROR, error.getCode());
 			Assert.assertEquals("An unexpected error occurred while processing your request. Please try again later.", error.getMessage());
+			Assert.assertNull(error.getDetail());
 		}
 		
 		mockServer.verify();

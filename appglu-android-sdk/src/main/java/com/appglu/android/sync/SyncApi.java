@@ -17,7 +17,6 @@ package com.appglu.android.sync;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -42,6 +41,8 @@ import com.appglu.android.AsyncTaskExecutor;
 import com.appglu.android.ImageViewAsyncCallback;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * <p>{@code SyncApi} is used to synchronize the data in your local SQLite tables with the AppGlu server.<br>
@@ -178,7 +179,29 @@ public final class SyncApi {
 		});
 	}
 	
-	/* Methods to return files from sync storage */
+	/* Method to return all files from sync storage */
+	
+	/**
+	 * Return all files that has previously being downloaded by the SyncIntentService.<br>
+	 */
+	public List<StorageFile> getAllFiles() {
+		return syncService.getAllFiles();
+	}
+	
+	/**
+	 * Asynchronous version of {@link #getAllFiles()}.
+	 * @see #getAllFiles()
+	 */
+	public void getAllFilesInBackground(AsyncCallback<List<StorageFile>> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<List<StorageFile>>() {
+			public List<StorageFile> call() throws Exception {
+				return getAllFiles();
+			}
+		});
+	}
+	
+	/* Methods to read files from sync storage */
 	
 	/**
 	 * Reads a file that has previously being downloaded by the SyncIntentService.<br>
@@ -237,7 +260,7 @@ public final class SyncApi {
 		return this.syncService.readBitmapFromFileStorage(storageFile, requestedWidth, requestedHeight);
 	}
 	
-	/* Methods to return files from sync storage in a background thread */
+	/* Methods to read files from sync storage in a background thread */
 	
 	/**
 	 * Asynchronous version of {@link #readFileFromFileStorage(StorageFile)}.
@@ -427,20 +450,7 @@ public final class SyncApi {
 			Intent intent = new Intent(this.context, SyncIntentService.class);
 			this.validateSyncIntent(intent);
 			
-			intent.putExtra(SyncIntentService.SYNC_OPERATION_SERIALIZABLE_EXTRA, request.getSyncRequestOperation());
-			intent.putExtra(SyncIntentService.SYNC_FILES_BOOLEAN_EXTRA, request.getSyncFiles());
-			
-			if (request.getTablesToSync() != null) {
-				intent.putStringArrayListExtra(SyncIntentService.TABLES_STRING_ARRAY_EXTRA, new ArrayList<String>(request.getTablesToSync()));
-			}
-			
-			if (request.getSyncServiceRunningNotification() != null) {
-				intent.putExtra(SyncIntentService.SYNC_SERVICE_RUNNING_NOTIFICATION_PARCELABLE_EXTRA, request.getSyncServiceRunningNotification());
-				
-				if (request.getSyncServiceCompletedNotification() != null) {
-					intent.putExtra(SyncIntentService.SYNC_SERVICE_COMPLETED_NOTIFICATION_PARCELABLE_EXTRA, request.getSyncServiceCompletedNotification());
-				}
-			}
+			intent.putExtra(SyncIntentService.SYNC_INTENT_REQUEST_PARCELABLE, request);
 			
 			lastUsedInstance = this;
 			
@@ -457,6 +467,26 @@ public final class SyncApi {
 			throw new AppGluNotProperlyConfiguredException("To be able to execute sync you must declare " +
 					"a service named com.appglu.android.sync.SyncIntentService in the AndroidManifest.xml");
 		}
+	}
+	
+	/**
+	 * Registers a {@link SyncListener} to listen for events fired by {@link SyncIntentService}.<br>
+	 * Ideally, call {@link #registerSyncListener(SyncListener)} from <code>onCreate()</code> or <code>onStart()</code> or <code>onResume()</code> methods.<br>
+	 * Call {@link #unregisterSyncListener(SyncListener)} from <code>onDestroy()</code> or <code>onStop()</code> or <code>onPause()</code> methods.
+	 * @see #unregisterSyncListener(SyncListener)
+	 */
+	public void registerSyncListener(SyncListener syncListener) {
+		EventBus.getDefault().registerSticky(syncListener);
+	}
+	
+	/**
+	 * Unregister a {@link SyncListener}.<br>
+	 * Ideally, call {@link #registerSyncListener(SyncListener)} from <code>onCreate()</code> or <code>onStart()</code> or <code>onResume()</code> methods.<br>
+	 * Call {@link #unregisterSyncListener(SyncListener)} from <code>onDestroy()</code> or <code>onStop()</code> or <code>onPause()</code> methods.
+	 * @see #registerSyncListener(SyncListener)
+	 */
+	public void unregisterSyncListener(SyncListener syncListener) {
+		EventBus.getDefault().unregister(syncListener);
 	}
 
 }

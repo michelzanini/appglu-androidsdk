@@ -243,7 +243,7 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	}
 	
 	/**
-	 * @return environment name to be accessed, by default is {@link AppGluTemplate#DEFAULT_ENVIRONMENT}
+	 * @return environment name to be accessed, by default is {@link AppGluTemplate#PRODUCTION_ENVIRONMENT}
 	 */
 	public String getApplicationEnvironment() {
 		return applicationEnvironment;
@@ -417,7 +417,6 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	 * If you replace the default HTTP client, please remember to override {@link #shouldAddGzipRequestInterceptor()} and return <code>true</code> if this library do not add GZip support by default.<br>
 	 * Apache Http Commons (HttpComponentsClientHttpRequestFactory) is supported as well as the standard JSE HttpURLConnection (SimpleClientHttpRequestFactory).
 	 * 
-	 * @see createClientHttpRequestFactory
 	 * @see #shouldAddGzipRequestInterceptor()
 	 */
 	protected ClientHttpRequestFactory createClientHttpRequestFactory() {
@@ -428,8 +427,7 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	 * Extension point to override if you changed the HTTP client by overriding {@link #createClientHttpRequestFactory()}.<br> 
 	 * Return <code>true</code> if this library do not add GZip support by default.
 	 * 
-	 * @see createClientHttpRequestFactory
-	 * @see #createClientHttpRequestFactory
+	 * @see #createClientHttpRequestFactory()
 	 */
 	protected boolean shouldAddGzipRequestInterceptor() {
 		return !ClientHttpRequestFactorySelector.supportsGzipCompression();

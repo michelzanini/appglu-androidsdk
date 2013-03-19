@@ -134,6 +134,10 @@ public class SyncService {
 		return AppGluUtils.decodeSampledBitmapFromFile(file, requestedWidth, requestedHeight);
 	}
 	
+	public List<StorageFile> getAllFiles() {
+		return syncRepository.getAllFiles();
+	}
+
 	public boolean checkIfDatabaseIsSynchronized() {
 		List<TableVersion> localTableVersions = this.syncRepository.versionsForAllTables();
 		return this.areTablesSynchronized(localTableVersions);
@@ -336,7 +340,7 @@ public class SyncService {
 			this.logger.info("Changes were downloaded with success");
 			
 		} catch (RuntimeException e) {
-			this.logger.error("Download failed with exception", e);
+			this.logger.error("Download failed with exception: " + e.getMessage());
 			throw e;
 		} finally {
 			this.logger.info("Download finished");
@@ -356,7 +360,7 @@ public class SyncService {
 			logger.info("Changes were applied with success");
 			
 		} catch (RuntimeException e) {
-			this.logger.error("Synchronization failed with exception", e);
+			this.logger.error("Synchronization failed with exception: " + e.getMessage());
 			throw e;
 		} finally {
 			this.logger.info("Synchronization finished");

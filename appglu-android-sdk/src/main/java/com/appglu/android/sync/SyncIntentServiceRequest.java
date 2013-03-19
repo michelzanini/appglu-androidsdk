@@ -15,10 +15,13 @@
  ******************************************************************************/
 package com.appglu.android.sync;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import android.app.Notification;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * <p>Describes what the {@link SyncIntentService} is going to do during the Sync operation.<br> 
@@ -42,7 +45,7 @@ import android.app.Notification;
  * @see SyncApi#startSyncIntentService(SyncIntentServiceRequest)
  * @since 1.0.0
  */
-public class SyncIntentServiceRequest {
+public class SyncIntentServiceRequest implements Parcelable {
 	
 	/* package */ enum SyncRequestOperation {
 		DOWNLOAD_CHANGES,
@@ -60,6 +63,21 @@ public class SyncIntentServiceRequest {
 	private Notification syncServiceRunningNotification;
 	
 	private Notification syncServiceCompletedNotification;
+	
+	/* package */ SyncIntentServiceRequest(Parcel in) {
+		this.syncRequestOperation = (SyncRequestOperation) in.readSerializable();
+		this.syncFiles = in.readInt() == 1 ? true : false;
+		
+		boolean hasTablesToSync = in.readInt() == 1 ? true : false;
+		
+		List<String> tablesToSync = new ArrayList<String>();
+		in.readStringList(tablesToSync);
+		
+		this.tablesToSync = hasTablesToSync ? tablesToSync : null;
+		
+		this.syncServiceRunningNotification = in.readParcelable(SyncIntentServiceRequest.class.getClassLoader());
+		this.syncServiceCompletedNotification = in.readParcelable(SyncIntentServiceRequest.class.getClassLoader());
+	}
 	
 	/* package */ SyncIntentServiceRequest(SyncRequestOperation syncOperation) {
 		this(syncOperation, false);
@@ -226,5 +244,28 @@ public class SyncIntentServiceRequest {
 	/* package */ Notification getSyncServiceCompletedNotification() {
 		return syncServiceCompletedNotification;
 	}
+
+	public int describeContents() {
+		return 0;
+	}
+
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeSerializable(this.syncRequestOperation);
+		parcel.writeInt(this.syncFiles ? 1 : 0);
+		parcel.writeInt(this.tablesToSync != null ? 1 : 0);
+		parcel.writeStringList(this.tablesToSync);
+		parcel.writeParcelable(this.syncServiceRunningNotification, flags);
+		parcel.writeParcelable(this.syncServiceCompletedNotification, flags);
+	}
+	
+	public static final Parcelable.Creator<SyncIntentServiceRequest> CREATOR = new Parcelable.Creator<SyncIntentServiceRequest>() {
+		public SyncIntentServiceRequest createFromParcel(Parcel in) {
+		    return new SyncIntentServiceRequest(in);
+		}
+		
+		public SyncIntentServiceRequest[] newArray(int size) {
+		    return new SyncIntentServiceRequest[size];
+		}
+	};
 	
 }
