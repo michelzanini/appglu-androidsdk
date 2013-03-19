@@ -26,7 +26,7 @@ package com.appglu.android.sync;
  * 
  * @see SyncApi#registerSyncListener(SyncListener)
  * @see SyncApi#unregisterSyncListener(SyncListener)
- * @see SyncIntentFilter
+ * @see SyncIntentService
  * @since 1.0.0
  */
 public abstract class SyncListener {

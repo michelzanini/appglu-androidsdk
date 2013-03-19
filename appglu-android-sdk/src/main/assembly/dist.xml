@@ -36,15 +36,15 @@
 	
 	<files>
 		<file>
-			<source>target/${artifactId}-${version}.jar</source>
+			<source>target/${artifactId}-${appglu.android.sdk.version}.jar</source>
 			<outputDirectory>/libs</outputDirectory>
 		</file>
 		<file>
-			<source>target/${artifactId}-${version}-sources.jar</source>
+			<source>target/${artifactId}-${appglu.android.sdk.version}-sources.jar</source>
 			<outputDirectory>/sources</outputDirectory>
 		</file>
 		<file>
-			<source>target/dependency/appglu-java-client-${appglu.java.client.version}-sources.jar</source>
+			<source>target/dependency/appglu-java-client-${appglu.android.sdk.version}-sources.jar</source>
 			<outputDirectory>/sources</outputDirectory>
 		</file>
 		
