@@ -28,6 +28,37 @@
 	<artifactId>appglu-android-sdk</artifactId>
 	<packaging>jar</packaging>
 	
+	<name>AppGlu Android SDK</name>
+	<description>AppGlu SDK for Android devices</description>
+	
+	<url>https://github.com/appglu/appglu-androidsdk/tree/master/appglu-android-sdk</url>
+	
+	<organization>
+		<name>AppGlu</name>
+		<url>http://appglu.com</url>
+	</organization>
+	
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>paulo.michels</id>
+			<name>Paulo Michels</name>
+			<email>paulo.michels@appglu.com</email>
+		</developer>
+	</developers>
+	
+	<scm>
+		<connection>scm:git:https://github.com/appglu/appglu-androidsdk.git</connection>
+		<url>https://github.com/appglu/appglu-androidsdk</url>
+	</scm>
+	
 	<properties>
 		<spring.android.version>1.0.1.RELEASE</spring.android.version>
 		<eventbus.version>2.0.2</eventbus.version>

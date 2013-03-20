@@ -28,6 +28,37 @@
 	<artifactId>appglu-java-client</artifactId>
 	<packaging>jar</packaging>
 	
+	<name>AppGlu Java Client</name>
+	<description>Java REST client library to access AppGlu's web service</description>
+	
+	<url>https://github.com/appglu/appglu-androidsdk/tree/master/appglu-java-client</url>
+	
+	<organization>
+		<name>AppGlu</name>
+		<url>http://appglu.com</url>
+	</organization>
+	
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>paulo.michels</id>
+			<name>Paulo Michels</name>
+			<email>paulo.michels@appglu.com</email>
+		</developer>
+	</developers>
+	
+	<scm>
+		<connection>scm:git:https://github.com/appglu/appglu-androidsdk.git</connection>
+		<url>https://github.com/appglu/appglu-androidsdk</url>
+	</scm>
+	
 	<properties>
 		<springframework.version>3.2.1.RELEASE</springframework.version>
 		<jackson.version>1.9.12</jackson.version>
