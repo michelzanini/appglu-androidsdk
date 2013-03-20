@@ -28,7 +28,37 @@
 	
 	<artifactId>appglu-android-sdk-test</artifactId>
 	<packaging>apk</packaging>
-    <name>appglu-android-sdk-test</name>
+	
+	<name>AppGlu Android SDK - Integration Test Cases</name>
+	<description>Test cases for Android classes of AppGlu Android SDK</description>
+	
+	<url>https://github.com/appglu/appglu-androidsdk/tree/master/appglu-android-sdk-test</url>
+	
+	<organization>
+		<name>AppGlu</name>
+		<url>http://appglu.com</url>
+	</organization>
+	
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>paulo.michels</id>
+			<name>Paulo Michels</name>
+			<email>paulo.michels@appglu.com</email>
+		</developer>
+	</developers>
+	
+	<scm>
+		<connection>scm:git:https://github.com/appglu/appglu-androidsdk.git</connection>
+		<url>https://github.com/appglu/appglu-androidsdk</url>
+	</scm>
     
     <dependencies>
         
