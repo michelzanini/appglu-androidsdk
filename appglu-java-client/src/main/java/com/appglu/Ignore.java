@@ -29,5 +29,17 @@ import java.lang.annotation.Target;
  * @since TODO
  */
 public @interface Ignore {
+	
+	public enum Mode {
+		BOTH,
+		WRITE,
+		READ;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	Mode mode() default Mode.BOTH;
 
 }

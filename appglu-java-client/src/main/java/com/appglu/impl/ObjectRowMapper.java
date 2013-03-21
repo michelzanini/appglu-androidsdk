@@ -28,6 +28,7 @@ import com.appglu.Column;
 import com.appglu.Ignore;
 import com.appglu.Row;
 import com.appglu.RowMapper;
+import com.appglu.RowMapperException;
 import com.appglu.RowMapperTypeConversionException;
 import com.appglu.impl.util.StringUtils;
 
@@ -50,7 +51,7 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 		FieldCallback fieldCallback = new FieldCallback() {
 			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
 				try {
-					doWithField(row, object, field);
+					mapFieldToRowProperty(object, row, field);
 				} catch (RowMapperTypeConversionException e) {
 					throw new ObjectRowMapperException(mappedClass, e);
 				}
@@ -75,6 +76,34 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 		return object;
 	}
 	
+	public Row mapObject(final T object) throws RowMapperException {
+		final Row row = new Row();
+		
+		FieldCallback fieldCallback = new FieldCallback() {
+			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+				mapRowPropertyToField(object, row, field);
+			}
+		};
+		
+		FieldFilter fieldFilter = new FieldFilter() {
+			public boolean matches(Field field) {
+				if (!mappedClass.equals(field.getDeclaringClass())) {
+					return false;
+				}
+				
+				if (field.isAnnotationPresent(Ignore.class)) {
+					return false;
+				}
+				
+				return ReflectionUtils.COPYABLE_FIELDS.matches(field);
+			}
+		};
+		
+		ReflectionUtils.doWithFields(this.mappedClass, fieldCallback, fieldFilter);
+		
+		return row;
+	}
+	
 	protected T instantiate() throws IllegalStateException {
 		if (mappedClass.isInterface()) {
 			throw new ObjectRowMapperException(mappedClass, "Specified class is an interface");
@@ -88,7 +117,7 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 		}
 	}
 	
-	protected void doWithField(Row row, T object, Field field) {
+	protected void mapFieldToRowProperty(T object, Row row, Field field) {
 		String key = StringUtils.underscoreName(field.getName());
 		boolean required = false;
 		
@@ -140,6 +169,10 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 		
 		ReflectionUtils.makeAccessible(field);
 		ReflectionUtils.setField(field, object, value);
+	}
+	
+	protected void mapRowPropertyToField(T object, Row row, Field field) {
+		
 	}
 	
 }

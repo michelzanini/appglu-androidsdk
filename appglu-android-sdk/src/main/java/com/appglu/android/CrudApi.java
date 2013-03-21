@@ -53,6 +53,20 @@ public final class CrudApi implements CrudOperations, AsyncCrudOperations {
 	/**
 	 * {@inheritDoc}
 	 */
+	public Object create(Object entity) throws AppGluRestClientException {
+		return crudOperations.create(entity);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public <T> Object create(T entity, RowMapper<T> rowMapper) throws AppGluRestClientException {
+		return crudOperations.create(entity, rowMapper);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	public Row read(String tableName, Object id) throws AppGluRestClientException {
 		return crudOperations.read(tableName, id);
 	}
@@ -116,7 +130,7 @@ public final class CrudApi implements CrudOperations, AsyncCrudOperations {
 	/**
 	 * {@inheritDoc}
 	 */
-	public <T> boolean delete(Object entity) throws AppGluRestClientException {
+	public boolean delete(Object entity) throws AppGluRestClientException {
 		return crudOperations.delete(entity);
 	}
 

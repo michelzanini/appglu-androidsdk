@@ -75,6 +75,25 @@ public final class CrudTemplate implements CrudOperations {
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public Object create(Object entity) throws AppGluRestClientException {
+		Class clazz = entity.getClass();
+		return this.create(entity, new ObjectRowMapper<Object>(clazz));
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public <T> Object create(T entity, RowMapper<T> rowMapper) throws AppGluRestClientException {
+		String tableName = this.getTableNameForClass(entity.getClass());
+		Row row = rowMapper.mapObject(entity);
+		
+		return this.create(tableName, row);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	public Row read(String tableName, Object id) throws AppGluRestClientException {
 		return this.read(tableName, id, false);
 	}
@@ -92,6 +111,23 @@ public final class CrudTemplate implements CrudOperations {
 		} catch (RestClientException e) {
 			throw new AppGluRestClientException(e.getMessage(), e);
 		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public <T> T read(Class<T> clazz, Object id) throws AppGluRestClientException {
+		return this.read(clazz, id, new ObjectRowMapper<T>(clazz));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public <T> T read(Class<T> clazz, Object id, RowMapper<T> rowMapper) throws AppGluRestClientException {
+		String tableName = this.getTableNameForClass(clazz);
+		
+		Row row = this.read(tableName, id);
+		return rowMapper.mapRow(row);
 	}
 	
 	/**
@@ -183,31 +219,10 @@ public final class CrudTemplate implements CrudOperations {
 		}
 	}
 	
-	/*
-	 * Crud Operations using classes and annotations
-	 */
-	
 	/**
 	 * {@inheritDoc}
 	 */
-	public <T> T read(Class<T> clazz, Object id) {
-		return this.read(clazz, id, new ObjectRowMapper<T>(clazz));
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public <T> T read(Class<T> clazz, Object id, RowMapper<T> rowMapper) throws AppGluRestClientException {
-		String tableName = this.getTableNameForClass(clazz);
-		
-		Row row = this.read(tableName, id);
-		return rowMapper.mapRow(row);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public <T> boolean delete(Object entity) throws AppGluRestClientException {
+	public boolean delete(Object entity) throws AppGluRestClientException {
 		Object id = this.extractPrimaryKeyValue(entity);
 		return this.delete(entity.getClass(), id);
 	}

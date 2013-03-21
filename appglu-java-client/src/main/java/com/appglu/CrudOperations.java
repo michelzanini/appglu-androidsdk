@@ -29,6 +29,22 @@ public interface CrudOperations {
 	 * @param row contains the column names and values to be used when inserting this row on the table
 	 */
 	Object create(String tableName, Row row) throws AppGluRestClientException;
+	
+	
+	/**
+	 * TODO
+	 * @param entity
+	 * @return
+	 */
+	Object create(Object entity) throws AppGluRestClientException;
+	
+	/**
+	 * 
+	 * @param entity
+	 * @param rowMapper
+	 * @return
+	 */
+	<T> Object create(T entity, RowMapper<T> rowMapper) throws AppGluRestClientException;
 
 	/**
 	 * Search the table for the specified primary key value and return the {@link Row} or return <code>null</code> if not found.
@@ -110,7 +126,7 @@ public interface CrudOperations {
 	 * @param entity
 	 * @return
 	 */
-	<T> boolean delete(Object entity) throws AppGluRestClientException;
+	boolean delete(Object entity) throws AppGluRestClientException;
 
 	/**
 	 * TODO

@@ -24,5 +24,7 @@ package com.appglu;
 public interface RowMapper<T> {
 	
 	T mapRow(Row row) throws RowMapperException;
+	
+	Row mapObject(T object) throws RowMapperException;
 
 }

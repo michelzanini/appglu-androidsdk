@@ -96,4 +96,9 @@ public class ContentValuesRowMapper implements RowMapper<ContentValues> {
 		return values;
 	}
 
+	/* In the future, if we have the need for sending out rows from SQLite to AppGlu, we can implement this method */
+	public Row mapObject(ContentValues values) throws RowMapperException {
+		throw new UnsupportedOperationException("Not yet implemented");
+	}
+
 }

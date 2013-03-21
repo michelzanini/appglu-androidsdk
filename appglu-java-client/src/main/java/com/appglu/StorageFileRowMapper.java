@@ -16,7 +16,7 @@
 package com.appglu;
 
 /**
- * Maps a {@link Row} of the database to {@link StorageFile} object.
+ * Maps a {@link Row} of the database to a {@link StorageFile} object.
  * 
  * @since 1.0.0
  */
@@ -38,6 +38,24 @@ public class StorageFileRowMapper implements RowMapper<StorageFile> {
 		storageFile.setDirectoryId(row.getLong("directory_id"));
 		
 		return storageFile;
+	}
+	
+	public Row mapObject(StorageFile storageFile) throws RowMapperException {
+		Row row = new Row();
+		
+		row.put("id", storageFile.getId());
+		row.put("key", storageFile.getKey());
+		row.put("name", storageFile.getName());
+		row.put("content_type", storageFile.getContentType());
+		row.put("title", storageFile.getTitle());
+		row.put("size", storageFile.getSize());
+		row.putDatetime("last_modified", storageFile.getLastModified());
+		row.put("url", storageFile.getUrl());
+		row.put("etag", storageFile.getETag());
+		row.put("version", storageFile.getVersion());
+		row.put("directory_id", storageFile.getDirectoryId());
+		
+		return row;
 	}
 
 }
