@@ -30,14 +30,24 @@ import com.appglu.impl.AsyncExecutor;
  */
 public class AsyncTaskExecutor implements AsyncExecutor {
 	
+	private boolean checkForInternetConnection;
+	
+	public AsyncTaskExecutor() {
+		this(true);
+	}
+	
+	public AsyncTaskExecutor(boolean checkForInternetConnection) {
+		this.checkForInternetConnection = checkForInternetConnection;
+	}
+
 	@Override
 	public <Result> void execute(final AsyncCallback<Result> asyncCallback, final Callable<Result> workerThreadCallback) {
 		AppGluAsyncCallbackTask<Result> asyncTask = new AppGluAsyncCallbackTask<Result>(asyncCallback, workerThreadCallback);
 		
-		if (AppGlu.hasInternetConnection()) {
-			asyncTask.execute();
-		} else {
+		if (this.checkForInternetConnection && !AppGlu.hasInternetConnection()) {
 			asyncCallback.onNoInternetConnection();
+		} else {
+			asyncTask.execute();
 		}
 	}
 

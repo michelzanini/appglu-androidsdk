@@ -15,8 +15,15 @@
  ******************************************************************************/
 package com.appglu.android;
 
+import java.util.concurrent.Callable;
+
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestOperations;
+
 import android.content.Context;
 
+import com.appglu.AppGluHttpIncompatibleClientVersionException;
+import com.appglu.AppGluHttpInternalServerErrorException;
 import com.appglu.AsyncCallback;
 import com.appglu.AsyncPushOperations;
 import com.appglu.AsyncSavedQueriesOperations;
@@ -187,7 +194,7 @@ public final class AppGlu {
 		this.settings = settings;
 		this.deviceInstallation = new DeviceInstallation(this.context);
 		
-		this.appGluTemplate = settings.createAppGluTemplate();
+		this.appGluTemplate = settings.createAppGluTemplate(this.context);
 		this.appGluTemplate.setAsyncExecutor(new AsyncTaskExecutor());
 		this.appGluTemplate.setDefaultHeaders(this.deviceInstallation.createDefaultHeaders(settings));
 		
@@ -340,6 +347,30 @@ public final class AppGlu {
 		return AppGluUtils.hasInternetConnection(context);
 	}
 	
+	private VersionValidationResult doValidateApplicationVersion() {
+		RestOperations restOperations = this.getAppGluTemplate().restOperations();
+		
+		try {
+			restOperations.exchange("/v1", HttpMethod.GET, null, Void.class);
+		} catch (AppGluHttpIncompatibleClientVersionException e) {
+			if (!e.hasError() || !e.getError().hasDetail()) {
+				throw new AppGluHttpInternalServerErrorException();
+			}
+			return new VersionValidationResult(e.getError().getDetail());
+		}
+		
+		return new VersionValidationResult();
+	}
+	
+	private void doValidateApplicationVersionInBackground(AsyncCallback<VersionValidationResult> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor();
+		executor.execute(asyncCallback, new Callable<VersionValidationResult>() {
+			public VersionValidationResult call() throws Exception {
+				return doValidateApplicationVersion();
+			}
+		});
+	}
+	
 	//Public Methods
 	
 	/**
@@ -351,6 +382,26 @@ public final class AppGlu {
 	 */
 	public static synchronized void initialize(Context context, AppGluSettings settings) {
 		getInstance().doInitialize(context, settings);
+	}
+	
+	/**
+	 * Validates if your application version is compatible with the version defined as minimum on the AppGlu server.<br>
+	 * By default, the version sent to the server will be the 'versionName' property of your AndroidManifest.xml.<br>
+	 * If you want to send another version to validate with the server, you can set it on {@link AppGluSettings#setApplicationVersion(String)} before calling {@link AppGlu#initialize(Context, AppGluSettings)}.<br>
+	 * @return if {@link VersionValidationResult#succeed()} is <code>false</code> then {@link VersionValidationResult#getAppUpdateUrl()} will contain an URL (configure it using AppGlu's dashbaord) that can be displayed to the user, so he can update the app
+	 * @see VersionValidationResult
+	 * @see AppGluSettings#setApplicationVersion(String)
+	 */
+	public static VersionValidationResult validateApplicationVersion() {
+		return getRequiredInstance().doValidateApplicationVersion();
+	}
+	
+	/**
+	 * Asynchronous version of {@link #validateApplicationVersion()}.
+	 * @see #validateApplicationVersion()
+	 */
+	public static void validateApplicationVersionInBackground(AsyncCallback<VersionValidationResult> asyncCallback) {
+		getRequiredInstance().doValidateApplicationVersionInBackground(asyncCallback);
 	}
 	
 	/**

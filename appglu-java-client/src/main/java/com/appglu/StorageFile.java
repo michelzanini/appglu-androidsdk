@@ -49,10 +49,16 @@ public class StorageFile implements Serializable {
 	
 	private String eTag;
 	
+	private String version;
+	
 	private long directoryId;
 	
 	public StorageFile() {
 		
+	}
+	
+	public StorageFile(Long id) {
+		this.setId(id == null ? 0 : id);
 	}
 	
 	public StorageFile(long id) {
@@ -98,6 +104,10 @@ public class StorageFile implements Serializable {
 	public String getETag() {
 		return eTag;
 	}
+	
+	public String getVersion() {
+		return version;
+	}
 
 	public long getDirectoryId() {
 		return directoryId;
@@ -122,6 +132,10 @@ public class StorageFile implements Serializable {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+	
+	public void setSize(Long size) {
+		this.setSize(size == null ? 0 : size);
+	}
 
 	public void setSize(long size) {
 		this.size = size;
@@ -137,6 +151,14 @@ public class StorageFile implements Serializable {
 	
 	public void setETag(String eTag) {
 		this.eTag = eTag;
+	}
+	
+	public void setVersion(String version) {
+		this.version = version;
+	}
+	
+	public void setDirectoryId(Long directoryId) {
+		this.setDirectoryId(directoryId == null ? 0 : directoryId);
 	}
 
 	public void setDirectoryId(long directoryId) {
@@ -157,6 +179,10 @@ public class StorageFile implements Serializable {
 	
 	public boolean hasETag() {
 		return StringUtils.isNotEmpty(eTag);
+	}
+	
+	public boolean hasVersion() {
+		return StringUtils.isNotEmpty(version);
 	}
 	
 	public boolean hasLastModifiedDate() {

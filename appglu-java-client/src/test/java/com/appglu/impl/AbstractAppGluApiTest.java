@@ -53,7 +53,7 @@ public abstract class AbstractAppGluApiTest {
 	}
 
 	protected AppGluTemplate createAppGluTemplate() {
-		AppGluTemplate appgluTemplate = new AppGluTemplate("http://localhost/appglu", "applicationKey", "applicationSecret");
+		AppGluTemplate appgluTemplate = new AppGluTemplate("applicationKey", "applicationSecret", AppGluTemplate.STAGING_ENVIRONMENT, "http://localhost/appglu");
 		appgluTemplate.setDefaultHeaders(this.createDefaultHttpHeaders());
 		return appgluTemplate;
 	}

@@ -24,7 +24,7 @@ import android.widget.ProgressBar;
 
 import com.appglu.AsyncCallback;
 import com.appglu.StorageFile;
-import com.appglu.android.AppGluAsyncCallbackTask;
+import com.appglu.android.AsyncTaskExecutor;
 import com.appglu.android.ImageViewAsyncCallback;
 
 /**
@@ -92,52 +92,52 @@ public final class StorageApi {
 	 * Asynchronous version of {@link #downloadAsInputStream(String)}.
 	 * @see #downloadAsInputStream(String)
 	 */
-	public void downloadAsInputStreamInBackground(final String url, AsyncCallback<InputStream> callback) {
-		AppGluAsyncCallbackTask<InputStream> asyncTask = new AppGluAsyncCallbackTask<InputStream>(callback, new Callable<InputStream>() {
+	public void downloadAsInputStreamInBackground(final String url, AsyncCallback<InputStream> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<InputStream>() {
 			public InputStream call() throws Exception {
 				return downloadAsInputStream(url);
 			}
 		});
-		asyncTask.execute();
 	}
 	
 	/**
 	 * Asynchronous version of {@link #downloadAsByteArray(String)}.
 	 * @see #downloadAsByteArray(String)
 	 */
-	public void downloadAsByteArrayInBackground(final String url, AsyncCallback<byte[]> callback) {
-		AppGluAsyncCallbackTask<byte[]> asyncTask = new AppGluAsyncCallbackTask<byte[]>(callback, new Callable<byte[]>() {
+	public void downloadAsByteArrayInBackground(final String url, AsyncCallback<byte[]> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<byte[]>() {
 			public byte[] call() throws Exception {
 				return downloadAsByteArray(url);
 			}
 		});
-		asyncTask.execute();
 	}
 	
 	/**
 	 * Asynchronous version of {@link #downloadAsBitmap(String)}.
 	 * @see #downloadAsBitmap(String)
 	 */
-	public void downloadAsBitmapInBackground(final String url, AsyncCallback<Bitmap> callback) {
-		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+	public void downloadAsBitmapInBackground(final String url, AsyncCallback<Bitmap> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return downloadAsBitmap(url);
 			}
 		});
-		asyncTask.execute();
 	}
 	
 	/**
 	 * Asynchronous version of {@link #downloadAsBitmap(String, int)}.
 	 * @see #downloadAsBitmap(String, int)
 	 */
-	public void downloadAsBitmapInBackground(final String url, final int inSampleSize, AsyncCallback<Bitmap> callback) {
-		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+	public void downloadAsBitmapInBackground(final String url, final int inSampleSize, AsyncCallback<Bitmap> asyncCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return downloadAsBitmap(url, inSampleSize);
 			}
 		});
-		asyncTask.execute();
 	}
 	
 	/* Methods to download an image in background using an ImageView and ProgressBar to update the UI */
@@ -153,14 +153,14 @@ public final class StorageApi {
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromInputStream(InputStream)
 	 */
 	public void downloadToImageViewInBackground(final String url, ImageView imageView, ProgressBar progressBar) {
-		ImageViewAsyncCallback callback = new ImageViewAsyncCallback(imageView, progressBar);
+		ImageViewAsyncCallback asyncCallback = new ImageViewAsyncCallback(imageView, progressBar);
 		
-		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return downloadAsBitmap(url);
 			}
 		});
-		asyncTask.execute();
 	}
 	
 	/**
@@ -175,14 +175,14 @@ public final class StorageApi {
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromInputStream(InputStream, int)
 	 */
 	public void downloadToImageViewInBackground(final String url, final int inSampleSize, ImageView imageView, ProgressBar progressBar) {
-		ImageViewAsyncCallback callback = new ImageViewAsyncCallback(imageView, progressBar);
+		ImageViewAsyncCallback asyncCallback = new ImageViewAsyncCallback(imageView, progressBar);
 		
-		AppGluAsyncCallbackTask<Bitmap> asyncTask = new AppGluAsyncCallbackTask<Bitmap>(callback, new Callable<Bitmap>() {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(asyncCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return downloadAsBitmap(url, inSampleSize);
 			}
 		});
-		asyncTask.execute();
 	}
 	
 }

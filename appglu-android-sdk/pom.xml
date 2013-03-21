@@ -17,47 +17,90 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.appglu</groupId>
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+		<groupId>com.appglu</groupId>
+		<artifactId>appglu-androidsdk-all</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	
 	<artifactId>appglu-android-sdk</artifactId>
-	<version>1.0.0</version>
+	<packaging>jar</packaging>
+	
+	<name>AppGlu Android SDK</name>
+	<description>AppGlu SDK for Android devices</description>
+	
+	<url>https://github.com/appglu/appglu-androidsdk/tree/master/appglu-android-sdk</url>
+	
+	<organization>
+		<name>AppGlu</name>
+		<url>http://appglu.com</url>
+	</organization>
+	
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>paulo.michels</id>
+			<name>Paulo Michels</name>
+			<email>paulo.michels@appglu.com</email>
+		</developer>
+	</developers>
+	
+	<scm>
+		<connection>scm:git:https://github.com/appglu/appglu-androidsdk.git</connection>
+		<url>https://github.com/appglu/appglu-androidsdk</url>
+	</scm>
 	
 	<properties>
-        <platform.version>2.2.1</platform.version>
-        <appglu.java.client.version>1.0.0</appglu.java.client.version>
-    </properties>
-
+		<spring.android.version>1.0.1.RELEASE</spring.android.version>
+		<eventbus.version>2.0.2</eventbus.version>
+	</properties>
+	
     <dependencies>
         
         <dependency>
             <groupId>com.appglu</groupId>
             <artifactId>appglu-java-client</artifactId>
-            <version>${appglu.java.client.version}</version>
+            <version>${appglu.android.sdk.version}</version>
             <exclusions>
                 <exclusion>
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-web</artifactId>  
-				</exclusion>  
+				</exclusion>
             </exclusions>
         </dependency>
         
         <dependency>
             <groupId>org.springframework.android</groupId>
             <artifactId>spring-android-rest-template</artifactId>
-            <version>1.0.1.RELEASE</version>
+            <version>${spring.android.version}</version>
         </dependency>
+        
+        <dependency>
+			<groupId>de.greenrobot</groupId>
+			<artifactId>eventbus</artifactId>
+			<version>${eventbus.version}</version>
+		</dependency>
         
         <dependency>
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
-            <version>${platform.version}</version>
+            <version>${android.platform.version}</version>
             <scope>provided</scope>
         </dependency>
         
 		<dependency>
 			<groupId>com.google.android</groupId>
 			<artifactId>support-v4</artifactId>
-			<version>r7</version>
+			<version>${android.support.jar.version}</version>
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
@@ -68,16 +111,16 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
             
             <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>${maven.jar.plugin.version}</version>
 				<configuration>
 					<archive>
 						<addMavenDescriptor>false</addMavenDescriptor>
@@ -87,7 +130,7 @@
             
             <plugin>
 		        <artifactId>maven-source-plugin</artifactId>
-		        <version>2.2.1</version>
+		        <version>${maven.source.plugin.version}</version>
 		        <executions>
 		            <execution>
 			            <id>generate-sources</id>
@@ -101,7 +144,7 @@
 		    
 		    <plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
+				<version>${maven.javadoc.plugin.version}</version>
 				<executions>
 					<execution>
 						<id>generate-javadoc</id>
@@ -124,7 +167,7 @@
 			
 		    <plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.6</version>
+				<version>${maven.dependency.plugin.version}</version>
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
@@ -148,21 +191,13 @@
 			
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.3</version>
+				<version>${maven.assembly.plugin.version}</version>
 				<configuration>
 					<descriptors>
 		            	<descriptor>src/main/assembly/dist.xml</descriptor>
+		            	<descriptor>src/main/assembly/maven-central.xml</descriptor>
 		            </descriptors>
 				</configuration>
-				<executions>
-					<execution>
-						<id>generate-distribution</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
         </plugins>
     </build>

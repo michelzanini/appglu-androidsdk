@@ -19,17 +19,52 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.appglu</groupId>
-    <artifactId>appglu-android-sample</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <packaging>apk</packaging>
-    <name>appglu-android-sample</name>
-
-    <properties>
-        <platform.version>2.3.3</platform.version>
-        <appglu.android.sdk.version>1.0.0</appglu.android.sdk.version>
-    </properties>
     
+    <parent>
+		<groupId>com.appglu</groupId>
+		<artifactId>appglu-androidsdk-all</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	
+    <artifactId>appglu-android-sample</artifactId>
+    <packaging>apk</packaging>
+    
+    <name>AppGlu Android SDK - Sample App</name>
+	<description>Sample application to illustrate how the AppGlu Android SDK works</description>
+	
+	<url>https://github.com/appglu/appglu-androidsdk/tree/master/appglu-android-sample</url>
+	
+	<organization>
+		<name>AppGlu</name>
+		<url>http://appglu.com</url>
+	</organization>
+	
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>paulo.michels</id>
+			<name>Paulo Michels</name>
+			<email>paulo.michels@appglu.com</email>
+		</developer>
+	</developers>
+	
+	<scm>
+		<connection>scm:git:https://github.com/appglu/appglu-androidsdk.git</connection>
+		<url>https://github.com/appglu/appglu-androidsdk</url>
+	</scm>
+    
+    <properties>
+        <sample.android.platform.level>14</sample.android.platform.level>
+        <sample.android.platform.version>4.0.1.2</sample.android.platform.version>
+    </properties>
+ 
     <dependencies>
         
         <dependency>
@@ -41,45 +76,39 @@
         <dependency>
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
-            <version>${platform.version}</version>
+            <version>${sample.android.platform.version}</version>
             <scope>provided</scope>
         </dependency>
-        
-        <dependency>
-			<groupId>com.google.android</groupId>
-			<artifactId>annotations</artifactId>
-			<version>4.1.1.4</version>
-			<scope>provided</scope>
-		</dependency>
         
     </dependencies>
     
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            
+            <plugin>
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
-                <version>3.3.2</version>
+                <version>${android.maven.plugin.version}</version>
                 <configuration>
                     <androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
                     <assetsDirectory>${project.basedir}/assets</assetsDirectory>
                     <resourceDirectory>${project.basedir}/res</resourceDirectory>
                     <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
                     <sdk>
-                        <platform>10</platform>
+                        <path>${env.ANDROID_HOME}</path>
+                        <platform>${sample.android.platform.level}</platform>
                     </sdk>
                     <undeployBeforeDeploy>true</undeployBeforeDeploy>
                 </configuration>
                 <extensions>true</extensions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
             </plugin>
         </plugins>
     </build>

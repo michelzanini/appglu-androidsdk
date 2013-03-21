@@ -41,14 +41,16 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 	private static final int EVENT_ID_COLUMN = 3;
 	private static final int EVENT_NAME_COLUMN = 4;
 	private static final int EVENT_DATE_COLUMN = 5;
+	private static final int EVENT_DATA_TABLE_COLUMN = 6;
+	private static final int EVENT_DATA_ID_COLUMN = 7;
 	
-	private static final int EVENT_PARAM_ID_COLUMN = 6;
-	private static final int EVENT_PARAM_NAME_COLUMN = 7;
-	private static final int EVENT_PARAM_VALUE_COLUMN = 8;
+	private static final int EVENT_PARAM_ID_COLUMN = 8;
+	private static final int EVENT_PARAM_NAME_COLUMN = 9;
+	private static final int EVENT_PARAM_VALUE_COLUMN = 10;
 	
-	private static final int SESSION_PARAM_ID_COLUMN = 9;
-	private static final int SESSION_PARAM_NAME_COLUMN = 10;
-	private static final int SESSION_PARAM_VALUE_COLUMN = 11;
+	private static final int SESSION_PARAM_ID_COLUMN = 11;
+	private static final int SESSION_PARAM_NAME_COLUMN = 12;
+	private static final int SESSION_PARAM_VALUE_COLUMN = 13;
 	
 	private AnalyticsDatabaseHelper analyticsDatabaseHelper;
 
@@ -295,6 +297,8 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 		} else {
 			values.put("date", event.getDate().getTime());
 		}
+		values.put("data_table", event.getDataTable());
+		values.put("data_id", event.getDataId());
 		
 		long eventId = database.insertOrThrow("session_events", null, values);
 		
@@ -367,7 +371,7 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 	private String sessionSelectStatement(String whereClause) {
 		StringBuilder builder = new StringBuilder();
 		
-		builder.append("select s.id, s.start_date, s.end_date, e.id, e.name, e.date, ep.id, ep.name, ep.value, p.id, p.name, p.value ");
+		builder.append("select s.id, s.start_date, s.end_date, e.id, e.name, e.date, e.data_table, e.data_id, ep.id, ep.name, ep.value, p.id, p.name, p.value ");
 		builder.append("from sessions s ");
 		builder.append("left outer join session_parameters p on s.id = p.session_id ");
 		builder.append("left outer join session_events e on s.id = e.session_id ");
@@ -473,6 +477,9 @@ public class SQLiteAnalyticsRepository implements AnalyticsRepository {
 		if (!cursor.isNull(EVENT_DATE_COLUMN)) {
 			event.setDate(new Date(cursor.getLong(EVENT_DATE_COLUMN)));
 		}
+		
+		event.setDataTable(cursor.getString(EVENT_DATA_TABLE_COLUMN));
+		event.setDataId(cursor.getString(EVENT_DATA_ID_COLUMN));
 		
 		return event;
 	}

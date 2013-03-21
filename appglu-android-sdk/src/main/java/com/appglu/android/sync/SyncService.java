@@ -134,6 +134,10 @@ public class SyncService {
 		return AppGluUtils.decodeSampledBitmapFromFile(file, requestedWidth, requestedHeight);
 	}
 	
+	public List<StorageFile> getAllFiles() {
+		return syncRepository.getAllFiles();
+	}
+
 	public boolean checkIfDatabaseIsSynchronized() {
 		List<TableVersion> localTableVersions = this.syncRepository.versionsForAllTables();
 		return this.areTablesSynchronized(localTableVersions);
@@ -221,8 +225,12 @@ public class SyncService {
 		return this.downloadChangesAndFilesForTables(tables, true);
 	}
 	
-	protected boolean downloadChangesAndFiles(boolean syncFiles) {
+	private boolean downloadChangesAndFiles(boolean syncFiles) {
 		List<TableVersion> tableVersions = this.syncRepository.versionsForAllTables();
+		
+		if (!syncFiles) {
+			this.removeStorageFilesTable(tableVersions);
+		}
 		
 		if (this.areTablesSynchronized(tableVersions)) {
 			if (tableVersions.isEmpty()) {
@@ -236,10 +244,23 @@ public class SyncService {
 			return true;
 		}
 	}
+
+	private void removeStorageFilesTable(List<TableVersion> tableVersions) {
+		for (TableVersion tableVersion : tableVersions) {
+			if (SyncDatabaseHelper.APPGLU_STORAGE_FILES_TABLE.equals(tableVersion.getTableName())) {
+				tableVersions.remove(tableVersion);
+				break;
+			}
+		}
+	}
 	
-	protected boolean downloadChangesAndFilesForTables(List<String> tables, boolean syncFiles) {
-		if (syncFiles && !tables.contains(SyncDatabaseHelper.APPGLU_STORAGE_FILES_TABLE)) {
-			tables.add(SyncDatabaseHelper.APPGLU_STORAGE_FILES_TABLE);
+	private boolean downloadChangesAndFilesForTables(List<String> tables, boolean syncFiles) {
+		if (syncFiles) {
+			if (!tables.contains(SyncDatabaseHelper.APPGLU_STORAGE_FILES_TABLE)) {
+				tables.add(SyncDatabaseHelper.APPGLU_STORAGE_FILES_TABLE);
+			}
+		} else {
+			tables.remove(SyncDatabaseHelper.APPGLU_STORAGE_FILES_TABLE);
 		}
 		
 		List<TableVersion> tableVersions = this.syncRepository.versionsForTables(tables);
@@ -294,7 +315,7 @@ public class SyncService {
 		return true;
 	}
 	
-	protected void downloadChangesAndSyncFiles(List<TableVersion> tableVersions, boolean syncFiles) {
+	private void downloadChangesAndSyncFiles(List<TableVersion> tableVersions, boolean syncFiles) {
 		this.logger.info("Download started");
 		
 		try {
@@ -319,14 +340,14 @@ public class SyncService {
 			this.logger.info("Changes were downloaded with success");
 			
 		} catch (RuntimeException e) {
-			this.logger.error("Download failed with exception", e);
+			this.logger.error("Download failed with exception: " + e.getMessage());
 			throw e;
 		} finally {
 			this.logger.info("Download finished");
 		}
 	}
 	
-	protected void syncData() {
+	private void syncData() {
 		this.logger.info("Synchronization started");
 		try {
 			
@@ -339,14 +360,14 @@ public class SyncService {
 			logger.info("Changes were applied with success");
 			
 		} catch (RuntimeException e) {
-			this.logger.error("Synchronization failed with exception", e);
+			this.logger.error("Synchronization failed with exception: " + e.getMessage());
 			throw e;
 		} finally {
 			this.logger.info("Synchronization finished");
 		}
 	}
 	
-	protected void applyChangesWithTransaction() {
+	private void applyChangesWithTransaction() {
 		try {
 			InputStream inputStream = syncStorageService.getDownloadedChanges();
 			syncOperations.parseTableChanges(inputStream, syncRepository);
@@ -360,7 +381,7 @@ public class SyncService {
 		}
 	}
 	
-	protected void syncFiles() {
+	private void syncFiles() {
 		if (!this.syncStorageService.hasTemporaryChanges()) {
 			throw new SyncFileStorageException("Error while saving downloaded changes to storage");
 		}
@@ -377,7 +398,7 @@ public class SyncService {
 		List<StorageFile> parsedFiles = fileChangesCallback.getParsedFiles();
 		
 		if (parsedFiles.isEmpty()) {
-			this.logger.info("There are no new files to downloaded");
+			this.logger.info("There are no new files to download");
 			return;
 		}
 		
@@ -398,7 +419,7 @@ public class SyncService {
 		}
 	}
 	
-	protected boolean verifyIfStorageFileNeedsToBeDownloaded(StorageFile storageFile) {
+	private boolean verifyIfStorageFileNeedsToBeDownloaded(StorageFile storageFile) {
 		File cachedFile = this.syncStorageService.getFileFromExternalStorage(storageFile);
 		
 		if (cachedFile == null) {
@@ -412,7 +433,7 @@ public class SyncService {
 		return true;
 	}
 	
-	protected void downloadFiles(List<StorageFile> filesToBeDownloaded) {
+	private void downloadFiles(List<StorageFile> filesToBeDownloaded) {
 		long totalDownloadSizeInBytes = this.syncStorageService.calculateTotalDownloadSizeInBytes(filesToBeDownloaded);
 		
 		this.syncStorageService.checkIfThereIsEnoughSpaceAvailableOnStorage(totalDownloadSizeInBytes);
@@ -431,7 +452,7 @@ public class SyncService {
 		this.logger.info("All files were downloaded with success");
 	}
 	
-	protected void removeFilesThatAreNotBeingUsed() {
+	private void removeFilesThatAreNotBeingUsed() {
 		List<StorageFile> files = this.syncRepository.getAllFiles();
 		
 		List<String> filesToBeRemoved = new ArrayList<String>();
@@ -451,7 +472,7 @@ public class SyncService {
 		}
 	}
 	
-	protected void removeFiles(List<String> filesToBeRemoved) {
+	private void removeFiles(List<String> filesToBeRemoved) {
 		if (this.logger.isInfoEnabled()) {
 			this.logger.info(filesToBeRemoved.size() + " file(s) will be removed");
 		}

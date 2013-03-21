@@ -54,12 +54,17 @@ public class JsonMessageConverterSelector {
 		
 		private static ObjectMapper cachedObjectMapper;
 		
-		private static ObjectMapper createObjectMapper() {
+		public static ObjectMapper createObjectMapper() {
 			if (cachedObjectMapper == null) {
 				ObjectMapper objectMapper = new ObjectMapper();
+				
+				/* If we encounter a not expected JSON property then we must ignore it */
+				objectMapper.configure(org.codehaus.jackson.map.DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+				
 				objectMapper.registerModule(new AppGluModule());
 				DateFormat dateFormat = new SimpleDateFormat(DateUtils.DATE_TIME_FORMAT);
 				objectMapper.setDateFormat(dateFormat);
+				
 				cachedObjectMapper = objectMapper;
 			}
 			return cachedObjectMapper;

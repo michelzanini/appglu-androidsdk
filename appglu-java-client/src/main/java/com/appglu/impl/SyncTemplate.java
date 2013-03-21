@@ -38,7 +38,6 @@ import com.appglu.SyncOperations;
 import com.appglu.TableChanges;
 import com.appglu.TableChangesCallback;
 import com.appglu.TableVersion;
-import com.appglu.impl.json.JsonMessageConverterSelector;
 import com.appglu.impl.json.TableChangesBody;
 import com.appglu.impl.json.TableChangesJsonParser;
 import com.appglu.impl.json.TableVersionBody;
@@ -57,10 +56,10 @@ public final class SyncTemplate implements SyncOperations {
 	
 	private TableChangesJsonParser tableChangesJsonParser;
 	
-	public SyncTemplate(RestOperations restOperations, HttpMessageConverter<Object> jsonMessageConverter) {
+	public SyncTemplate(RestOperations restOperations, HttpMessageConverter<Object> jsonMessageConverter, TableChangesJsonParser tableChangesJsonParser) {
 		this.restOperations = restOperations;
 		this.jsonMessageConverter = jsonMessageConverter;
-		this.tableChangesJsonParser = JsonMessageConverterSelector.getTableChangesJsonParser();
+		this.tableChangesJsonParser = tableChangesJsonParser;
 	}
 	
 	/**

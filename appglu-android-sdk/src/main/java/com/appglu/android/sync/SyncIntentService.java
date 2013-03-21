@@ -15,9 +15,7 @@
  ******************************************************************************/
 package com.appglu.android.sync;
 
-import java.util.ArrayList;
-
-import org.springframework.web.client.RestClientException;
+import java.util.List;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -25,13 +23,12 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 
-import com.appglu.AppGluHttpClientException;
-import com.appglu.AppGluHttpServerException;
-import com.appglu.AppGluRestClientException;
 import com.appglu.android.AppGlu;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.sync.SyncIntentServiceRequest.SyncRequestOperation;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * <p>This is the Android service responsible for executing the Sync operation with the AppGlu server.<br>
@@ -56,54 +53,10 @@ public class SyncIntentService extends IntentService {
 	
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
 	
-	public static final String SYNC_OPERATION_SERIALIZABLE_EXTRA = "SyncIntentService.SYNC_OPERATION_SERIALIZABLE_EXTRA";
-	
-	public static final String SYNC_FILES_BOOLEAN_EXTRA = "SyncIntentService.SYNC_FILES_BOOLEAN_EXTRA";
-	
-	public static final String TABLES_STRING_ARRAY_EXTRA = "SyncIntentService.TABLES_STRING_ARRAY_EXTRA";
-	
-	public static final String SYNC_SERVICE_RUNNING_NOTIFICATION_PARCELABLE_EXTRA = "SyncIntentService.SYNC_SERVICE_RUNNING_NOTIFICATION_PARCELABLE_EXTRA";
-	
-	public static final String SYNC_SERVICE_COMPLETED_NOTIFICATION_PARCELABLE_EXTRA = "SyncIntentService.SYNC_SERVICE_COMPLETED_NOTIFICATION_PARCELABLE_EXTRA";
-	
-	public static final String PRE_EXECUTE_ACTION = "SyncIntentService.ON_PRE_EXECUTE_ACTION";
-	
-	public static final String NO_INTERNET_CONNECTION_ACTION = "SyncIntentService.ON_NO_INTERNET_CONNECTION_ACTION";
-	
-	public static final String ON_TRANSACTION_START_ACTION = "SyncIntentService.ON_TRANSACTION_START_ACTION";
-	
-	public static final String ON_TRANSACTION_FINISH_ACTION = "SyncIntentService.ON_TRANSACTION_FINISH_ACTION";
-	
-	public static final String RESULT_ACTION = "SyncIntentService.RESULT_ACTION";
-	
-	public static final String EXCEPTION_ACTION = "SyncIntentService.EXCEPTION_ACTION";
-	
-	public static final String FINISH_ACTION = "SyncIntentService.FINISH_ACTION";
-	
-	public static final String EXCEPTION_WRAPPER_SERIALIZABLE_EXTRA = "SyncIntentService.EXCEPTION_WRAPPER_SERIALIZABLE_EXTRA";
-	
-	public static final String CHANGES_WERE_APPLIED_BOOLEAN_EXTRA = "SyncIntentService.CHANGES_WERE_APPLIED_BOOLEAN_EXTRA";
+	public static final String SYNC_INTENT_REQUEST_PARCELABLE = "SyncIntentService.SYNC_INTENT_REQUEST_PARCELABLE";
 	
 	public SyncIntentService() {
 		super("SyncIntentService");
-	}
-	
-	@Override
-	public void onStart(Intent intent, int startId) {
-		super.onStart(intent, startId);
-		
-		if (this.hasSyncServiceRunningNotificationExtra(intent)) {
-			Notification notification = (Notification) intent.getParcelableExtra(SYNC_SERVICE_RUNNING_NOTIFICATION_PARCELABLE_EXTRA);
-			this.sendNotification(notification, false);
-		}
-	}
-
-	private boolean hasSyncServiceRunningNotificationExtra(Intent intent) {
-		return intent.hasExtra(SYNC_SERVICE_RUNNING_NOTIFICATION_PARCELABLE_EXTRA);
-	}
-	
-	private boolean hasSyncServiceCompletedNotificationExtra(Intent intent) {
-		return intent.hasExtra(SYNC_SERVICE_COMPLETED_NOTIFICATION_PARCELABLE_EXTRA);
 	}
 	
 	private SyncApi getSyncApiInstance() {
@@ -117,8 +70,15 @@ public class SyncIntentService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		boolean successful = false;
 		
+		SyncIntentServiceRequest request = intent.getParcelableExtra(SYNC_INTENT_REQUEST_PARCELABLE);
+		
 		try {
-			SyncRequestOperation syncOperation = (SyncRequestOperation) intent.getSerializableExtra(SYNC_OPERATION_SERIALIZABLE_EXTRA);
+			if (request.getSyncServiceRunningNotification() != null) {
+				Notification notification = request.getSyncServiceRunningNotification();
+				this.sendNotification(notification, false);
+			}
+			
+			SyncRequestOperation syncOperation = request.getSyncRequestOperation();
 			
 			boolean isApplyChanges = SyncRequestOperation.APPLY_CHANGES.equals(syncOperation);
 			boolean isDiscardChanges = SyncRequestOperation.DISCARD_CHANGES.equals(syncOperation);
@@ -129,14 +89,16 @@ public class SyncIntentService extends IntentService {
 			boolean requiresInternet = isDownloadChanges || isDownloadAndApplyChanges;
 			
 			if (requiresInternet && !AppGlu.hasInternetConnection()) {
-				this.broadcastAction(NO_INTERNET_CONNECTION_ACTION);
+				this.postEvent(SyncEvent.Type.ON_NO_INTERNET_CONNECTION);
+				
+				logger.info("SyncIntentService did not executed because it could not connect to the Internet");
 				return;
 			}
 			
-			this.broadcastAction(PRE_EXECUTE_ACTION);
+			this.postEvent(SyncEvent.Type.ON_PRE_EXECUTE);
 			
-			ArrayList<String> tables = intent.getStringArrayListExtra(TABLES_STRING_ARRAY_EXTRA);
-			boolean syncFiles = intent.getBooleanExtra(SYNC_FILES_BOOLEAN_EXTRA, false);
+			List<String> tables = request.getTablesToSync();
+			boolean syncFiles = request.getSyncFiles();
 			
 			if (isApplyChanges) {
 				successful = this.applyChanges();
@@ -159,14 +121,14 @@ public class SyncIntentService extends IntentService {
 				}
 			}
 			
-			this.broadcastResult(successful);
-	
+			this.postResultEvent(successful);
+			
 		} catch (Exception exception) {
-			this.broadcastException(exception);
+			this.postExceptionEvent(exception);
 		} finally {
-			if (this.hasSyncServiceRunningNotificationExtra(intent)) {
-				if (successful && this.hasSyncServiceCompletedNotificationExtra(intent)) {
-					Notification notification = (Notification) intent.getParcelableExtra(SYNC_SERVICE_COMPLETED_NOTIFICATION_PARCELABLE_EXTRA);
+			if (request.getSyncServiceRunningNotification() != null) {
+				if (successful && request.getSyncServiceCompletedNotification() != null) {
+					Notification notification = request.getSyncServiceCompletedNotification();
 					this.sendNotification(notification, true);
 				} else {
 					this.cancelNotification();
@@ -174,28 +136,29 @@ public class SyncIntentService extends IntentService {
 			}
 		}
 		
-		this.broadcastAction(FINISH_ACTION);
+		this.postEvent(SyncEvent.Type.ON_FINISH);
+		logger.info("SyncIntentService has being stopped");
 	}
 
-	protected boolean applyChanges() {
+	private boolean applyChanges() {
 		if (!this.getSyncApiInstance().hasDownloadedChanges()) {
 			this.logger.info("No changes to apply");
 			return false;
 		}
 		
 		try {
-			this.broadcastAction(ON_TRANSACTION_START_ACTION);
+			this.postEvent(SyncEvent.Type.ON_TRANSACTION_START);
 			return this.getSyncApiInstance().applyChanges();
 		} finally {
-			this.broadcastAction(ON_TRANSACTION_FINISH_ACTION);
+			this.postEvent(SyncEvent.Type.ON_TRANSACTION_FINISH);
 		}
 	}
 	
-	protected boolean discardChanges() {
+	private boolean discardChanges() {
 		return this.getSyncApiInstance().discardChanges();
 	}
 	
-	protected boolean downloadChangesAndFilesForTables(ArrayList<String> tables, boolean syncFiles) {
+	private boolean downloadChangesAndFilesForTables(List<String> tables, boolean syncFiles) {
 		if (tables == null) {
 			if (syncFiles) {
 				return this.getSyncApiInstance().downloadChangesAndFiles();
@@ -211,7 +174,7 @@ public class SyncIntentService extends IntentService {
 		}
 	}
 	
-	protected void sendNotification(Notification notification, boolean autoCancelNotification) {
+	private void sendNotification(Notification notification, boolean autoCancelNotification) {
 		if (autoCancelNotification) {
 			notification.flags |= Notification.FLAG_AUTO_CANCEL;
 			notification.flags &= ~Notification.FLAG_ONGOING_EVENT;
@@ -226,62 +189,24 @@ public class SyncIntentService extends IntentService {
 		notificationManager.notify(SyncApi.NOTIFICATION_ID, notification);
 	}
 
-	protected void cancelNotification() {
+	private void cancelNotification() {
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationManager.cancel(SyncApi.NOTIFICATION_ID);
 	}
 	
-	protected void broadcastAction(String action) {
-		Intent intent = new Intent();
-		intent.setAction(action);
-		this.sendBroadcast(intent);
+	private void postEvent(SyncEvent.Type eventType) {
+		EventBus.getDefault().post(new SyncEvent(eventType));
 	}
 	
-	protected void broadcastResult(boolean changesWereApplied) {
-		Intent intent = new Intent();
-		intent.putExtra(CHANGES_WERE_APPLIED_BOOLEAN_EXTRA, changesWereApplied);
-		intent.setAction(RESULT_ACTION);
-		this.sendBroadcast(intent);
+	private void postResultEvent(boolean changesWereApplied) {
+		EventBus.getDefault().post(new SyncEvent(changesWereApplied));
 	}
 	
-	protected void broadcastException(Exception exception) {
+	private void postExceptionEvent(Exception exception) {
+		logger.error(exception);
+		
 		SyncExceptionWrapper wrapper = new SyncExceptionWrapper(exception);
-		
-		Intent intent = new Intent();
-		intent.putExtra(EXCEPTION_WRAPPER_SERIALIZABLE_EXTRA, wrapper);
-		intent.setAction(EXCEPTION_ACTION);
-		
-		try {	
-			this.sendBroadcast(intent);
-		} catch (RuntimeException e) {
-			this.broadcastNotSerializableException(wrapper);
-		}
-	}
-	
-	/**
-	 * If the original exception is not serializable then broadcast a exception that it is
-	 */
-	private void broadcastNotSerializableException(SyncExceptionWrapper wrapper) {
-		if (wrapper.isHttpClientException()) {
-			AppGluHttpClientException httpClientException = wrapper.getHttpClientException();
-			this.broadcastException(new AppGluHttpClientException(httpClientException.getStatusCode(), httpClientException.getError()));
-			return;
-		}
-		
-		if (wrapper.isHttpServerException()) {
-			AppGluHttpServerException httpServerException = wrapper.getHttpServerException();
-			this.broadcastException(new AppGluHttpServerException(httpServerException.getStatusCode(), httpServerException.getError()));
-			return;
-		}
-		
-		if (wrapper.isRestClientException()) {
-			AppGluRestClientException restException = wrapper.getRestClientException();
-			this.broadcastException(new RestClientException(restException.getMessage()));
-			return;
-		}
-		
-		Exception exception = wrapper.getException();
-		this.broadcastException(new Exception(exception.getMessage()));
+		EventBus.getDefault().post(new SyncEvent(wrapper));
 	}
 
 }

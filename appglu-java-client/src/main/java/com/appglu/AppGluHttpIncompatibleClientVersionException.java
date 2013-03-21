@@ -13,28 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.appglu.android.sample;
+package com.appglu;
 
-import android.app.Application;
+import org.springframework.http.HttpStatus;
 
-import com.appglu.android.AppGlu;
-import com.appglu.android.AppGluSettings;
-import com.appglu.android.log.LoggerLevel;
+/**
+ * Happens if the X-AppGlu-Client-Version HTTP header contains a version that is not compatible with the version defined on the AppGlu server.
+ * 
+ * @since 1.0.0
+ */
 
-public class SampleApplication extends Application {
-	
-	public static final String LOG_TAG = "AppGluSample";
-	
-	@Override
-	public void onCreate() {
-		super.onCreate();
-		
-		AppGluSettings settings = new AppGluSettings("ENTER_APP_KEY", "ENTER_APP_SECRET");
-		
-		settings.setDefaultSyncDatabaseHelper(new ProductsDatabaseHelper(this));
-		settings.setLoggerLevel(LoggerLevel.DEBUG);
-		
-		AppGlu.initialize(this, settings);
+@SuppressWarnings("serial")
+public class AppGluHttpIncompatibleClientVersionException extends AppGluHttpServerException {
+
+	public AppGluHttpIncompatibleClientVersionException(Error error) {
+		super(HttpStatus.BAD_REQUEST.value(), error);
 	}
-	
+
 }

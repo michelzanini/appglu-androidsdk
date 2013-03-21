@@ -15,6 +15,12 @@
  ******************************************************************************/
 package com.appglu.android;
 
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+
+import android.content.Context;
+import android.net.http.AndroidHttpClient;
+
 import com.appglu.UserSessionPersistence;
 import com.appglu.android.analytics.AnalyticsDispatcher;
 import com.appglu.android.analytics.AnalyticsSessionCallback;
@@ -50,6 +56,12 @@ import com.appglu.impl.AppGluTemplate;
  */
 public class AppGluSettings {
 	
+	public static final String DEFAULT_BASE_URL = AppGluTemplate.DEFAULT_BASE_URL;
+	
+	public static final String PRODUCTION_ENVIRONMENT = AppGluTemplate.PRODUCTION_ENVIRONMENT;
+	
+	public static final String STAGING_ENVIRONMENT = AppGluTemplate.STAGING_ENVIRONMENT;
+	
 	private String baseUrl;
 	
 	private String applicationKey;
@@ -79,39 +91,33 @@ public class AppGluSettings {
 	 * @param applicationSecret the secret key used to authenticate this application
 	 */
 	public AppGluSettings(String applicationKey, String applicationSecret) {
-		this(AppGluTemplate.DEFAULT_BASE_URL, applicationKey, applicationSecret);
+		this(applicationKey, applicationSecret, PRODUCTION_ENVIRONMENT);
 	}
 	
 	/**
-	 * @param baseUrl the server URL to point to, if different from the default {@link com.appglu.impl.AppGluTemplate#DEFAULT_BASE_URL}
 	 * @param applicationKey a randomly generated unique key specific for each mobile application
 	 * @param applicationSecret the secret key used to authenticate this application
+	 * @param applicationEnvironment environment name to be accessed on the AppGlu server. 
+	 * Normally set to {@link #PRODUCTION_ENVIRONMENT} or {@link #STAGING_ENVIRONMENT}, if not set {@link #PRODUCTION_ENVIRONMENT} is assumed
 	 */
-	public AppGluSettings(String baseUrl, String applicationKey, String applicationSecret) {
-		this(baseUrl, applicationKey, applicationSecret, AppGluTemplate.DEFAULT_ENVIRONMENT);
+	public AppGluSettings(String applicationKey, String applicationSecret, String applicationEnvironment) {
+		this(applicationKey, applicationSecret, applicationEnvironment, DEFAULT_BASE_URL);
 	}
 	
 	/**
-	 * @param baseUrl the server URL to point to, if different from the default {@link com.appglu.impl.AppGluTemplate#DEFAULT_BASE_URL}
 	 * @param applicationKey a randomly generated unique key specific for each mobile application
 	 * @param applicationSecret the secret key used to authenticate this application
-	 * @param applicationEnvironment The environment name to be accessed on the AppGlu server. 
-	 * Normally set to "staging" or "production", if not set {@link com.appglu.impl.AppGluTemplate#DEFAULT_ENVIRONMENT} is assumed
+	 * @param applicationEnvironment environment name to be accessed on the AppGlu server. 
+	 * Normally set to {@link #PRODUCTION_ENVIRONMENT} or {@link #STAGING_ENVIRONMENT}, if not set {@link #PRODUCTION_ENVIRONMENT} is assumed
+	 * @param baseUrl the server URL to point to, if different from the default {@link #DEFAULT_BASE_URL}
 	 */
-	public AppGluSettings(String baseUrl, String applicationKey, String applicationSecret, String applicationEnvironment) {
-		this.baseUrl = baseUrl;
+	public AppGluSettings(String applicationKey, String applicationSecret, String applicationEnvironment, String baseUrl) {
 		this.applicationKey = applicationKey;
 		this.applicationSecret = applicationSecret;
 		this.applicationEnvironment = applicationEnvironment;
+		this.baseUrl = baseUrl;
 	}
 	
-	/**
-	 * Returns the server URL the SDK is pointing to, by default is {@link com.appglu.impl.AppGluTemplate#DEFAULT_BASE_URL}.
-	 */
-	public String getBaseUrl() {
-		return baseUrl;
-	}
-
 	/**
 	 * Returns a randomly generated unique key specific for each mobile application.
 	 */
@@ -128,16 +134,35 @@ public class AppGluSettings {
 	
 	/**
 	 * Returns the environment name that is being accessed on the AppGlu server. 
-	 * Normally is "staging" or "production", by default is {@link com.appglu.impl.AppGluTemplate#DEFAULT_ENVIRONMENT}.
+	 * Normally set to {@link #PRODUCTION_ENVIRONMENT} or {@link #STAGING_ENVIRONMENT}, if not set {@link #PRODUCTION_ENVIRONMENT} is assumed.
 	 */
 	public String getApplicationEnvironment() {
 		return applicationEnvironment;
 	}
 	
+	/**
+	 * Returns the server URL the SDK is pointing to, by default is {@link #DEFAULT_BASE_URL}.
+	 */
+	public String getBaseUrl() {
+		return baseUrl;
+	}
+	
+	/**
+	 * Returns the application version to be validated when calling {@link AppGlu#validateApplicationVersion()}.<br>
+	 * If <code>null</code> is returned, the version sent to the server will be the 'versionName' property of your AndroidManifest.xml.
+	 * @see #setApplicationVersion(String)
+	 * @see AppGlu#validateApplicationVersion()
+	 */
 	public String getApplicationVersion() {
 		return applicationVersion;
 	}
 
+	/**
+	 * {@link AppGlu#validateApplicationVersion()} validates if your application version is compatible with the version defined as minimum on the AppGlu server.<br>
+	 * By default, the version sent to the server will be the 'versionName' property of your AndroidManifest.xml.<br>
+	 * If you want another version to be validated with the server, you can use this method to set it before calling {@link AppGlu#initialize(Context, AppGluSettings)}.
+	 * @see AppGlu#validateApplicationVersion()
+	 */
 	public void setApplicationVersion(String applicationVersion) {
 		this.applicationVersion = applicationVersion;
 	}
@@ -259,8 +284,19 @@ public class AppGluSettings {
 	/**
 	 * This is an extension point that can be used if you wish to extend or customize the {@link com.appglu.impl.AppGluTemplate}.
 	 */
-	protected AppGluTemplate createAppGluTemplate() {
-		return new AppGluTemplate(this.getBaseUrl(), this.getApplicationKey(), this.getApplicationSecret(), this.getApplicationEnvironment());
+	protected AppGluTemplate createAppGluTemplate(final Context context) {
+		return new AppGluTemplate(this.getApplicationKey(), this.getApplicationSecret(), this.getApplicationEnvironment(), this.getBaseUrl()) {
+			
+			protected ClientHttpRequestFactory createClientHttpRequestFactory() {
+				AndroidHttpClient androidHttpClient = AndroidHttpClient.newInstance("Android-User-Agent", context);
+				return new HttpComponentsClientHttpRequestFactory(androidHttpClient);
+			}
+			
+			protected boolean shouldAddGzipRequestInterceptor() {
+				return true;
+			}
+			
+		};
 	}
 	
 }

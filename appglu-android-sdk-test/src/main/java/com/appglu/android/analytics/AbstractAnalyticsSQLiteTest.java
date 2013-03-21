@@ -61,9 +61,9 @@ public abstract class AbstractAnalyticsSQLiteTest extends AndroidTestCase {
 			database.execSQL("insert into session_parameters (id, session_id, name, value) values (4, 3, 'name7', 'value4')");
 			database.execSQL("insert into session_parameters (id, session_id, name, value) values (5, 3, 'name8', 'value5')");
 			database.execSQL("insert into session_parameters (id, session_id, name, value) values (6, 3, 'name9', 'value6')");
-			database.execSQL("insert into session_events (id, session_id, name, date) values (1, 1, 'event1', " + lastTimestamp + ")");
-			database.execSQL("insert into session_events (id, session_id, name, date) values (2, 2, 'event2', " + lastTimestamp + ")");
-			database.execSQL("insert into session_events (id, session_id, name, date) values (3, 2, 'event3', " + lastTimestamp + ")");
+			database.execSQL("insert into session_events (id, session_id, name, date, data_table, data_id) values (1, 1, 'event1', " + lastTimestamp + ", 'table_one', 'id_one')");
+			database.execSQL("insert into session_events (id, session_id, name, date, data_table, data_id) values (2, 2, 'event2', " + lastTimestamp + ", 'table_two', 'id_two')");
+			database.execSQL("insert into session_events (id, session_id, name, date, data_table, data_id) values (3, 2, 'event3', " + lastTimestamp + ", 'table_three', 'id_three')");
 			database.execSQL("insert into session_event_parameters (id, event_id, name, value) values (1, 1, 'name1', 'value1')");
 			database.execSQL("insert into session_event_parameters (id, event_id, name, value) values (2, 1, 'name2', 'value2')");
 			database.execSQL("insert into session_event_parameters (id, event_id, name, value) values (3, 1, 'name3', 'value3')");
@@ -96,6 +96,16 @@ public abstract class AbstractAnalyticsSQLiteTest extends AndroidTestCase {
 		AnalyticsSessionEvent event = new AnalyticsSessionEvent();
 		event.setName(name);
 		event.setDate(new Date(this.lastTimestamp));
+		event.setParameters(parameters);
+		return event;
+	}
+	
+	protected AnalyticsSessionEvent event(String name, String dataTable, String dataId, Map<String, String> parameters) {
+		AnalyticsSessionEvent event = new AnalyticsSessionEvent();
+		event.setName(name);
+		event.setDate(new Date(this.lastTimestamp));
+		event.setDataTable(dataTable);
+		event.setDataId(dataId);
 		event.setParameters(parameters);
 		return event;
 	}
@@ -175,6 +185,8 @@ public abstract class AbstractAnalyticsSQLiteTest extends AndroidTestCase {
 			
 			Assert.assertEquals(expectedEvent.getName(), returnedEvent.getName());
 			Assert.assertEquals(expectedEvent.getDate(), returnedEvent.getDate());
+			Assert.assertEquals(expectedEvent.getDataTable(), returnedEvent.getDataTable());
+			Assert.assertEquals(expectedEvent.getDataId(), returnedEvent.getDataId());
 			Assert.assertEquals(expectedEvent.getParameters(), returnedEvent.getParameters());
 		}
 	}

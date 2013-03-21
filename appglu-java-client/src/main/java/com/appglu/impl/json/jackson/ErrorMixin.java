@@ -27,7 +27,7 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.appglu.ErrorCode;
 
-@JsonPropertyOrder({"code", "message"})
+@JsonPropertyOrder({"code", "message", "detail"})
 public abstract class ErrorMixin {
 	
 	@JsonProperty("code")
@@ -36,6 +36,9 @@ public abstract class ErrorMixin {
 	
 	@JsonProperty("message")
 	String message;
+	
+	@JsonProperty("detail")
+	String detail;
 	
 	private static class ErrorCodeDeserializer extends JsonDeserializer<ErrorCode> {
 		@Override

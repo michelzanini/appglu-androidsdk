@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
@@ -47,6 +47,7 @@ import com.appglu.User;
 import com.appglu.UserOperations;
 import com.appglu.UserSessionPersistence;
 import com.appglu.impl.json.JsonMessageConverterSelector;
+import com.appglu.impl.json.TableChangesJsonParser;
 import com.appglu.impl.util.StringUtils;
 
 /**
@@ -78,17 +79,17 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	
 	public static final String DEFAULT_BASE_URL = "https://api.appglu.com";
 	
-	public static final String DEFAULT_ENVIRONMENT = "production";
+	public static final String PRODUCTION_ENVIRONMENT = "production";
 	
-	private static final boolean ANDROID_ENVIRONMENT = ClassUtils.isPresent("android.os.Build", AppGluTemplate.class.getClassLoader());
-	
-	private String baseUrl;
+	public static final String STAGING_ENVIRONMENT = "staging";
 	
 	private String applicationKey;
 	
 	private String applicationSecret;
 	
 	private String applicationEnvironment;
+	
+	private String baseUrl;
 	
 	private RestTemplate restTemplate;
 	
@@ -126,6 +127,8 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	
 	private HttpMessageConverter<Object> jsonMessageConverter;
 	
+	private TableChangesJsonParser tableChangesJsonParser;
+	
 	private DefaultHeadersHttpRequestInterceptor defaultHeadersHttpRequestInterceptor;
 	
 	private BasicAuthHttpRequestInterceptor basicAuthHttpRequestInterceptor;
@@ -139,43 +142,47 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	 * @param applicationSecret the secret key used to authenticate this application
 	 */
 	public AppGluTemplate(String applicationKey, String applicationSecret) {
-		this(DEFAULT_BASE_URL, applicationKey, applicationSecret);
+		this(applicationKey, applicationSecret, PRODUCTION_ENVIRONMENT);
 	}
 	
 	/**
-	 * @param baseUrl the server URL to point to, if different from the default {@link AppGluTemplate#DEFAULT_BASE_URL}
 	 * @param applicationKey a randomly generated unique key specific for each mobile application
 	 * @param applicationSecret the secret key used to authenticate this application
+	 * @param applicationEnvironment environment name to be accessed on the AppGlu server. 
+	 * Normally set to {@link #PRODUCTION_ENVIRONMENT} or {@link #STAGING_ENVIRONMENT}, if not set {@link #PRODUCTION_ENVIRONMENT} is assumed
 	 */
-	public AppGluTemplate(String baseUrl, String applicationKey, String applicationSecret) {
-		this(baseUrl, applicationKey, applicationSecret, DEFAULT_ENVIRONMENT);
+	public AppGluTemplate(String applicationKey, String applicationSecret, String applicationEnvironment) {
+		this(applicationKey, applicationSecret, applicationEnvironment, DEFAULT_BASE_URL);
 	}
 	
 	/**
-	 * @param baseUrl the server URL to point to, if different from the default {@link AppGluTemplate#DEFAULT_BASE_URL}
 	 * @param applicationKey a randomly generated unique key specific for each mobile application
 	 * @param applicationSecret the secret key used to authenticate this application
-	 * @param applicationEnvironment The environment name to be accessed. Normally set to "staging" or "production", if not set "production" is assumed
+	 * @param applicationEnvironment environment name to be accessed on the AppGlu server. 
+	 * Normally set to {@link #PRODUCTION_ENVIRONMENT} or {@link #STAGING_ENVIRONMENT}, if not set {@link #PRODUCTION_ENVIRONMENT} is assumed
+	 * @param baseUrl the server URL to point to, if different from the default {@link #DEFAULT_BASE_URL}
 	 */
-	public AppGluTemplate(String baseUrl, String applicationKey, String applicationSecret, String applicationEnvironment) {
+	public AppGluTemplate(String applicationKey, String applicationSecret, String applicationEnvironment, String baseUrl) {
 		if (StringUtils.isEmpty(baseUrl)) {
 			throw new IllegalArgumentException("Base URL cannot be empty");
 		}
 		
-		this.baseUrl = baseUrl;
 		this.applicationKey = applicationKey;
 		this.applicationSecret = applicationSecret;
 		this.applicationEnvironment = applicationEnvironment;
+		this.baseUrl = baseUrl;
 		
 		this.userSessionPersistence = new MemoryUserSessionPersistence();
 
-		this.restTemplate = this.createRestTemplate();
-		this.jsonMessageConverter = JsonMessageConverterSelector.getJsonMessageConverter();
+		this.restTemplate = new RestTemplate(this.createClientHttpRequestFactory());
+		
+		this.jsonMessageConverter = this.createJsonMessageConverter();
+		this.tableChangesJsonParser = this.createTableChangesJsonParser();
 		this.restTemplate.setMessageConverters(this.getMessageConverters());
 		this.restTemplate.setErrorHandler(this.getResponseErrorHandler());
 		this.restTemplate.setInterceptors(this.createInterceptors());
 		
-		this.downloadRestTemplate = this.createRestTemplate();
+		this.downloadRestTemplate = new RestTemplate(this.createClientHttpRequestFactory());
 		
 		this.initApis();
 	}
@@ -222,13 +229,6 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	}
 	
 	/**
-	 * @return the server URL the SDK is pointing to, by default is {@link AppGluTemplate#DEFAULT_BASE_URL}
-	 */
-	public String getBaseUrl() {
-		return baseUrl;
-	}
-
-	/**
 	 * @return a randomly generated unique key specific for each mobile application
 	 */
 	public String getApplicationKey() {
@@ -243,10 +243,17 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 	}
 	
 	/**
-	 * @return environment name to be accessed, by default is {@link AppGluTemplate#DEFAULT_ENVIRONMENT}
+	 * @return environment name to be accessed, by default is {@link AppGluTemplate#PRODUCTION_ENVIRONMENT}
 	 */
 	public String getApplicationEnvironment() {
 		return applicationEnvironment;
+	}
+	
+	/**
+	 * @return the server URL the SDK is pointing to, by default is {@link AppGluTemplate#DEFAULT_BASE_URL}
+	 */
+	public String getBaseUrl() {
+		return baseUrl;
 	}
 
 	public CrudOperations crudOperations() {
@@ -367,10 +374,10 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.pushOperations = new PushTemplate(this.restOperations());
 		this.analyticsOperations = new AnalyticsTemplate(this.restOperations());
 		this.userOperations = new UserTemplate(this.restOperations(), this.userSessionPersistence);
-		this.syncOperations = new SyncTemplate(this.restOperations(), this.jsonMessageConverter);
+		this.syncOperations = new SyncTemplate(this.restOperations(), this.jsonMessageConverter, this.tableChangesJsonParser);
 		this.storageOperations = new StorageTemplate(this.downloadRestOperations());
 	}
-	
+
 	private void initAsyncApis() {
 		this.asyncCrudOperations = new AsyncCrudTemplate(this.getAsyncExecutor(), this.crudOperations());
 		this.asyncSavedQueriesOperations = new AsyncSavedQueriesTemplate(this.getAsyncExecutor(), this.savedQueriesOperations());
@@ -381,13 +388,55 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		this.asyncStorageOperations = new AsyncStorageTemplate(this.getAsyncExecutor(), this.storageOperations());
 	}
 	
-	protected RestTemplate createRestTemplate() {
-		if (ANDROID_ENVIRONMENT) {
-			return new RestTemplate();
-		}
-		return new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
+	/**
+	 * Extension point to replace or customize the JSON parser library.<br>
+	 * If you replace or customize the default JSON library please remember to do it as well on {@link #createTableChangesJsonParser()}.<br>
+	 * For now, Jackson JSON parser library is the only JSON parser supported.
+	 * 
+	 * @see JsonMessageConverterSelector
+	 * @see #createTableChangesJsonParser()
+	 */
+	protected HttpMessageConverter<Object> createJsonMessageConverter() {
+		return JsonMessageConverterSelector.getJsonMessageConverter();
+	}
+	
+	/**
+	 * Extension point to replace or customize the JSON parser library.<br>
+	 * If you replace or customize the default JSON library, please remember to do it as well on {@link #createJsonMessageConverter()}.<br>
+	 * For now, Jackson JSON parser library is the only JSON parser supported.
+	 * 
+	 * @see JsonMessageConverterSelector
+	 * @see #createJsonMessageConverter()
+	 */
+	protected TableChangesJsonParser createTableChangesJsonParser() {
+		return JsonMessageConverterSelector.getTableChangesJsonParser();
+	}
+	
+	/**
+	 * Extension point to replace or customize the HTTP client library.<br>
+	 * If you replace the default HTTP client, please remember to override {@link #shouldAddGzipRequestInterceptor()} and return <code>true</code> if this library do not add GZip support by default.<br>
+	 * Apache Http Commons (HttpComponentsClientHttpRequestFactory) is supported as well as the standard JSE HttpURLConnection (SimpleClientHttpRequestFactory).
+	 * 
+	 * @see #shouldAddGzipRequestInterceptor()
+	 */
+	protected ClientHttpRequestFactory createClientHttpRequestFactory() {
+		return ClientHttpRequestFactorySelector.getRequestFactory();
+	}
+	
+	/**
+	 * Extension point to override if you changed the HTTP client by overriding {@link #createClientHttpRequestFactory()}.<br> 
+	 * Return <code>true</code> if this library do not add GZip support by default.
+	 * 
+	 * @see #createClientHttpRequestFactory()
+	 */
+	protected boolean shouldAddGzipRequestInterceptor() {
+		return !ClientHttpRequestFactorySelector.supportsGzipCompression();
 	}
 
+	/**
+	 * Extension point to configure or add request interceptors (implementations of ClientHttpRequestInterceptor).<br>
+	 * Remember to call <code>super.configureHttpRequestInterceptors(interceptors)</code> if you override this method.
+	 */
 	protected void configureHttpRequestInterceptors(List<ClientHttpRequestInterceptor> interceptors) {
 		this.defaultHeadersHttpRequestInterceptor = new DefaultHeadersHttpRequestInterceptor(this.getBaseUrl(), this.getApplicationEnvironment());
 		this.basicAuthHttpRequestInterceptor = new BasicAuthHttpRequestInterceptor(this.getApplicationKey(), this.getApplicationSecret());
@@ -397,7 +446,7 @@ public class AppGluTemplate implements AppGluOperations, AsyncAppGluOperations {
 		interceptors.add(this.basicAuthHttpRequestInterceptor);
 		interceptors.add(this.userSessionRequestInterceptor);
 		
-		if (ANDROID_ENVIRONMENT) {
+		if (this.shouldAddGzipRequestInterceptor()) {
 			interceptors.add(new GZipHttpRequestInterceptor());
 		}
 	}

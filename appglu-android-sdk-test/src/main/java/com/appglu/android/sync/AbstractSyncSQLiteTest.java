@@ -70,8 +70,8 @@ public abstract class AbstractSyncSQLiteTest extends AbstractDatabaseHelperTest 
 			database.execSQL("insert into appglu_sync_metadata(sync_key, table_name, primary_key) values (4, 'logged_table', '3');");
 			
 			database.execSQL("delete from appglu_storage_files");
-			database.execSQL("insert into appglu_storage_files (id, key, name, content_type, title, size, last_modified, url, e_tag, directory_id) values (1001, '1ee26276-b773-4eaa-9762-49c380e604c7', 'app-icon.png', 'image/png', 'app-icon', 10125, 1357309209000, 'https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png', 'abdca54e4ca831ec8013ef9f597adf1c', 1)");
-			database.execSQL("insert into appglu_storage_files (id, key, name, content_type, title, size, last_modified, url, e_tag, directory_id) values (1002, '12312312-b773-4eaa-9762-123123123123', 'splash.png', 'image/png', 'splash', 3410125, 1357309209000, 'https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png', 'e1518f15ce668ab198508939822225d1', 1)");
+			database.execSQL("insert into appglu_storage_files (id, key, name, content_type, title, size, last_modified, url, etag, version, directory_id) values (1001, '1ee26276-b773-4eaa-9762-49c380e604c7', 'app-icon.png', 'image/png', 'app-icon', 10125, 1357309209000, 'https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png', 'abdca54e4ca831ec8013ef9f597adf1c', '2', 1)");
+			database.execSQL("insert into appglu_storage_files (id, key, name, content_type, title, size, last_modified, url, etag, version, directory_id) values (1002, '12312312-b773-4eaa-9762-123123123123', 'splash.png', 'image/png', 'splash', 3410125, 1357309209000, 'https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png', 'e1518f15ce668ab198508939822225d1', '2', 1)");
 			
 			database.setTransactionSuccessful();
 		} finally {
