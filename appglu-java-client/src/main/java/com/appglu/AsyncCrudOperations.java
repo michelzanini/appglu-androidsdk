@@ -87,4 +87,16 @@ public interface AsyncCrudOperations {
 	 */
 	void deleteInBackground(String tableName, Object id, AsyncCallback<Boolean> deleteCallback);
 	
+	/**
+	 * Asynchronous version of {@link CrudOperations#delete(Object)}.
+	 * @see CrudOperations#delete(Object)
+	 */
+	void deleteInBackground(Object entity, AsyncCallback<Boolean> deleteCallback);
+	
+	/**
+	 * Asynchronous version of {@link CrudOperations#delete(Class, Object)}.
+	 * @see CrudOperations#delete(Class, Object)
+	 */
+	<T> void deleteInBackground(Class<T> clazz, Object id, AsyncCallback<Boolean> deleteCallback);
+	
 }

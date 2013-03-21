@@ -183,10 +183,20 @@ public final class CrudTemplate implements CrudOperations {
 		}
 	}
 	
+	/*
+	 * Crud Operations using classes and annotations
+	 */
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	public <T> T read(Class<T> clazz, Object id) {
 		return this.read(clazz, id, new ObjectRowMapper<T>(clazz));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public <T> T read(Class<T> clazz, Object id, RowMapper<T> rowMapper) throws AppGluRestClientException {
 		String tableName = this.getTableNameForClass(clazz);
 		
@@ -194,31 +204,41 @@ public final class CrudTemplate implements CrudOperations {
 		return rowMapper.mapRow(row);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public <T> boolean delete(Object entity) throws AppGluRestClientException {
 		Object id = this.extractPrimaryKeyValue(entity);
 		return this.delete(entity.getClass(), id);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public <T> boolean delete(Class<T> clazz, Object id) throws AppGluRestClientException {
 		String tableName = this.getTableNameForClass(clazz);
 		return this.delete(tableName, id);
 	}
 
-	protected <T> String getTableNameForClass(Class<T> clazz) {
-		String className = ClassUtils.getShortName(clazz);
-		String tableName = StringUtils.underscoreName(className);
-		
+	/**
+	 * Return the table name for this class.
+	 */
+	private <T> String getTableNameForClass(Class<T> clazz) {
 		if (clazz.isAnnotationPresent(Table.class)) {
 			Table tableAnnotation = clazz.getAnnotation(Table.class);
 			if (StringUtils.isNotEmpty(tableAnnotation.tableName())) {
-				tableName = tableAnnotation.tableName();
+				return tableAnnotation.tableName();
 			}
 		}
 		
-		return tableName;
+		String className = ClassUtils.getShortName(clazz);
+		return StringUtils.underscoreName(className);
 	}
 	
-	protected Object extractPrimaryKeyValue(final Object entity) {
+	/**
+	 * Extract the primary key value from this entity.
+	 */
+	private Object extractPrimaryKeyValue(final Object entity) {
 		final Class<?> clazz = entity.getClass();
 		
 		final List<Object> primaryKeyValues = new ArrayList<Object>();
@@ -245,7 +265,7 @@ public final class CrudTemplate implements CrudOperations {
 					return false;
 				}
 				
-				Column columnAnnotation = clazz.getAnnotation(Column.class);
+				Column columnAnnotation = field.getAnnotation(Column.class);
 				return columnAnnotation.primaryKey();
 			}
 		};
@@ -253,10 +273,12 @@ public final class CrudTemplate implements CrudOperations {
 		ReflectionUtils.doWithFields(clazz, fieldCallback, fieldFilter);
 		
 		if (primaryKeyValues.isEmpty()) {
+			//TODO
 			throw new AppGluRestClientException("");
 		}
 		
 		if (primaryKeyValues.size() > 1) {
+			//TODO
 			throw new AppGluRestClientException("");
 		}
 		

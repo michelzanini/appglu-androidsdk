@@ -197,4 +197,18 @@ public final class CrudApi implements CrudOperations, AsyncCrudOperations {
 		asyncCrudOperations.deleteInBackground(tableName, id, deleteCallback);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public void deleteInBackground(Object entity, AsyncCallback<Boolean> deleteCallback) {
+		asyncCrudOperations.deleteInBackground(entity, deleteCallback);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public <T> void deleteInBackground(Class<T> clazz, Object id, AsyncCallback<Boolean> deleteCallback) {
+		asyncCrudOperations.deleteInBackground(clazz, id, deleteCallback);
+	}
+
 }

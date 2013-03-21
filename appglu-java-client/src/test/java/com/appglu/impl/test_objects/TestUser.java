@@ -13,39 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.appglu;
+package com.appglu.impl.test_objects;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.appglu.Column;
+import com.appglu.Table;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Table(tableName = "user")
+public class TestUser {
 
-/**
- * 
- * TODO
- * @since TODO
- */
-public @interface Column {
-
-	/**
-	 * TODO
-	 * @return
-	 */
-	String columnName() default "";
-	
-	/**
-	 * TODO
-	 * @return
-	 */
-	boolean primaryKey() default false;
-	
-	/**
-	 * TODO
-	 * @return
-	 */
-	boolean required() default false;
+	@Column(primaryKey = true)
+	public int id;
 	
 }

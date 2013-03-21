@@ -42,6 +42,7 @@ import com.appglu.Rows;
 import com.appglu.SortDirection;
 import com.appglu.impl.test_objects.Annotations;
 import com.appglu.impl.test_objects.DataTypes;
+import com.appglu.impl.test_objects.TestUser;
 import com.appglu.impl.util.DateUtils;
 
 public class CrudTemplateTest extends AbstractAppGluApiTest {
@@ -296,6 +297,33 @@ public class CrudTemplateTest extends AbstractAppGluApiTest {
 		
 		boolean success = crudOperations.delete("user", 2);
 		Assert.assertFalse(success);
+		
+		mockServer.verify();
+	}
+	
+	@Test
+	public void deleteObject() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/1"))
+			.andExpect(method(HttpMethod.DELETE))
+			.andRespond(withSuccess().headers(responseHeaders));
+		
+		TestUser user = new TestUser();
+		user.id = 1;
+		
+		boolean success = crudOperations.delete(user);
+		Assert.assertTrue(success);
+		
+		mockServer.verify();
+	}
+	
+	@Test
+	public void deleteObjectUsingClass() {
+		mockServer.expect(requestTo("http://localhost/appglu/v1/tables/user/1"))
+			.andExpect(method(HttpMethod.DELETE))
+			.andRespond(withSuccess().headers(responseHeaders));
+		
+		boolean success = crudOperations.delete(TestUser.class, 1);
+		Assert.assertTrue(success);
 		
 		mockServer.verify();
 	}

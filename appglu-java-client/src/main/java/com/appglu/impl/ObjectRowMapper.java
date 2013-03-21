@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 AppGlu, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.appglu.impl;
 
 import java.lang.reflect.Field;
@@ -16,6 +31,11 @@ import com.appglu.RowMapper;
 import com.appglu.RowMapperTypeConversionException;
 import com.appglu.impl.util.StringUtils;
 
+/**
+ * TODO
+ * @param <T>
+ * @since TODO
+ */
 public class ObjectRowMapper<T> implements RowMapper<T> {
 
 	private Class<T> mappedClass;
@@ -80,8 +100,11 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 			required = columnAnnotation.required();
 		}
 		
-		if (required && !row.containsKey(key)) {
-			throw new ObjectRowMapperException(mappedClass, "Column " + key + " is required but not present on the response");
+		if (!row.containsKey(key)) {
+			if (required) {
+				throw new ObjectRowMapperException(mappedClass, "Column " + key + " is required but not present on the response");
+			}
+			return;
 		}
 		
 		Class<?> type = field.getType();
@@ -112,13 +135,11 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 		} else if (type.equals(Date.class)) {
 			value = row.getDate(key);
 		} else {
-			throw new ObjectRowMapperException(mappedClass, "Not supported field of " + type + ". To ignore it, add the annotation @Ignore.");
+			throw new ObjectRowMapperException(mappedClass, "Not supported field " + field + ". To ignore it, add the annotation @Ignore.");
 		}
 		
-		if (value != null) {
-			ReflectionUtils.makeAccessible(field);
-			ReflectionUtils.setField(field, object, value);
-		}
+		ReflectionUtils.makeAccessible(field);
+		ReflectionUtils.setField(field, object, value);
 	}
 	
 }

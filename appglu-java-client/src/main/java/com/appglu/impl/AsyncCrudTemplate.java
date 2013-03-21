@@ -17,7 +17,6 @@ package com.appglu.impl;
 
 import java.util.concurrent.Callable;
 
-import com.appglu.AppGluRestClientException;
 import com.appglu.AsyncCallback;
 import com.appglu.AsyncCrudOperations;
 import com.appglu.CrudOperations;
@@ -124,11 +123,15 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 			}
 		});
 	}
+	
+	/*
+	 * Crud Operations using classes and annotations
+	 */
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public <T> void readInBackground(final Class<T> clazz, final Object id, AsyncCallback<T> objectCallback) throws AppGluRestClientException {
+	public <T> void readInBackground(final Class<T> clazz, final Object id, AsyncCallback<T> objectCallback) {
 		asyncExecutor.execute(objectCallback, new Callable<T>() {
 			public T call() {
 				return crudOperations.read(clazz, id);
@@ -139,10 +142,32 @@ public final class AsyncCrudTemplate implements AsyncCrudOperations {
 	/**
 	 * {@inheritDoc}
 	 */
-	public <T> void readInBackground(final Class<T> clazz, final Object id, final RowMapper<T> rowMapper, AsyncCallback<T> objectCallback) throws AppGluRestClientException {
+	public <T> void readInBackground(final Class<T> clazz, final Object id, final RowMapper<T> rowMapper, AsyncCallback<T> objectCallback) {
 		asyncExecutor.execute(objectCallback, new Callable<T>() {
 			public T call() {
 				return crudOperations.read(clazz, id, rowMapper);
+			}
+		});
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public void deleteInBackground(final Object entity, AsyncCallback<Boolean> deleteCallback) {
+		asyncExecutor.execute(deleteCallback, new Callable<Boolean>() {
+			public Boolean call() {
+				return crudOperations.delete(entity);
+			}
+		});
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public <T> void deleteInBackground(final Class<T> clazz, final Object id, AsyncCallback<Boolean> deleteCallback) {
+		asyncExecutor.execute(deleteCallback, new Callable<Boolean>() {
+			public Boolean call() {
+				return crudOperations.delete(clazz, id);
 			}
 		});
 	}
