@@ -112,15 +112,18 @@ public final class StorageTemplate implements StorageOperations {
 					}
 					
 					Md5DigestCalculatingInputStream inputStream = new Md5DigestCalculatingInputStream(response.getBody());
-					
 					inputStreamCallback.doWithInputStream(inputStream);
 					
-					byte[] contentMd5 = inputStream.getMd5Digest();
-					String eTag = StringUtils.removeDoubleQuotes(response.getHeaders().getETag());
+					String eTagHeader = response.getHeaders().getETag();
 					
-					if (!HashUtils.md5MatchesWithETag(contentMd5, eTag)) {
-						throw new AppGluRestClientException("Unable to verify integrity of downloaded file. " +
-		                        "Client calculated content hash didn't match hash calculated by server");
+					if (StringUtils.isNotEmpty(eTagHeader)) {
+						String eTag = StringUtils.removeDoubleQuotes(eTagHeader);
+						
+						byte[] contentMd5 = inputStream.getMd5Digest();
+						if (!HashUtils.md5MatchesWithETag(contentMd5, eTag)) {
+							throw new AppGluRestClientException("Unable to verify integrity of downloaded file. " +
+			                        "Client calculated content hash didn't match hash calculated by server");
+						}
 					}
 					
 					return true;
