@@ -135,23 +135,23 @@ public class ImageViewAsyncCallback extends AsyncCallback<Bitmap> {
 	
 	/**
 	 * 
-	 * TODO
-	 * @since TODO
+	 * Provide callbacks methods when the image is being downloaded in background.
+	 * @since 1.0.0
 	 */
 	public interface ImageDownloadListener {
 		
 		/**
-		 * TODO
+		 * Executes before the HTTP request.
 		 */
 		void onImageStartLoading();
 		
 		/**
-		 * TODO
+		 * Executes after the HTTP completes with success.
 		 */
 		void onImageLoaded(Bitmap bitmap);
 		
 		/**
-		 * TODO
+		 * Executes after the HTTP failed.
 		 */
 		void onImageFailedLoading();
 
