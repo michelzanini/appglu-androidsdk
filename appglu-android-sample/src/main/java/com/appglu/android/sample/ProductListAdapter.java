@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.appglu.StorageFile;
 import com.appglu.android.AppGlu;
+import com.appglu.android.ImageViewAsyncCallback;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -61,7 +62,8 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 		Product product = this.products.get(position);
 		
 		//load an image to an ImageView and also uses a ProgressBar while the image is being loaded
-		AppGlu.syncApi().readBitmapToImageViewInBackground(new StorageFile(product.getImageName()), 100, 100, holder.thumbnail, holder.progress);
+		ImageViewAsyncCallback callback = new ImageViewAsyncCallback(holder.thumbnail, holder.progress, null);
+		AppGlu.syncApi().readBitmapToImageViewInBackground(new StorageFile(product.getImageName()), 100, 100, callback);
 		
 		holder.title.setText(product.getTitle());
 		holder.description.setText(product.getBriefDescription());

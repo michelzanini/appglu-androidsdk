@@ -22,6 +22,7 @@ import java.util.Date;
 
 import android.graphics.Bitmap;
 
+import com.appglu.AppGluRestClientException;
 import com.appglu.InputStreamCallback;
 import com.appglu.StorageFile;
 import com.appglu.StorageOperations;
@@ -85,20 +86,33 @@ public class StorageService {
 			}
 		}
 		
-		boolean wasModified = this.storageOperations.streamStorageFileIfModifiedSince(file, new InputStreamCallback() {
-			public void doWithInputStream(InputStream inputStream) throws IOException {
-				if (logger.isDebugEnabled()) {
-					logger.debug("Downloading '" + cacheKey + "' from network");
+		try {
+			boolean wasModified = this.storageOperations.streamStorageFileIfModifiedSince(file, new InputStreamCallback() {
+				public void doWithInputStream(InputStream inputStream) throws IOException {
+					if (logger.isDebugEnabled()) {
+						logger.debug("Downloading '" + cacheKey + "' from network");
+					}
+					cacheManager.store(cacheKey, inputStream);
 				}
-				cacheManager.store(cacheKey, inputStream);
+			});
+			
+			if (!wasModified) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Updating '" + cacheKey + "' last modified date");
+				}
+				this.cacheManager.updateLastModifiedDate(cacheKey);
 			}
-		});
-		
-		if (!wasModified) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Updating '" + cacheKey + "' last modified date");
+		} catch (AppGluRestClientException e) {
+			
+			if (this.cacheManager.exists(cacheKey)) {
+				if (logger.isErrorEnabled()) {
+					logger.error("Error while loading '" + cacheKey + "' from network, loading from cache instead", e);
+				}
+				
+				return this.cacheManager.retrieve(cacheKey);
 			}
-			this.cacheManager.updateLastModifiedDate(cacheKey);
+			
+			throw e;
 		}
 		
 		return this.cacheManager.retrieve(cacheKey);

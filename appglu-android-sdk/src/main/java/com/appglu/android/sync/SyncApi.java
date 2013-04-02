@@ -29,8 +29,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.appglu.AsyncCallback;
 import com.appglu.StorageFile;
@@ -347,16 +345,15 @@ public final class SyncApi {
 	 * If a <code>ProgressBar</code> is provided, then it will be displayed as long as the image is loading.
 	 * 
 	 * @param storageFile has to contain either an ID or a URL
-	 * @param imageView a <code>ImageView</code> reference from your Activity
-	 * @param progressBar a <code>ProgressBar</code> reference from your Activity or <code>null</code> if you don't want to show a progress bar
+	 * @param imageViewCallback a {@link com.appglu.android.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.ImageViewAsyncCallback.ImageDownloadListener})
+	 * or references to a <code>ImageView</code>, <code>ProgressBar</code> and a <code>View</code> (place holder to display if error occur)
 	 * 
+	 * @see com.appglu.android.ImageViewAsyncCallback
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromFile(File)
 	 */
-	public void readBitmapToImageViewInBackground(final StorageFile storageFile, ImageView imageView, ProgressBar progressBar) {
-		ImageViewAsyncCallback asyncCallback = new ImageViewAsyncCallback(imageView, progressBar);
-		
+	public void readBitmapToImageViewInBackground(final StorageFile storageFile, ImageViewAsyncCallback imageViewCallback) {
 		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
-		executor.execute(asyncCallback, new Callable<Bitmap>() {
+		executor.execute(imageViewCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return readBitmapFromFileStorage(storageFile);
 			}
@@ -369,16 +366,15 @@ public final class SyncApi {
 	 * 
 	 * @param storageFile has to contain either an ID or a URL
 	 * @param inSampleSize how much smaller that the image will be, for example, <code>inSampleSize</code> equals 2 will return an image 1/2 the size of the original
-	 * @param imageView a <code>ImageView</code> reference from your Activity
-	 * @param progressBar a <code>ProgressBar</code> reference from your Activity or <code>null</code> if you don't want to show a progress bar
+	 * @param imageViewCallback a {@link com.appglu.android.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.ImageViewAsyncCallback.ImageDownloadListener})
+	 * or references to a <code>ImageView</code>, <code>ProgressBar</code> and a <code>View</code> (place holder to display if error occur)
 	 * 
+	 * @see com.appglu.android.ImageViewAsyncCallback 
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromFile(File, int)
 	 */
-	public void readBitmapToImageViewInBackground(final StorageFile storageFile, final int inSampleSize, ImageView imageView, ProgressBar progressBar) {
-		ImageViewAsyncCallback asyncCallback = new ImageViewAsyncCallback(imageView, progressBar);
-		
+	public void readBitmapToImageViewInBackground(final StorageFile storageFile, final int inSampleSize, ImageViewAsyncCallback imageViewCallback) {
 		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
-		executor.execute(asyncCallback, new Callable<Bitmap>() {
+		executor.execute(imageViewCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return readBitmapFromFileStorage(storageFile, inSampleSize);
 			}
@@ -392,16 +388,15 @@ public final class SyncApi {
 	 * @param storageFile has to contain either an ID or a URL
 	 * @param requestedWidth the final image width will be close to the requestedWidth
 	 * @param requestedHeight the final image height will be close to the requestedHeight
-	 * @param imageView a <code>ImageView</code> reference from your Activity
-	 * @param progressBar a <code>ProgressBar</code> reference from your Activity or <code>null</code> if you don't want to show a progress bar
+	 * @param imageViewCallback a {@link com.appglu.android.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.ImageViewAsyncCallback.ImageDownloadListener})
+	 * or references to a <code>ImageView</code>, <code>ProgressBar</code> and a <code>View</code> (place holder to display if error occur)
 	 * 
+	 * @see com.appglu.android.ImageViewAsyncCallback
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromFile(File, int, int)
 	 */
-	public void readBitmapToImageViewInBackground(final StorageFile storageFile, final int requestedWidth, final int requestedHeight, ImageView imageView, ProgressBar progressBar) {
-		ImageViewAsyncCallback asyncCallback = new ImageViewAsyncCallback(imageView, progressBar);
-		
+	public void readBitmapToImageViewInBackground(final StorageFile storageFile, final int requestedWidth, final int requestedHeight, ImageViewAsyncCallback imageViewCallback) {
 		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
-		executor.execute(asyncCallback, new Callable<Bitmap>() {
+		executor.execute(imageViewCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return readBitmapFromFileStorage(storageFile, requestedWidth, requestedHeight);
 			}
