@@ -341,8 +341,7 @@ public final class SyncApi {
 	/* Methods to read an image from sync storage in background using an ImageView and ProgressBar to update the UI  */
 	
 	/**
-	 * Reads a file that has previously being downloaded by the SyncIntentService, convert it to a <code>Bitmap</code>, and then load it into the provided <code>ImageView</code> reference.<br>
-	 * If a <code>ProgressBar</code> is provided, then it will be displayed as long as the image is loading.
+	 * Reads a file that has previously being downloaded by the {@link com.appglu.android.sync.SyncIntentService}, converts it to a <code>Bitmap</code>, and then make it available through the {@link com.appglu.android.ImageViewAsyncCallback}.<p>
 	 * 
 	 * @param storageFile has to contain either an ID or a URL
 	 * @param imageViewCallback a {@link com.appglu.android.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.ImageViewAsyncCallback.ImageDownloadListener})
@@ -361,8 +360,7 @@ public final class SyncApi {
 	}
 	
 	/**
-	 * Reads a file that has previously being downloaded by the SyncIntentService, convert it to a <code>Bitmap</code>, and then load it into the provided <code>ImageView</code> reference.<br>
-	 * If a <code>ProgressBar</code> is provided, then it will be displayed as long as the image is loading.
+	 * Reads a file that has previously being downloaded by the {@link com.appglu.android.sync.SyncIntentService}, converts it to a <code>Bitmap</code>, and then make it available through the {@link com.appglu.android.ImageViewAsyncCallback}.<p>
 	 * 
 	 * @param storageFile has to contain either an ID or a URL
 	 * @param inSampleSize how much smaller that the image will be, for example, <code>inSampleSize</code> equals 2 will return an image 1/2 the size of the original
@@ -382,8 +380,7 @@ public final class SyncApi {
 	}
 
 	/**
-	 * Reads a file that has previously being downloaded by the SyncIntentService, convert it to a <code>Bitmap</code>, and then load it into the provided <code>ImageView</code> reference.<br>
-	 * If a <code>ProgressBar</code> is provided, then it will be displayed as long as the image is loading.
+	 * Reads a file that has previously being downloaded by the {@link com.appglu.android.sync.SyncIntentService}, converts it to a <code>Bitmap</code>, and then make it available through the {@link com.appglu.android.ImageViewAsyncCallback}.<p>
 	 * 
 	 * @param storageFile has to contain either an ID or a URL
 	 * @param requestedWidth the final image width will be close to the requestedWidth

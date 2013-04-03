@@ -141,8 +141,7 @@ public final class StorageApi {
 	/* Methods to download an image in background using an ImageView and ProgressBar to update the UI */
 	
 	/**
-	 * Download a file using the URL, convert it to a <code>Bitmap</code>, and then load it into the provided <code>ImageView</code> reference.<br>
-	 * If a <code>ProgressBar</code> is provided, then it will be displayed as long as the image is loading.
+	 * Downloads a file using the URL, converts it to a <code>Bitmap</code> and then make it available through the {@link com.appglu.android.ImageViewAsyncCallback}.<p>
 	 * 
 	 * @param url the file URL - must be a image file
 	 * @param imageViewCallback a {@link com.appglu.android.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.ImageViewAsyncCallback.ImageDownloadListener})
@@ -161,8 +160,7 @@ public final class StorageApi {
 	}
 	
 	/**
-	 * Download a file using the URL, convert it to a <code>Bitmap</code>, and then load it into the provided <code>ImageView</code> reference.<br>
-	 * If a <code>ProgressBar</code> is provided, then it will be displayed as long as the image is loading.
+	 * Downloads a file using the URL, converts it to a <code>Bitmap</code> and then make it available through the {@link com.appglu.android.ImageViewAsyncCallback}.<p>
 	 * 
 	 * @param url the file URL - must be a image file
 	 * @param inSampleSize how much smaller that the image will be, for example, <code>inSampleSize</code> equals 2 will return an image 1/2 the size of the original

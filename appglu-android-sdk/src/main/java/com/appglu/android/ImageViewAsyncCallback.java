@@ -26,8 +26,13 @@ import com.appglu.AsyncCallback;
 import com.appglu.ExceptionWrapper;
 
 /**
- * {@link AsyncCallback} implementation to load image Bitmaps into a ImageView using a ProgressBar while the image is being loaded.<br>
- * If you do not want a ProgressBar then while constructing the class send <code>null</code> on the <code>progressBar</code> parameter.
+ * {@link AsyncCallback} implementation to load image Bitmaps into a ImageView using a ProgressBar while the image is being loaded and a place holder <code>View</code> if the image fails loading.<p>
+ * 
+ * Use the {@link #ImageViewAsyncCallback(android.widget.ImageView, android.widget.ProgressBar, android.view.View)} constructor to load the image into a provided <code>ImageView</code> reference. 
+ * If a non <code>null</code> <code>ProgressBar</code> is provided to the constructor, then it will be displayed as long as the image is loading. 
+ * If a non <code>null</code> <code>View</code> is provided as place holder to the constructor, it will be displayed in the case the image fails loading.<p>
+ * 
+ * Use the {@link #ImageViewAsyncCallback(com.appglu.android.ImageViewAsyncCallback.ImageDownloadListener)} constructor to receive callback methods while the image is being loaded.
  * 
  * @see com.appglu.AsyncCallback
  * @since 1.0.0
