@@ -27,12 +27,6 @@ import com.appglu.AnalyticsSession;
 import com.appglu.AnalyticsSessionEvent;
 import com.appglu.AsyncAnalyticsOperations;
 import com.appglu.android.AppGlu;
-import com.appglu.android.analytics.activity.AppGluAnalyticsActivity;
-import com.appglu.android.analytics.activity.AppGluAnalyticsExpandableListActivity;
-import com.appglu.android.analytics.activity.AppGluAnalyticsFragmentActivity;
-import com.appglu.android.analytics.activity.AppGluAnalyticsListActivity;
-import com.appglu.android.analytics.activity.AppGluAnalyticsPreferenceActivity;
-import com.appglu.android.analytics.activity.AppGluAnalyticsTabActivity;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 
@@ -92,12 +86,12 @@ public final class AnalyticsApi {
 	/**
 	 * Should be called from every {@link Activity#onResume()} of your application.<br>
 	 * Another alternative is to extend from any AppGlu super class that already does this for you.
-	 * @see AppGluAnalyticsActivity
-	 * @see AppGluAnalyticsExpandableListActivity
-	 * @see AppGluAnalyticsFragmentActivity
-	 * @see AppGluAnalyticsListActivity
-	 * @see AppGluAnalyticsPreferenceActivity
-	 * @see AppGluAnalyticsTabActivity
+	 * @see com.appglu.android.analytics.activity.AppGluAnalyticsActivity
+	 * @see com.appglu.android.analytics.activity.AppGluAnalyticsExpandableListActivity
+	 * @see com.appglu.android.analytics.activity.AppGluAnalyticsFragmentActivity
+	 * @see com.appglu.android.analytics.activity.AppGluAnalyticsListActivity
+	 * @see com.appglu.android.analytics.activity.AppGluAnalyticsPreferenceActivity
+	 * @see com.appglu.android.analytics.activity.AppGluAnalyticsTabActivity
 	 * @param activity the Activity that wants to sent analytics events
 	 */
 	public void onActivityResume(final Activity activity) {
@@ -112,12 +106,11 @@ public final class AnalyticsApi {
 	/**
 	 * Should be called from every {@link Activity#onPause()} of your application.
 	 * Another alternative is to extend from any AppGlu super class that already does this for you.
-	 * @see AppGluAnalyticsActivity
-	 * @see AppGluAnalyticsExpandableListActivity
-	 * @see AppGluAnalyticsFragmentActivity
-	 * @see AppGluAnalyticsListActivity
-	 * @see AppGluAnalyticsPreferenceActivity
-	 * @see AppGluAnalyticsTabActivity
+	 * @see com.appglu.android.analytics.activity.AppGluAnalyticsActivity
+	 * @see com.appglu.android.analytics.activity.AppGluAnalyticsExpandableListActivity
+	 * @see com.appglu.android.analytics.activity.AppGluAnalyticsFragmentActivity
+	 * @see com.appglu.android.analytics.activity.AppGluAnalyticsListActivity
+	 * @see com.appglu.android.analytics.activity.AppGluAnalyticsPreferenceActivity
 	 * @param activity the Activity that wants to sent analytics events
 	 */
 	public void onActivityPause(final Activity activity) {

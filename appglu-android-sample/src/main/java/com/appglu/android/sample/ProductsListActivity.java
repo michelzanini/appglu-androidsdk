@@ -30,13 +30,13 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.appglu.android.AppGlu;
-import com.appglu.android.AppGluAsyncTask;
 import com.appglu.android.analytics.activity.AppGluAnalyticsListActivity;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.android.sync.SyncExceptionWrapper;
 import com.appglu.android.sync.SyncIntentServiceRequest;
 import com.appglu.android.sync.SyncListener;
+import com.appglu.android.task.AppGluAsyncTask;
 
 /**
  * Displays a list of {@link Product} objects in a ListView.<br>

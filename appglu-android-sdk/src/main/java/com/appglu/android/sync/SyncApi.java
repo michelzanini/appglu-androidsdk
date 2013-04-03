@@ -35,10 +35,10 @@ import com.appglu.StorageFile;
 import com.appglu.SyncOperations;
 import com.appglu.android.AppGlu;
 import com.appglu.android.AppGluNotProperlyConfiguredException;
-import com.appglu.android.AsyncTaskExecutor;
-import com.appglu.android.ImageViewAsyncCallback;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
+import com.appglu.android.task.AsyncTaskExecutor;
+import com.appglu.android.task.ImageViewAsyncCallback;
 
 import de.greenrobot.event.EventBus;
 
@@ -341,14 +341,13 @@ public final class SyncApi {
 	/* Methods to read an image from sync storage in background using an ImageView and ProgressBar to update the UI  */
 	
 	/**
-	 * Reads a file that has previously being downloaded by the SyncIntentService, convert it to a <code>Bitmap</code>, and then load it into the provided <code>ImageView</code> reference.<br>
-	 * If a <code>ProgressBar</code> is provided, then it will be displayed as long as the image is loading.
+	 * Reads a file that has previously being downloaded by the {@link com.appglu.android.sync.SyncIntentService}, converts it to a <code>Bitmap</code>, and then make it available through the {@link com.appglu.android.task.ImageViewAsyncCallback}.<p>
 	 * 
 	 * @param storageFile has to contain either an ID or a URL
-	 * @param imageViewCallback a {@link com.appglu.android.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.ImageViewAsyncCallback.ImageDownloadListener})
+	 * @param imageViewCallback a {@link com.appglu.android.task.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.task.ImageViewAsyncCallback.ImageDownloadListener})
 	 * or references to a <code>ImageView</code>, <code>ProgressBar</code> and a <code>View</code> (place holder to display if error occur)
 	 * 
-	 * @see com.appglu.android.ImageViewAsyncCallback
+	 * @see com.appglu.android.task.ImageViewAsyncCallback
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromFile(File)
 	 */
 	public void readBitmapToImageViewInBackground(final StorageFile storageFile, ImageViewAsyncCallback imageViewCallback) {
@@ -361,15 +360,14 @@ public final class SyncApi {
 	}
 	
 	/**
-	 * Reads a file that has previously being downloaded by the SyncIntentService, convert it to a <code>Bitmap</code>, and then load it into the provided <code>ImageView</code> reference.<br>
-	 * If a <code>ProgressBar</code> is provided, then it will be displayed as long as the image is loading.
+	 * Reads a file that has previously being downloaded by the {@link com.appglu.android.sync.SyncIntentService}, converts it to a <code>Bitmap</code>, and then make it available through the {@link com.appglu.android.task.ImageViewAsyncCallback}.<p>
 	 * 
 	 * @param storageFile has to contain either an ID or a URL
 	 * @param inSampleSize how much smaller that the image will be, for example, <code>inSampleSize</code> equals 2 will return an image 1/2 the size of the original
-	 * @param imageViewCallback a {@link com.appglu.android.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.ImageViewAsyncCallback.ImageDownloadListener})
+	 * @param imageViewCallback a {@link com.appglu.android.task.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.task.ImageViewAsyncCallback.ImageDownloadListener})
 	 * or references to a <code>ImageView</code>, <code>ProgressBar</code> and a <code>View</code> (place holder to display if error occur)
 	 * 
-	 * @see com.appglu.android.ImageViewAsyncCallback 
+	 * @see com.appglu.android.task.ImageViewAsyncCallback 
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromFile(File, int)
 	 */
 	public void readBitmapToImageViewInBackground(final StorageFile storageFile, final int inSampleSize, ImageViewAsyncCallback imageViewCallback) {
@@ -382,16 +380,15 @@ public final class SyncApi {
 	}
 
 	/**
-	 * Reads a file that has previously being downloaded by the SyncIntentService, convert it to a <code>Bitmap</code>, and then load it into the provided <code>ImageView</code> reference.<br>
-	 * If a <code>ProgressBar</code> is provided, then it will be displayed as long as the image is loading.
+	 * Reads a file that has previously being downloaded by the {@link com.appglu.android.sync.SyncIntentService}, converts it to a <code>Bitmap</code>, and then make it available through the {@link com.appglu.android.task.ImageViewAsyncCallback}.<p>
 	 * 
 	 * @param storageFile has to contain either an ID or a URL
 	 * @param requestedWidth the final image width will be close to the requestedWidth
 	 * @param requestedHeight the final image height will be close to the requestedHeight
-	 * @param imageViewCallback a {@link com.appglu.android.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.ImageViewAsyncCallback.ImageDownloadListener})
+	 * @param imageViewCallback a {@link com.appglu.android.task.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.task.ImageViewAsyncCallback.ImageDownloadListener})
 	 * or references to a <code>ImageView</code>, <code>ProgressBar</code> and a <code>View</code> (place holder to display if error occur)
 	 * 
-	 * @see com.appglu.android.ImageViewAsyncCallback
+	 * @see com.appglu.android.task.ImageViewAsyncCallback
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromFile(File, int, int)
 	 */
 	public void readBitmapToImageViewInBackground(final StorageFile storageFile, final int requestedWidth, final int requestedHeight, ImageViewAsyncCallback imageViewCallback) {

@@ -51,6 +51,7 @@ import com.appglu.android.sync.SyncApi;
 import com.appglu.android.sync.SyncDatabaseHelper;
 import com.appglu.android.sync.SyncFileStorageService;
 import com.appglu.android.sync.SyncRepository;
+import com.appglu.android.task.AsyncTaskExecutor;
 import com.appglu.android.util.AppGluUtils;
 import com.appglu.impl.AppGluTemplate;
 
