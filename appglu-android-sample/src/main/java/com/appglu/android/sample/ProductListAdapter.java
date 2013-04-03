@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.appglu.StorageFile;
 import com.appglu.android.AppGlu;
-import com.appglu.android.ImageViewAsyncCallback;
+import com.appglu.android.task.ImageViewAsyncCallback;
 
 import android.content.Context;
 import android.view.LayoutInflater;

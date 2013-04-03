@@ -44,7 +44,7 @@ public abstract class HashUtils {
             }
             return messageDigest.digest();
         } catch (NoSuchAlgorithmException e) {
-        	throw new IOException(e);
+        	throw new IOException(e.getMessage());
 		} finally {
             IOUtils.closeQuietly(bis);
         }

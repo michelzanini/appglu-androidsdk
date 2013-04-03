@@ -36,7 +36,7 @@ public class Md5DigestCalculatingInputStream extends FilterInputStream {
         try {
         	digest = MessageDigest.getInstance("MD5");
 	    } catch (NoSuchAlgorithmException e) {
-	    	throw new IOException(e);
+	    	throw new IOException(e.getMessage());
 	    }
     }
 
@@ -52,7 +52,7 @@ public class Md5DigestCalculatingInputStream extends FilterInputStream {
         try {
             digest = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-        	throw new IOException(e);
+        	throw new IOException(e.getMessage());
         }
 
         in.reset();

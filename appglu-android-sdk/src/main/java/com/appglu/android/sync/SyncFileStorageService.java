@@ -57,7 +57,7 @@ public class SyncFileStorageService {
 				File destinationFile = getFileFromExternalStorage(storageFile);
 				
 				FileOutputStream fileOutputStream = new FileOutputStream(destinationFile);
-				BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream);
+				BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream, IOUtils.BUFFER_SIZE);
 				
 				IOUtils.copy(inputStream, outputStream);
 			}
@@ -170,7 +170,7 @@ public class SyncFileStorageService {
 	
 	public void writeTemporaryChanges(InputStream inputStream) throws IOException {
 		FileOutputStream fileOutputStream = new FileOutputStream(this.temporaryFile());
-		BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream);
+		BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream, IOUtils.BUFFER_SIZE);
 		
 		IOUtils.copy(inputStream, outputStream);
 	}

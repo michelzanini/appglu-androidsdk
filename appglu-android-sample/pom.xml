@@ -60,11 +60,6 @@
 		<url>https://github.com/appglu/appglu-androidsdk</url>
 	</scm>
     
-    <properties>
-        <sample.android.platform.level>14</sample.android.platform.level>
-        <sample.android.platform.version>4.0.1.2</sample.android.platform.version>
-    </properties>
- 
     <dependencies>
         
         <dependency>
@@ -76,7 +71,7 @@
         <dependency>
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
-            <version>${sample.android.platform.version}</version>
+            <version>${android.platform.version}</version>
             <scope>provided</scope>
         </dependency>
         
@@ -104,7 +99,7 @@
                     <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
                     <sdk>
                         <path>${env.ANDROID_HOME}</path>
-                        <platform>${sample.android.platform.level}</platform>
+                        <platform>${android.platform.level}</platform>
                     </sdk>
                     <undeployBeforeDeploy>true</undeployBeforeDeploy>
                 </configuration>

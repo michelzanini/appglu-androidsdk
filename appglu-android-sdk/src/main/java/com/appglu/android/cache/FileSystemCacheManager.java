@@ -198,7 +198,7 @@ public class FileSystemCacheManager implements CacheManager {
 			File destinationFile = this.getCacheFile(fileName);
 			
 			FileOutputStream fileOutputStream = new FileOutputStream(destinationFile);
-			BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream);
+			BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream, IOUtils.BUFFER_SIZE);
 			IOUtils.copy(inputStream, outputStream);
 			
 			this.writeLastModifiedDateToSharedPreferences(fileName);

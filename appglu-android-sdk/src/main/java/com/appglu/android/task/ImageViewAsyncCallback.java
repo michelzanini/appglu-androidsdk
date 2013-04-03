@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.appglu.android;
+package com.appglu.android.task;
 
 import java.lang.ref.WeakReference;
 
@@ -32,7 +32,7 @@ import com.appglu.ExceptionWrapper;
  * If a non <code>null</code> <code>ProgressBar</code> is provided to the constructor, then it will be displayed as long as the image is loading. 
  * If a non <code>null</code> <code>View</code> is provided as place holder to the constructor, it will be displayed in the case the image fails loading.<p>
  * 
- * Use the {@link #ImageViewAsyncCallback(com.appglu.android.ImageViewAsyncCallback.ImageDownloadListener)} constructor to receive callback methods while the image is being loaded.
+ * Use the {@link #ImageViewAsyncCallback(com.appglu.android.task.ImageViewAsyncCallback.ImageDownloadListener)} constructor to receive callback methods while the image is being loaded.
  * 
  * @see com.appglu.AsyncCallback
  * @since 1.0.0

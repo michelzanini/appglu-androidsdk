@@ -13,57 +13,84 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.appglu.android;
+package com.appglu.android.task;
 
 import java.util.concurrent.Callable;
 
 import com.appglu.AsyncCallback;
 import com.appglu.ExceptionWrapper;
+import com.appglu.android.AppGlu;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 
 /**
- * Adapt {@link com.appglu.android.AppGluAsyncTask} callbacks to a more user friendly version implemented in the {@link com.appglu.AsyncCallback} abstract class.<br>
- * {@link com.appglu.AsyncCallback} is used in every <strong>asynchronous</strong> method of the SDK.
- *  
- * @see com.appglu.impl.AsyncExecutor
- * @see com.appglu.AsyncCallback
+ * Extension of Android's Ice Cream Sandwich port of <code>AsyncTask</code> to add {@link #onException(Exception)} and {@link #onFinished()} callbacks.
+ * 
  * @since 1.0.0
  */
-public class AppGluAsyncCallbackTask<Result> extends AppGluAsyncTask<Void, Void, Result> {
+public class AppGluAsyncTaskCompat<Result> extends AsyncTaskCompat<Void, Void, Result> {
 	
 	private Logger logger = LoggerFactory.getLogger(AppGlu.LOG_TAG);
+	
+	private Exception exception;
 	
 	private AsyncCallback<Result> asyncCallback;
 	
 	private Callable<Result> workerThreadCallback;
 	
-	public AppGluAsyncCallbackTask(AsyncCallback<Result> asyncCallback, Callable<Result> workerThreadCallback) {
+	public AppGluAsyncTaskCompat(AsyncCallback<Result> asyncCallback, Callable<Result> workerThreadCallback) {
 		this.asyncCallback = asyncCallback;
 		this.workerThreadCallback = workerThreadCallback;
 	}
 
+	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
 		asyncCallback.onPreExecute();
+	}
+
+	@Override
+	protected final Result doInBackground(Void... params) {
+		try {
+			return this.doExecuteInBackground(params);
+		} catch (Exception e) {
+			this.exception = e;
+			return null;
+		}
 	}
 
 	protected Result doExecuteInBackground(Void... params) throws Exception {
 		return workerThreadCallback.call();
 	}
 
-	protected void onResult(Result result) {
-		asyncCallback.onResult(result);
+	@Override
+	protected final void onPostExecute(Result result) {
+		try {
+			if (this.exception != null) {
+				this.onException(exception);
+			} else {
+				this.onResult(result);
+			}
+		} finally {
+			this.onFinished();
+		}
 	}
 
 	protected void onException(Exception exception) {
-		super.onException(exception);
 		logger.error(exception);
 		asyncCallback.onException(new ExceptionWrapper(exception));
 	}
-
+	
+	protected void onResult(Result result) {
+		asyncCallback.onResult(result);
+	}
+	
+	@Override
+	protected void onCancelled() {
+		this.onFinished();
+	}
+	
 	protected void onFinished() {
-		super.onFinished();
 		asyncCallback.onFinish();
 	}
 
