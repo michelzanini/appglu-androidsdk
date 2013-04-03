@@ -34,6 +34,7 @@ import com.appglu.android.AppGlu;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 import com.appglu.impl.util.IOUtils;
+import com.appglu.impl.util.StringUtils;
 
 /**
  * {@link CacheManager} implementation that will store the files on disk.<br>
@@ -88,6 +89,9 @@ public class FileSystemCacheManager implements CacheManager {
 	}
 	
 	protected synchronized File getCacheFile(String fileName) {
+		if (StringUtils.isEmpty(fileName)) {
+			return null;
+		}
 		File cacheDir = this.getCacheDir();
 		return new File(cacheDir, fileName);
 	}
@@ -156,6 +160,9 @@ public class FileSystemCacheManager implements CacheManager {
 	
 	public synchronized boolean exists(String fileName) {
 		File file = this.getCacheFile(fileName);
+		if (file == null) {
+			return false;
+		}
 		return file.exists();
 	}
 
@@ -167,7 +174,7 @@ public class FileSystemCacheManager implements CacheManager {
 		}
 		
 		File file = this.getCacheFile(fileName);
-		if (file.exists()) {
+		if (file != null && file.exists()) {
 			return new Date(file.lastModified());
 		}
 		return null;
@@ -175,7 +182,7 @@ public class FileSystemCacheManager implements CacheManager {
 	
 	public synchronized boolean updateLastModifiedDate(String fileName) {
 		File file = this.getCacheFile(fileName);
-		if (file.exists()) {
+		if (file != null && file.exists()) {
 			return this.writeLastModifiedDateToSharedPreferences(fileName);
 		}
 		return false;
@@ -183,7 +190,7 @@ public class FileSystemCacheManager implements CacheManager {
 
 	public synchronized InputStream retrieve(String fileName) {
 		File file = this.getCacheFile(fileName);
-		if (file.exists()) {
+		if (file != null && file.exists()) {
 			try {
 				return new FileInputStream(file);
 			} catch (FileNotFoundException e) {
@@ -196,6 +203,10 @@ public class FileSystemCacheManager implements CacheManager {
 	public synchronized boolean store(String fileName, InputStream inputStream) {
 		try {
 			File destinationFile = this.getCacheFile(fileName);
+			
+			if (destinationFile == null) {
+				return false;
+			}
 			
 			FileOutputStream fileOutputStream = new FileOutputStream(destinationFile);
 			BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream, IOUtils.BUFFER_SIZE);
@@ -216,6 +227,9 @@ public class FileSystemCacheManager implements CacheManager {
 
 	public synchronized boolean remove(String fileName) {
 		File file = this.getCacheFile(fileName);
+		if (file == null) {
+			return false;
+		}
 		return file.delete();
 	}
 
