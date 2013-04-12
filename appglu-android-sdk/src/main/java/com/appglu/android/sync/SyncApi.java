@@ -345,7 +345,7 @@ public final class SyncApi {
 	 * 
 	 * @param storageFile has to contain either an ID or a URL
 	 * @param imageViewCallback a {@link com.appglu.android.task.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.task.ImageViewAsyncCallback.ImageDownloadListener})
-	 * or references to a <code>ImageView</code>, <code>ProgressBar</code> and a <code>View</code> (place holder to display if error occur)
+	 * or references to a <code>ImageView</code>, a <code>View</code> to display while loading the image and a <code>View</code> to use as a place holder in the case the image fails loading
 	 * 
 	 * @see com.appglu.android.task.ImageViewAsyncCallback
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromFile(File)
@@ -365,7 +365,7 @@ public final class SyncApi {
 	 * @param storageFile has to contain either an ID or a URL
 	 * @param inSampleSize how much smaller that the image will be, for example, <code>inSampleSize</code> equals 2 will return an image 1/2 the size of the original
 	 * @param imageViewCallback a {@link com.appglu.android.task.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.task.ImageViewAsyncCallback.ImageDownloadListener})
-	 * or references to a <code>ImageView</code>, <code>ProgressBar</code> and a <code>View</code> (place holder to display if error occur)
+	 * or references to a <code>ImageView</code>, a <code>View</code> to display while loading the image and a <code>View</code> to use as a place holder in the case the image fails loading
 	 * 
 	 * @see com.appglu.android.task.ImageViewAsyncCallback 
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromFile(File, int)
@@ -386,7 +386,7 @@ public final class SyncApi {
 	 * @param requestedWidth the final image width will be close to the requestedWidth
 	 * @param requestedHeight the final image height will be close to the requestedHeight
 	 * @param imageViewCallback a {@link com.appglu.android.task.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.task.ImageViewAsyncCallback.ImageDownloadListener})
-	 * or references to a <code>ImageView</code>, <code>ProgressBar</code> and a <code>View</code> (place holder to display if error occur)
+	 * or references to a <code>ImageView</code>, a <code>View</code> to display while loading the image and a <code>View</code> to use as a place holder in the case the image fails loading
 	 * 
 	 * @see com.appglu.android.task.ImageViewAsyncCallback
 	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromFile(File, int, int)
