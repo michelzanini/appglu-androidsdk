@@ -195,18 +195,18 @@ public class SyncIntentService extends IntentService {
 	}
 	
 	private void postEvent(SyncEvent.Type eventType) {
-		EventBus.getDefault().post(new SyncEvent(eventType));
+		EventBus.getDefault().postSticky(new SyncEvent(eventType));
 	}
 	
 	private void postResultEvent(boolean changesWereApplied) {
-		EventBus.getDefault().post(new SyncEvent(changesWereApplied));
+		EventBus.getDefault().postSticky(new SyncEvent(changesWereApplied));
 	}
 	
 	private void postExceptionEvent(Exception exception) {
 		logger.error(exception);
 		
 		SyncExceptionWrapper wrapper = new SyncExceptionWrapper(exception);
-		EventBus.getDefault().post(new SyncEvent(wrapper));
+		EventBus.getDefault().postSticky(new SyncEvent(wrapper));
 	}
 
 }
