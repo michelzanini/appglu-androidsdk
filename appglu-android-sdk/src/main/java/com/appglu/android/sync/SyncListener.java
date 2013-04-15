@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.appglu.android.sync;
 
+import de.greenrobot.event.EventBus;
+
 /**
  * <p>Create a sub-class of <code>SyncListener</code> to receive events from {@link SyncIntentService}.<br>
  * <p>To register and unregister the <code>SyncListener</code> use the {@link SyncApi} methods like below:
@@ -32,6 +34,8 @@ package com.appglu.android.sync;
 public abstract class SyncListener {
 	
 	public final void onEventMainThread(SyncEvent event) {
+		EventBus.getDefault().removeStickyEvent(event);
+		
 		if (event.getType() == SyncEvent.Type.ON_PRE_EXECUTE) {
 			this.onPreExecute();
 		}

@@ -465,9 +465,19 @@ public final class SyncApi {
 	 * Registers a {@link SyncListener} to listen for events fired by {@link SyncIntentService}.<br>
 	 * Ideally, call {@link #registerSyncListener(SyncListener)} from <code>onCreate()</code> or <code>onStart()</code> or <code>onResume()</code> methods.<br>
 	 * Call {@link #unregisterSyncListener(SyncListener)} from <code>onDestroy()</code> or <code>onStop()</code> or <code>onPause()</code> methods.
+	 * @see #registerStickySyncListener(SyncListener)
 	 * @see #unregisterSyncListener(SyncListener)
 	 */
 	public void registerSyncListener(SyncListener syncListener) {
+		EventBus.getDefault().register(syncListener);
+	}
+	
+	/**
+	 * Registers a {@link SyncListener} to listen for events fired by {@link SyncIntentService}.<br>
+	 * Like {@link #registerSyncListener(SyncListener)}, but also triggers delivery of the most recent Sync event if it was lost when it was fired (there was no listener to consume it).
+	 * @see #unregisterSyncListener(SyncListener)
+	 */
+	public void registerStickySyncListener(SyncListener syncListener) {
 		EventBus.getDefault().registerSticky(syncListener);
 	}
 	
