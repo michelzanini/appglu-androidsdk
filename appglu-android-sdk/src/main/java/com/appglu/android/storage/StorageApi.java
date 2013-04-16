@@ -84,6 +84,19 @@ public final class StorageApi {
 		return this.storageService.downloadAsBitmap(new StorageFile(url), inSampleSize);
 	}
 	
+	/**
+	 * Download a file using the URL and return it as a <code>Bitmap</code>.
+	 * @param url the file URL
+	 * @param requestedWidth the final image width will be close to the requestedWidth (value is in pixels)
+	 * @param requestedHeight the final image height will be close to the requestedHeight (value is in pixels)
+	 * @return a <code>Bitmap</code> with the content of the file 
+	 * 
+	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromByteArray(byte[], int, int)
+	 */
+	public Bitmap downloadAsBitmap(String url, int requestedWidth, int requestedHeight) {
+		return this.storageService.downloadAsBitmap(new StorageFile(url), requestedWidth, requestedHeight);
+	}
+	
 	/* Methods to return files from storage API using a URL in a background thread */
 	
 	/**
@@ -175,6 +188,27 @@ public final class StorageApi {
 		executor.execute(imageViewCallback, new Callable<Bitmap>() {
 			public Bitmap call() throws Exception {
 				return downloadAsBitmap(url, inSampleSize);
+			}
+		});
+	}
+	
+	/**
+	 * Downloads a file using the URL, converts it to a <code>Bitmap</code> and then make it available through the {@link com.appglu.android.task.ImageViewAsyncCallback}.<p>
+	 * 
+	 * @param url the file URL - must be a image file
+	 * @param requestedWidth the final image width will be close to the requestedWidth (value is in pixels)
+	 * @param requestedHeight the final image height will be close to the requestedHeight (value is in pixels)
+	 * @param imageViewCallback a {@link com.appglu.android.task.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.task.ImageViewAsyncCallback.ImageDownloadListener})
+	 * or references to a <code>ImageView</code>, a <code>View</code> to display while loading the image and a <code>View</code> to use as a place holder in the case the image fails loading
+	 * 
+	 * @see com.appglu.android.task.ImageViewAsyncCallback
+	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromByteArray(byte[], int, int)
+	 */
+	public void downloadToImageViewInBackground(final String url, final int requestedWidth, final int requestedHeight, ImageViewAsyncCallback imageViewCallback) {
+		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);
+		executor.execute(imageViewCallback, new Callable<Bitmap>() {
+			public Bitmap call() throws Exception {
+				return downloadAsBitmap(url, requestedWidth, requestedHeight);
 			}
 		});
 	}

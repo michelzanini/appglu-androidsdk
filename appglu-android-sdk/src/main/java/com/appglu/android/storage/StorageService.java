@@ -155,5 +155,15 @@ public class StorageService {
 		
 		return AppGluUtils.decodeSampledBitmapFromInputStream(inputStream, inSampleSize);
 	}
+	
+	public synchronized Bitmap downloadAsBitmap(StorageFile file, int requestedWidth, int requestedHeight) {
+		byte[] imageBytes = this.downloadAsByteArray(file);
+		
+		if (imageBytes == null) {
+			return null;
+		}
+		
+		return AppGluUtils.decodeSampledBitmapFromByteArray(imageBytes, requestedWidth, requestedHeight);
+	}
 
 }

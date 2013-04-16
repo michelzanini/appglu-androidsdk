@@ -250,8 +250,8 @@ public final class SyncApi {
 	/**
 	 * Reads a file that has previously being downloaded by the SyncIntentService.<br>
 	 * @param storageFile has to contain either an ID or a URL
-	 * @param requestedWidth the final image width will be close to the requestedWidth
-	 * @param requestedHeight the final image height will be close to the requestedHeight
+	 * @param requestedWidth the final image width will be close to the requestedWidth (value is in pixels)
+	 * @param requestedHeight the final image height will be close to the requestedHeight (value is in pixels)
 	 * @return A <code>Bitmap</code> object or <code>null</code>, if the file is not found
 	 */
 	public Bitmap readBitmapFromFileStorage(StorageFile storageFile, int requestedWidth, int requestedHeight) {
@@ -383,8 +383,8 @@ public final class SyncApi {
 	 * Reads a file that has previously being downloaded by the {@link com.appglu.android.sync.SyncIntentService}, converts it to a <code>Bitmap</code>, and then make it available through the {@link com.appglu.android.task.ImageViewAsyncCallback}.<p>
 	 * 
 	 * @param storageFile has to contain either an ID or a URL
-	 * @param requestedWidth the final image width will be close to the requestedWidth
-	 * @param requestedHeight the final image height will be close to the requestedHeight
+	 * @param requestedWidth the final image width will be close to the requestedWidth (value is in pixels)
+	 * @param requestedHeight the final image height will be close to the requestedHeight (value is in pixels)
 	 * @param imageViewCallback a {@link com.appglu.android.task.ImageViewAsyncCallback} can be instantiated either with a listener ({@link com.appglu.android.task.ImageViewAsyncCallback.ImageDownloadListener})
 	 * or references to a <code>ImageView</code>, a <code>View</code> to display while loading the image and a <code>View</code> to use as a place holder in the case the image fails loading
 	 * 
