@@ -69,6 +69,7 @@ public class SyncIntentService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		boolean successful = false;
+		boolean exceptionWasThrown = false;
 		
 		SyncIntentServiceRequest request = intent.getParcelableExtra(SYNC_INTENT_REQUEST_PARCELABLE);
 		
@@ -124,6 +125,7 @@ public class SyncIntentService extends IntentService {
 			this.postResultEvent(successful);
 			
 		} catch (Exception exception) {
+			exceptionWasThrown = true;
 			this.postExceptionEvent(exception);
 		} finally {
 			if (request.getSyncServiceRunningNotification() != null) {
@@ -136,7 +138,7 @@ public class SyncIntentService extends IntentService {
 			}
 		}
 		
-		this.postEvent(SyncEvent.Type.ON_FINISH);
+		this.postFinishEvent(exceptionWasThrown);
 		logger.info("SyncIntentService has being stopped");
 	}
 
@@ -199,7 +201,11 @@ public class SyncIntentService extends IntentService {
 	}
 	
 	private void postResultEvent(boolean changesWereApplied) {
-		EventBus.getDefault().postSticky(new SyncEvent(changesWereApplied));
+		EventBus.getDefault().postSticky(new SyncEvent(SyncEvent.Type.ON_RESULT, changesWereApplied));
+	}
+	
+	private void postFinishEvent(boolean wasSuccessful) {
+		EventBus.getDefault().postSticky(new SyncEvent(SyncEvent.Type.ON_FINISH, wasSuccessful));
 	}
 	
 	private void postExceptionEvent(Exception exception) {
