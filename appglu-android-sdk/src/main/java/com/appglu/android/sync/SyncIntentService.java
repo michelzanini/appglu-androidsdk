@@ -138,7 +138,8 @@ public class SyncIntentService extends IntentService {
 			}
 		}
 		
-		this.postFinishEvent(exceptionWasThrown);
+		boolean wasSuccessful = !exceptionWasThrown;
+		this.postFinishEvent(wasSuccessful);
 		logger.info("SyncIntentService has being stopped");
 	}
 
