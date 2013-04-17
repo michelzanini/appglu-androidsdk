@@ -52,14 +52,17 @@ public class ProductsListActivity extends AppGluAnalyticsListActivity {
 	
 	private SyncListener syncListener = new SyncListener() {
 
+		@Override
 		public void onPreExecute() {
 			showLoadingView(true);
 		}
 
+		@Override
 		public void onResult(boolean changesWereApplied) {
 			logger.info("Were any changes applied? " + changesWereApplied + ".");
 		}
 
+		@Override
 		public void onException(SyncExceptionWrapper exceptionWrapper) {
 			String text = "An exception of type " + exceptionWrapper.getErrorCode() + " occured while executing the synchronization";
 			Toast.makeText(ProductsListActivity.this, text, Toast.LENGTH_LONG).show();
@@ -67,14 +70,16 @@ public class ProductsListActivity extends AppGluAnalyticsListActivity {
 			logger.error(exceptionWrapper.getException());
 		}
 
+		@Override
 		public void onNoInternetConnection() {
-			onFinish();
+			onFinish(false);
 		}
 
 		/*
 		 * Load local data no matter the sync was successful or not
 		 */
-		public void onFinish() {
+		@Override
+		public void onFinish(boolean wasSuccessful) {
 			LoadProductsAsyncTask task = new LoadProductsAsyncTask();
 			task.execute();
 		}
