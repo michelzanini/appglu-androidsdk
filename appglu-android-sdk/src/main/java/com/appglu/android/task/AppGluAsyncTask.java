@@ -40,19 +40,20 @@ public abstract class AppGluAsyncTask<Params, Progress, Result> extends AsyncTas
 			return null;
 		}
 	}
-
+	
 	protected abstract Result doExecuteInBackground(Params... params) throws Exception;
 
 	@Override
 	protected final void onPostExecute(Result result) {
+		boolean wasSuccessful = this.exception != null;
 		try {
-			if (this.exception != null) {
+			if (wasSuccessful) {
 				this.onException(exception);
 			} else {
 				this.onResult(result);
 			}
 		} finally {
-			this.onFinished();
+			this.onFinished(wasSuccessful);
 		}
 	}
 
@@ -64,10 +65,10 @@ public abstract class AppGluAsyncTask<Params, Progress, Result> extends AsyncTas
 	
 	@Override
 	protected void onCancelled() {
-		this.onFinished();
+		this.onFinished(false);
 	}
 	
-	protected void onFinished() {
+	protected void onFinished(boolean wasSuccessful) {
 		
 	}
 	
