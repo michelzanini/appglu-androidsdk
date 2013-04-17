@@ -193,7 +193,7 @@ public class ProductsListActivity extends AppGluAnalyticsListActivity {
 		}
 		
 		@Override
-		protected void onFinished() {
+		protected void onFinished(boolean wasSuccessful) {
 			showLoadingView(false);
 		}
 		

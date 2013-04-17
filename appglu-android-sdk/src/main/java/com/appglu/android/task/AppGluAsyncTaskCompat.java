@@ -65,14 +65,15 @@ public class AppGluAsyncTaskCompat<Result> extends AsyncTaskCompat<Void, Void, R
 
 	@Override
 	protected final void onPostExecute(Result result) {
+		boolean wasSuccessful = this.exception != null;
 		try {
-			if (this.exception != null) {
+			if (wasSuccessful) {
 				this.onException(exception);
 			} else {
 				this.onResult(result);
 			}
 		} finally {
-			this.onFinished();
+			this.onFinished(wasSuccessful);
 		}
 	}
 
@@ -87,11 +88,11 @@ public class AppGluAsyncTaskCompat<Result> extends AsyncTaskCompat<Void, Void, R
 	
 	@Override
 	protected void onCancelled() {
-		this.onFinished();
+		this.onFinished(false);
 	}
 	
-	protected void onFinished() {
-		asyncCallback.onFinish();
+	protected void onFinished(boolean wasSuccessful) {
+		asyncCallback.onFinish(wasSuccessful);
 	}
 
 }

@@ -63,9 +63,9 @@ public class AppGluAsyncCallbackTask<Result> extends AppGluAsyncTask<Void, Void,
 		asyncCallback.onException(new ExceptionWrapper(exception));
 	}
 
-	protected void onFinished() {
-		super.onFinished();
-		asyncCallback.onFinish();
+	protected void onFinished(boolean wasSuccessful) {
+		super.onFinished(wasSuccessful);
+		asyncCallback.onFinish(wasSuccessful);
 	}
 
 }

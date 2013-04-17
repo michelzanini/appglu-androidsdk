@@ -38,7 +38,7 @@ public abstract class AsyncCallback<Result> {
 		
 	}
 	
-	public void onFinish() {
+	public void onFinish(boolean wasSuccessful) {
 		
 	}
 
