@@ -36,7 +36,7 @@ public class SyncEvent {
 	
 	private Type type;
 	
-	private boolean changesWereApplied;
+	private boolean wasSuccessful; 
 	
 	private SyncExceptionWrapper exceptionWrapper;
 
@@ -44,9 +44,9 @@ public class SyncEvent {
 		this.type = type;
 	}
 	
-	public SyncEvent(boolean changesWereApplied) {
-		this.changesWereApplied = changesWereApplied;
-		this.type = Type.ON_RESULT;
+	public SyncEvent(Type type, boolean wasSuccessful) {
+		this.type = type;
+		this.wasSuccessful = wasSuccessful;
 	}
 
 	public SyncEvent(SyncExceptionWrapper exceptionWrapper) {
@@ -58,8 +58,8 @@ public class SyncEvent {
 		return type;
 	}
 
-	public boolean getChangesWereApplied() {
-		return changesWereApplied;
+	public boolean wasSuccessful() {
+		return wasSuccessful;
 	}
 
 	public SyncExceptionWrapper getExceptionWrapper() {

@@ -40,7 +40,7 @@ public abstract class SyncListener {
 			this.onPreExecute();
 		}
 		if (event.getType() == SyncEvent.Type.ON_RESULT) {
-			this.onResult(event.getChangesWereApplied());
+			this.onResult(event.wasSuccessful());
 		}
 		if (event.getType() == SyncEvent.Type.ON_TRANSACTION_START) {
 			this.onTransactionStart();
@@ -55,7 +55,7 @@ public abstract class SyncListener {
 			this.onNoInternetConnection();
 		}
 		if (event.getType() == SyncEvent.Type.ON_FINISH) {
-			this.onFinish();
+			this.onFinish(event.wasSuccessful());
 		}
 	}
 
@@ -83,7 +83,7 @@ public abstract class SyncListener {
 		
 	}
 	
-	public void onFinish() {
+	public void onFinish(boolean wasSuccessful) {
 		
 	}
 	
