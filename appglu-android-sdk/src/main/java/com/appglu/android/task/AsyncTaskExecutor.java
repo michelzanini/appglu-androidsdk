@@ -201,8 +201,8 @@ public class AsyncTaskExecutor implements AsyncExecutor {
 		}
         
         protected void removeOldestTaskIfNecessary() {
-			if (!tasks.isEmpty() && tasks.size() >= maxNumberOfActiveTasks) {
-				activeTask = tasks.pollLast();
+			if (!tasks.isEmpty() && tasks.size() > maxNumberOfActiveTasks) {
+				activeTask = removeTask();
 			}
 		}
         
@@ -223,6 +223,12 @@ public class AsyncTaskExecutor implements AsyncExecutor {
 
 		protected void addTask(Runnable runnable) {
 			tasks.offerFirst(runnable);
+		}
+		
+		protected void removeOldestTaskIfNecessary() {
+			if (!tasks.isEmpty() && tasks.size() > maxNumberOfActiveTasks) {
+				activeTask = tasks.pollLast();
+			}
 		}
 
 	}
@@ -247,8 +253,8 @@ public class AsyncTaskExecutor implements AsyncExecutor {
 		}
         
         protected void removeOldestTaskIfNecessary() {
-			if (!tasks.isEmpty() && tasks.size() >= maxNumberOfActiveTasks) {
-				activeTask = tasks.removeLast();
+			if (!tasks.isEmpty() && tasks.size() > maxNumberOfActiveTasks) {
+				activeTask = removeTask();
 			}
 		}
         
@@ -281,7 +287,7 @@ public class AsyncTaskExecutor implements AsyncExecutor {
 		}
         
         protected void removeOldestTaskIfNecessary() {
-			if (!tasks.empty() && tasks.size() >= maxNumberOfActiveTasks) {
+			if (!tasks.empty() && tasks.size() > maxNumberOfActiveTasks) {
 				activeTask = tasks.remove(0);
 			}
 		}
