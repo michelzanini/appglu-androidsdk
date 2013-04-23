@@ -50,8 +50,8 @@ public class AsyncTaskExecutor implements AsyncExecutor {
 	static {
 		int maxNumberOfActiveTasks = DEFAULT_MAX_NUMBER_OF_ACTIVE_TASKS;
 		
-		QUEUE_EXECUTOR = createQueueExecutor(maxNumberOfActiveTasks);
-		STACK_EXECUTOR = createStackExecutor(maxNumberOfActiveTasks);
+		QUEUE_EXECUTOR = createSerialQueueExecutor(maxNumberOfActiveTasks);
+		STACK_EXECUTOR = createSerialStackExecutor(maxNumberOfActiveTasks);
 	}
 	
 	public AsyncTaskExecutor() {
@@ -99,7 +99,11 @@ public class AsyncTaskExecutor implements AsyncExecutor {
 		asyncTask.executeOnExecutor(defaultExecutor);
 	}
 	
-	public static Executor createQueueExecutor(int maxNumberOfActiveTasks) {
+	/**
+	 * Creates a serial Executor (executes one task at a time) with a max limit of queued tasks. The tasks will execute in First In First Out (FIFO) order.
+	 * @param maxNumberOfActiveTasks max number of active tasks in the queue
+	 */
+	public static Executor createSerialQueueExecutor(int maxNumberOfActiveTasks) {
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
 			return new NativeQueueExecutor(maxNumberOfActiveTasks);
 		} else {
@@ -107,7 +111,11 @@ public class AsyncTaskExecutor implements AsyncExecutor {
 		}
 	}
 	
-	public static Executor createStackExecutor(int maxNumberOfActiveTasks) {
+	/**
+	 * Creates a serial Executor (executes one task at a time) with a max limit of queued tasks. The tasks will execute in Last In First Out (LIFO) order.
+	 * @param maxNumberOfActiveTasks max number of active tasks in the queue
+	 */
+	public static Executor createSerialStackExecutor(int maxNumberOfActiveTasks) {
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
 			return new NativeStackExecutor(maxNumberOfActiveTasks);
 		} else {

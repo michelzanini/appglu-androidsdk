@@ -43,7 +43,7 @@ public class ImageViewAsyncCallback extends AsyncCallback<Bitmap> {
 	public ImageViewAsyncCallback(ImageDownloadListener imageDownloadListener) {
 		this.imageDownloadListener = imageDownloadListener;
 	}
-
+	
 	/**
 	 * @param imageView a <code>ImageView</code> reference from your Activity
 	 * @param inProgressView a <code>View</code> reference from your Activity or <code>null</code> if you don't want to show a progress view while loading the image
@@ -51,6 +51,16 @@ public class ImageViewAsyncCallback extends AsyncCallback<Bitmap> {
 	 */
 	public ImageViewAsyncCallback(ImageView imageView, View inProgressView, View placeholderView) {
 		this.imageDownloadListener = new DefaultImageDownloadListener(imageView, inProgressView, placeholderView);
+	}
+
+	/**
+	 * @param id this object will be set as a tag to the views ({@code view.setTag()}) and when the callback returns, the tag will be validated if it has changed or not. <strong>This is import if you use the callback in an adapter</strong>.
+	 * @param imageView a <code>ImageView</code> reference from your Activity
+	 * @param inProgressView a <code>View</code> reference from your Activity or <code>null</code> if you don't want to show a progress view while loading the image
+	 * @param placeholderView a <code>View</code> reference from your Activity or <code>null</code> if you don't want a place holder view to be displayed when an error occur while loading the image
+	 */
+	public ImageViewAsyncCallback(Object id, ImageView imageView, View inProgressView, View placeholderView) {
+		this.imageDownloadListener = new DefaultImageDownloadListener(id, imageView, inProgressView, placeholderView);
 	}
 
 	@Override
@@ -78,6 +88,8 @@ public class ImageViewAsyncCallback extends AsyncCallback<Bitmap> {
 	
 	public static class DefaultImageDownloadListener implements ImageDownloadListener {
 		
+		private Object id;
+		
 		private WeakReference<ImageView> imageViewReference;
 		private WeakReference<View> inProgressViewReference;
 		private WeakReference<View> placeholderViewReference;
@@ -86,6 +98,24 @@ public class ImageViewAsyncCallback extends AsyncCallback<Bitmap> {
 			this.imageViewReference = new WeakReference<ImageView>(imageView);
 			this.inProgressViewReference = new WeakReference<View>(inProgressView);
 			this.placeholderViewReference = new WeakReference<View>(view);
+		}
+		
+		public DefaultImageDownloadListener(Object id, ImageView imageView, View inProgressView, View placeholderView) {
+			this.id = id;
+			
+			if (imageView != null) {
+				imageView.setTag(id);
+			}
+			if (inProgressView != null) {
+				inProgressView.setTag(id);
+			}
+			if (placeholderView != null) {
+				placeholderView.setTag(id);
+			}
+			
+			this.imageViewReference = new WeakReference<ImageView>(imageView);
+			this.inProgressViewReference = new WeakReference<View>(inProgressView);
+			this.placeholderViewReference = new WeakReference<View>(placeholderView);
 		}
 
 		@Override
@@ -112,7 +142,9 @@ public class ImageViewAsyncCallback extends AsyncCallback<Bitmap> {
 			if (imageViewReference != null) {
 				ImageView imageView = imageViewReference.get();
 				if (imageView != null) {
-					imageView.setImageBitmap(bitmap);
+					if (id == null || id.equals(imageView.getTag())) {
+						imageView.setImageBitmap(bitmap);
+					}
 				}
 			}
 		}
@@ -121,7 +153,9 @@ public class ImageViewAsyncCallback extends AsyncCallback<Bitmap> {
 			if (inProgressViewReference != null) {
 				View inProgressView = inProgressViewReference.get();
 				if (inProgressView != null) {
-					inProgressView.setVisibility(visibility);
+					if (id == null || id.equals(inProgressView.getTag())) {
+						inProgressView.setVisibility(visibility);
+					}
 				}
 			}
 		}
@@ -130,7 +164,9 @@ public class ImageViewAsyncCallback extends AsyncCallback<Bitmap> {
 			if (placeholderViewReference != null) {
 				View placeholderView = placeholderViewReference.get();
 				if (placeholderView != null) {
-					placeholderView.setVisibility(visibility);
+					if (id == null || id.equals(placeholderView.getTag())) {
+						placeholderView.setVisibility(visibility);
+					}
 				}
 			}
 		}
