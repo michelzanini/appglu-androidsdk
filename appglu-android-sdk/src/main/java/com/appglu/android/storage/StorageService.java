@@ -51,21 +51,96 @@ public class StorageService {
 		this.cacheManager = cacheManager;
 	}
 	
-	public synchronized void setCacheTimeToLiveInMilliseconds(long cacheTimeToLiveInMilliseconds) {
+	public void setCacheTimeToLiveInMilliseconds(long cacheTimeToLiveInMilliseconds) {
 		if (cacheTimeToLiveInMilliseconds > 0) {
 			this.cacheTimeToLiveInMilliseconds = cacheTimeToLiveInMilliseconds;
 		}
 	}
 
-	protected synchronized String cacheKeyForStorageFile(StorageFile file) {
+	protected String cacheKeyForStorageFile(StorageFile file) {
 		if (file == null || !file.hasUrl()) {
 			return null;
 		}
 		String hash = String.valueOf(file.getUrl().hashCode());
 		return HashUtils.toHexString(hash);
 	}
+	
+	/*
+	 * Retrieve only from local cache methods
+	 */
+	
+	public InputStream retrieveInputStreamFromCacheManager(StorageFile file) {
+		String cacheKey = this.cacheKeyForStorageFile(file);
+		
+		if (this.cacheManager.exists(cacheKey)) {
+			Date lastModifiedDate = this.cacheManager.lastModifiedDate(cacheKey);
+			
+			if (lastModifiedDate != null) {
+				long now = System.currentTimeMillis();
+				long lastModified = lastModifiedDate.getTime();
+				
+				if ( (lastModified + this.cacheTimeToLiveInMilliseconds) >= now ) {
+					return this.cacheManager.retrieve(cacheKey);
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public byte[] retrieveByteArrayFromCacheManager(StorageFile file) {
+		InputStream inputStream = this.retrieveInputStreamFromCacheManager(file);
+		
+		if (inputStream == null) {
+			return null;
+		}
+		
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		
+		try {
+			IOUtils.copy(inputStream, outputStream);
+		} catch (IOException e) {
+			return null;
+		}
+		
+		return outputStream.toByteArray();
+	}
+	
+	public Bitmap retrieveBitmapFromCacheManager(StorageFile file) {
+		InputStream inputStream = this.retrieveInputStreamFromCacheManager(file);
+		
+		if (inputStream == null) {
+			return null;
+		}
+		
+		return AppGluUtils.decodeSampledBitmapFromInputStream(inputStream);
+	}
+	
+	public Bitmap retrieveBitmapFromCacheManager(StorageFile file, int inSampleSize) {
+		InputStream inputStream = this.retrieveInputStreamFromCacheManager(file);
+		
+		if (inputStream == null) {
+			return null;
+		}
+		
+		return AppGluUtils.decodeSampledBitmapFromInputStream(inputStream, inSampleSize);
+	}
+	
+	public Bitmap retrieveBitmapFromCacheManager(StorageFile file, int requestedWidth, int requestedHeight) {
+		byte[] imageBytes = this.retrieveByteArrayFromCacheManager(file);
+		
+		if (imageBytes == null) {
+			return null;
+		}
+		
+		return AppGluUtils.decodeSampledBitmapFromByteArray(imageBytes, requestedWidth, requestedHeight);
+	}
+	
+	/*
+	 * Download from network methods
+	 */
 
-	public synchronized InputStream downloadAsInputStream(final StorageFile file) {
+	public InputStream downloadAsInputStream(final StorageFile file) {
 		final String cacheKey = this.cacheKeyForStorageFile(file);
 		
 		if (this.cacheManager.exists(cacheKey)) {
@@ -118,7 +193,7 @@ public class StorageService {
 		return this.cacheManager.retrieve(cacheKey);
 	}
 
-	public synchronized byte[] downloadAsByteArray(StorageFile file) {
+	public byte[] downloadAsByteArray(StorageFile file) {
 		InputStream inputStream = this.downloadAsInputStream(file);
 		
 		if (inputStream == null) {
@@ -136,7 +211,7 @@ public class StorageService {
 		return outputStream.toByteArray();
 	}
 	
-	public synchronized Bitmap downloadAsBitmap(StorageFile file) {
+	public Bitmap downloadAsBitmap(StorageFile file) {
 		InputStream inputStream = this.downloadAsInputStream(file);
 		
 		if (inputStream == null) {
@@ -146,7 +221,7 @@ public class StorageService {
 		return AppGluUtils.decodeSampledBitmapFromInputStream(inputStream);
 	}
 	
-	public synchronized Bitmap downloadAsBitmap(StorageFile file, int inSampleSize) {
+	public Bitmap downloadAsBitmap(StorageFile file, int inSampleSize) {
 		InputStream inputStream = this.downloadAsInputStream(file);
 		
 		if (inputStream == null) {
@@ -156,7 +231,7 @@ public class StorageService {
 		return AppGluUtils.decodeSampledBitmapFromInputStream(inputStream, inSampleSize);
 	}
 	
-	public synchronized Bitmap downloadAsBitmap(StorageFile file, int requestedWidth, int requestedHeight) {
+	public Bitmap downloadAsBitmap(StorageFile file, int requestedWidth, int requestedHeight) {
 		byte[] imageBytes = this.downloadAsByteArray(file);
 		
 		if (imageBytes == null) {

@@ -127,9 +127,13 @@ public class ImageViewAsyncCallback extends AsyncCallback<Bitmap> {
 
 		@Override
 		public void onImageLoaded(Bitmap bitmap) {
-			this.setImageBitmap(bitmap);
-			this.setInProgressViewVisibility(View.GONE);
-			this.setPlaceholderViewVisibility(View.GONE);
+			if (bitmap == null) {
+				this.onImageFailedLoading();
+			} else {
+				this.setImageBitmap(bitmap);
+				this.setInProgressViewVisibility(View.GONE);
+				this.setPlaceholderViewVisibility(View.GONE);
+			}
 		}
 
 		@Override

@@ -170,7 +170,7 @@ public class AsyncTaskExecutor implements AsyncExecutor {
             }
         }
 
-        protected synchronized void scheduleNext() {
+        protected void scheduleNext() {
         	activeTask = this.removeTask();
         	
             if (activeTask != null) {

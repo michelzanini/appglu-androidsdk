@@ -63,13 +63,13 @@ public class FileSystemCacheManager implements CacheManager {
 		this.setMaxCacheSizeInBytes(maxCacheSizeInBytes);
 	}
 	
-	public synchronized void setMaxCacheSizeInBytes(long maxCacheSizeInBytes) {
+	public void setMaxCacheSizeInBytes(long maxCacheSizeInBytes) {
 		if (maxCacheSizeInBytes > 0) {
 			this.maxCacheSizeInBytes = maxCacheSizeInBytes;
 		}
 	}
 	
-	protected synchronized File getCacheDir() {
+	protected File getCacheDir() {
 		File cacheDirectory = this.context.getExternalCacheDir();
 		if (cacheDirectory == null) {
 			//delegates to internal cache directory if external not available
@@ -88,7 +88,7 @@ public class FileSystemCacheManager implements CacheManager {
 		return appGluCacheDirectory;
 	}
 	
-	protected synchronized File getCacheFile(String fileName) {
+	protected File getCacheFile(String fileName) {
 		if (StringUtils.isEmpty(fileName)) {
 			return null;
 		}
@@ -96,12 +96,12 @@ public class FileSystemCacheManager implements CacheManager {
 		return new File(cacheDir, fileName);
 	}
 	
-	protected synchronized File[] listAllFiles() {
+	protected File[] listAllFiles() {
 		File cacheDir = this.getCacheDir();
 		return cacheDir.listFiles();
 	}
 	
-	protected synchronized void pruneFilesIfNecessary() {
+	protected void pruneFilesIfNecessary() {
 		File[] files = this.listAllFiles();
 		
 		if (files.length <= 1) {
@@ -143,7 +143,7 @@ public class FileSystemCacheManager implements CacheManager {
 		}
 	}
 	
-	protected synchronized Date readLastModifiedDateFromSharedPreferences(String fileName) {
+	protected Date readLastModifiedDateFromSharedPreferences(String fileName) {
 		SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
 		long time = sharedPreferences.getLong(fileName, 0);
 		if (time == 0) {
@@ -152,13 +152,13 @@ public class FileSystemCacheManager implements CacheManager {
 		return new Date(time);
 	}
 	
-	protected synchronized boolean writeLastModifiedDateToSharedPreferences(String fileName) {
+	protected boolean writeLastModifiedDateToSharedPreferences(String fileName) {
 		Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE).edit();
     	editor.putLong(fileName, new Date().getTime());
     	return editor.commit();
 	}
 	
-	public synchronized boolean exists(String fileName) {
+	public boolean exists(String fileName) {
 		File file = this.getCacheFile(fileName);
 		if (file == null) {
 			return false;
@@ -166,7 +166,7 @@ public class FileSystemCacheManager implements CacheManager {
 		return file.exists();
 	}
 
-	public synchronized Date lastModifiedDate(String fileName) {
+	public Date lastModifiedDate(String fileName) {
 		Date dateFromPreferences = this.readLastModifiedDateFromSharedPreferences(fileName);
 		
 		if (dateFromPreferences != null) {
@@ -180,7 +180,7 @@ public class FileSystemCacheManager implements CacheManager {
 		return null;
 	}
 	
-	public synchronized boolean updateLastModifiedDate(String fileName) {
+	public boolean updateLastModifiedDate(String fileName) {
 		File file = this.getCacheFile(fileName);
 		if (file != null && file.exists()) {
 			return this.writeLastModifiedDateToSharedPreferences(fileName);
@@ -188,7 +188,7 @@ public class FileSystemCacheManager implements CacheManager {
 		return false;
 	}
 
-	public synchronized InputStream retrieve(String fileName) {
+	public InputStream retrieve(String fileName) {
 		File file = this.getCacheFile(fileName);
 		if (file != null && file.exists()) {
 			try {
@@ -200,7 +200,7 @@ public class FileSystemCacheManager implements CacheManager {
 		return null;
 	}
 
-	public synchronized boolean store(String fileName, InputStream inputStream) {
+	public boolean store(String fileName, InputStream inputStream) {
 		try {
 			File destinationFile = this.getCacheFile(fileName);
 			
@@ -225,7 +225,7 @@ public class FileSystemCacheManager implements CacheManager {
 		}
 	}
 
-	public synchronized boolean remove(String fileName) {
+	public boolean remove(String fileName) {
 		File file = this.getCacheFile(fileName);
 		if (file == null) {
 			return false;
@@ -233,13 +233,13 @@ public class FileSystemCacheManager implements CacheManager {
 		return file.delete();
 	}
 
-	public synchronized void removeAll() {
+	public void removeAll() {
 		for (File file : this.listAllFiles()) {
 			file.delete();
 		}
 	}
 	
-	public synchronized long cacheSize() {
+	public long cacheSize() {
 		File[] files = this.listAllFiles();
 		
 		long totalSize = 0;

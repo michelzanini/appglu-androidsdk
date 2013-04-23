@@ -45,9 +45,7 @@ public class MemoryCacheManager implements CacheManager {
 	private LinkedHashMap<String, MemoryFile> cache = new LinkedHashMap<String, MemoryFile>() {
 
 		protected boolean removeEldestEntry(Entry<String, MemoryFile> eldest) {
-			synchronized (MemoryCacheManager.this) {
-				return size() > maxCacheSizeInNumberOfItems;
-			}
+			return size() > maxCacheSizeInNumberOfItems;
 		}
 		
 	};
@@ -65,17 +63,17 @@ public class MemoryCacheManager implements CacheManager {
 		this.setMaxCacheSizeInNumberOfItems(maxCacheSizeInNumberOfItems);
 	}
 	
-	public synchronized void setMaxCacheSizeInNumberOfItems(int maxCacheSizeInNumberOfItems) {
+	public void setMaxCacheSizeInNumberOfItems(int maxCacheSizeInNumberOfItems) {
 		if (maxCacheSizeInNumberOfItems > 0) {
 			this.maxCacheSizeInNumberOfItems = maxCacheSizeInNumberOfItems;
 		}
 	}
 
-	public synchronized boolean exists(String fileName) {
+	public boolean exists(String fileName) {
 		return this.cache.containsKey(fileName);
 	}
 
-	public synchronized Date lastModifiedDate(String fileName) {
+	public Date lastModifiedDate(String fileName) {
 		MemoryFile memoryFile = this.cache.get(fileName);
 		
 		if (memoryFile != null) {
@@ -85,7 +83,7 @@ public class MemoryCacheManager implements CacheManager {
 		return null;
 	}
 
-	public synchronized boolean updateLastModifiedDate(String fileName) {
+	public boolean updateLastModifiedDate(String fileName) {
 		if (this.exists(fileName)) {
 			//removing and putting the object back on the list will update the last inserted order of LinkedHashMap
 			MemoryFile fileToUpdate = this.cache.remove(fileName);
@@ -98,7 +96,7 @@ public class MemoryCacheManager implements CacheManager {
 		return false;
 	}
 
-	public synchronized InputStream retrieve(String fileName) {
+	public InputStream retrieve(String fileName) {
 		MemoryFile memoryFile = this.cache.get(fileName);
 		
 		if (memoryFile != null) {
@@ -108,7 +106,7 @@ public class MemoryCacheManager implements CacheManager {
 		return null;
 	}
 
-	public synchronized boolean store(String fileName, InputStream inputStream) {
+	public boolean store(String fileName, InputStream inputStream) {
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			IOUtils.copy(inputStream, outputStream);
@@ -134,15 +132,15 @@ public class MemoryCacheManager implements CacheManager {
 		}
 	}
 
-	public synchronized boolean remove(String fileName) {
+	public boolean remove(String fileName) {
 		return this.cache.remove(fileName) != null;
 	}
 
-	public synchronized void removeAll() {
+	public void removeAll() {
 		this.cache.clear();
 	}
 	
-	public synchronized long cacheSize() {
+	public long cacheSize() {
 		return this.cache.size();
 	}
 	
