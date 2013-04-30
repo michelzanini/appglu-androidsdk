@@ -104,6 +104,14 @@
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
+		
+		<dependency>
+            <groupId>com.google.android.gcm</groupId>
+			<artifactId>gcm-client</artifactId>
+			<version>r3</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+        </dependency>
         
     </dependencies>
     

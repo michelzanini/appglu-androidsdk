@@ -168,11 +168,11 @@ public class SyncFileStorageService {
 		return new File(externalCacheDirectory, SYNC_CHANGES_FILE);
 	}
 	
-	public void writeTemporaryChanges(InputStream inputStream) throws IOException {
+	public long writeTemporaryChanges(InputStream inputStream) throws IOException {
 		FileOutputStream fileOutputStream = new FileOutputStream(this.temporaryFile());
 		BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream, IOUtils.BUFFER_SIZE);
 		
-		IOUtils.copy(inputStream, outputStream);
+		return IOUtils.copy(inputStream, outputStream);
 	}
 
 	public void promoteTemporaryChanges() {
