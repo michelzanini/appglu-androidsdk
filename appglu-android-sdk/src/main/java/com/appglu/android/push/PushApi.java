@@ -40,7 +40,7 @@ public final class PushApi {
 	 * @param gcmSenderId this is your Google Cloud Message project ID. More information available in GCM documentation: {@link http://developer.android.com/google/gcm/gs.html}.
 	 */
 	public void registerForPushNotifications(Context context, String gcmSenderId) {
-		pushService.registerForPushNotifications(context, gcmSenderId, false);
+		this.registerForPushNotifications(context, gcmSenderId, false);
 	}
 	
 	/**
@@ -50,7 +50,7 @@ public final class PushApi {
 	 * @param checkManifest if <code>true</code> then GCMRegistrar.checkManifest(context) will be executed
 	 */
 	public void registerForPushNotifications(Context context, String gcmSenderId, boolean checkManifest) {
-		pushService.registerForPushNotifications(context, gcmSenderId, true);
+		pushService.registerForPushNotifications(context, gcmSenderId, checkManifest);
 	}
 	
 	/**
