@@ -37,7 +37,7 @@ public final class PushApi {
 	/**
 	 * Register this device with AppGlu to make it eligible to receive push notifications.
 	 * @param context Activity or Application object
-	 * @param gcmSenderId this is your Google Cloud Message project ID. More information available in GCM documentation: {@link http://developer.android.com/google/gcm/gs.html}.
+	 * @param gcmSenderId this is your Google Cloud Message project ID. More information available in GCM documentation: {@linkplain http://developer.android.com/google/gcm/gs.html}.
 	 */
 	public void registerForPushNotifications(Context context, String gcmSenderId) {
 		this.registerForPushNotifications(context, gcmSenderId, false);
@@ -46,7 +46,7 @@ public final class PushApi {
 	/**
 	 * Register this device with AppGlu to make it eligible to receive push notifications.
 	 * @param context Activity or Application object
-	 * @param gcmSenderId this is your Google Cloud Message project ID. More information available in GCM documentation: {@link http://developer.android.com/google/gcm/gs.html}.
+	 * @param gcmSenderId this is your Google Cloud Message project ID. More information available in GCM documentation: {@linkplain http://developer.android.com/google/gcm/gs.html}.
 	 * @param checkManifest if <code>true</code> then GCMRegistrar.checkManifest(context) will be executed
 	 */
 	public void registerForPushNotifications(Context context, String gcmSenderId, boolean checkManifest) {
