@@ -27,7 +27,6 @@ import com.appglu.AppGluHttpInternalServerErrorException;
 import com.appglu.AsyncCallback;
 import com.appglu.AsyncPushOperations;
 import com.appglu.AsyncSavedQueriesOperations;
-import com.appglu.PushOperations;
 import com.appglu.SavedQueriesOperations;
 import com.appglu.StorageOperations;
 import com.appglu.SyncOperations;
@@ -44,6 +43,8 @@ import com.appglu.android.cache.CacheManager;
 import com.appglu.android.cache.FileSystemCacheManager;
 import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
+import com.appglu.android.push.PushApi;
+import com.appglu.android.push.PushService;
 import com.appglu.android.storage.StorageApi;
 import com.appglu.android.storage.StorageService;
 import com.appglu.android.sync.SQLiteSyncRepository;
@@ -248,10 +249,10 @@ public final class AppGlu {
 	
 	private PushApi getPushApi() {
 		if (this.pushApi == null) {
-			PushOperations pushOperations = this.getAppGluTemplate().pushOperations();
 			AsyncPushOperations asyncPushOperations = this.getAppGluTemplate().asyncPushOperations();
+			PushService pushService = new PushService(asyncPushOperations, this.getDeviceInstallation());
 			
-			this.pushApi = new PushApi(pushOperations, asyncPushOperations, this.getDeviceInstallation());
+			this.pushApi = new PushApi(pushService);
 		}
 		return this.pushApi;
 	}

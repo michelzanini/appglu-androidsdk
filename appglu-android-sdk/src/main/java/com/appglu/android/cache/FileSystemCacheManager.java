@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.appglu.android.cache;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -192,7 +193,8 @@ public class FileSystemCacheManager implements CacheManager {
 		File file = this.getCacheFile(fileName);
 		if (file != null && file.exists()) {
 			try {
-				return new FileInputStream(file);
+				FileInputStream fileInputStream = new FileInputStream(file);
+				return new BufferedInputStream(fileInputStream, IOUtils.BUFFER_SIZE);
 			} catch (FileNotFoundException e) {
 				//ignore - should never happen
 			}

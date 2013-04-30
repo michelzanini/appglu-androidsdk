@@ -325,11 +325,12 @@ public class SyncService {
 			
 			this.syncOperations.downloadChangesForTables(tableVersions, new InputStreamCallback() {
 				public void doWithInputStream(InputStream inputStream) throws IOException {
-					syncStorageService.writeTemporaryChanges(inputStream);
+					long lengthInBytes = syncStorageService.writeTemporaryChanges(inputStream);
+					long lengthInKbytes = (long) lengthInBytes / 1024;
+					
+					logger.info("Remote changes downloaded. Uncompressed size of file: " + lengthInKbytes + " KB.");
 				}
 			});
-			
-			this.logger.info("Remote changes downloaded");
 			
 			if (syncFiles) {
 				this.syncFiles();
