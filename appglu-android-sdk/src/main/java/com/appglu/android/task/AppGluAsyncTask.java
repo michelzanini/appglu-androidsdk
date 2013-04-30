@@ -18,7 +18,7 @@ package com.appglu.android.task;
 import android.os.AsyncTask;
 
 /**
- * Extension of Android's <code>AsyncTask</code> to add {@link #onException(Exception)} and {@link #onFinished(boolean))} callbacks.
+ * Extension of Android's <code>AsyncTask</code> to add {@link #onException(Exception)} and {@link #onFinished(boolean)} callbacks.
  * 
  * @since 1.0.0
  */
