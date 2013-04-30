@@ -9,6 +9,7 @@ Moreover, it adds Android specific functionality to APIs such as Analytics, Sync
 
 * [Spring Android REST Template](http://www.springsource.org/spring-android) (spring-android-rest-template-1.0.x.jar and spring-android-core-1.0.x.jar)
 * [Jackson Json Parser](http://jackson.codehaus.org) (jackson-mapper-asl-1.9.x.jar and jackson-core-asl-1.9.x.jar)
+* [Event Bus](https://github.com/greenrobot/EventBus) (eventbus-2.0.x.jar)
 
 # Setup
 
@@ -24,7 +25,7 @@ Moreover, it adds Android specific functionality to APIs such as Analytics, Sync
 
 ### Maven and Google Cloud Message (GCM) dependency
 
-If you are using push notifications and your project uses Maven then you will need to add the GCM jar to your Maven repository because GCM is not yet available on Maven central.
+If you are using push notifications and your project uses Maven, then you will need to add the GCM jar to your Maven repository, because GCM is not yet available on Maven central.
 You can download the GCM library using Android's SDK manager and when you have the JAR file available you can deploy it to your local Maven repository with this command:
 
 ```sh
