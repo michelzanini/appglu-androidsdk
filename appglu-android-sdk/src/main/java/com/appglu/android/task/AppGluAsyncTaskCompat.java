@@ -24,7 +24,7 @@ import com.appglu.android.log.Logger;
 import com.appglu.android.log.LoggerFactory;
 
 /**
- * Extension of Android's Ice Cream Sandwich port of <code>AsyncTask</code> to add {@link #onException(Exception)} and {@link #onFinished(boolean))} callbacks.
+ * Extension of Android's Ice Cream Sandwich port of <code>AsyncTask</code> to add {@link #onException(Exception)} and {@link #onFinished(boolean)} callbacks.
  * 
  * @since 1.0.0
  */
