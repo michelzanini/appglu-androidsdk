@@ -146,47 +146,47 @@ public abstract class StringUtils {
 		return false;
 	}
 	
-	public int stringToInt(String string, int defaultValue) {
+	public Integer stringToInt(String string) {
 		if (isEmpty(string)) {
-			return defaultValue;
+			return null;
 		}
 		try {
 			return Integer.parseInt(string);
 		} catch (NumberFormatException e) {
-			return defaultValue;
+			return null;
 		}
 	}
 	
-	public long stringToLong(String string, long defaultValue) {
+	public Long stringToLong(String string) {
 		if (isEmpty(string)) {
-			return defaultValue;
+			return null;
 		}
 		try {
 			return Long.parseLong(string);
 		} catch (NumberFormatException e) {
-			return defaultValue;
+			return null;
 		}
 	}
 	
-	public float stringToFloat(String string, float defaultValue) {
+	public Float stringToFloat(String string) {
 		if (isEmpty(string)) {
-			return defaultValue;
+			return null;
 		}
 		try {
 			return Float.parseFloat(string);
 		} catch (NumberFormatException e) {
-			return defaultValue;
+			return null;
 		}
 	}
 	
-	public double stringToDouble(String string, double defaultValue) {
+	public Double stringToDouble(String string) {
 		if (isEmpty(string)) {
-			return defaultValue;
+			return null;
 		}
 		try {
 			return Double.parseDouble(string);
 		} catch (NumberFormatException e) {
-			return defaultValue;
+			return null;
 		}
 	}
 	
