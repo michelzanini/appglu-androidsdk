@@ -17,7 +17,6 @@ package com.appglu.android.push;
 
 import android.content.Context;
 
-
 /**
  * {@code PushApi} is used to register / unregister the device making it eligible to receive push notifications.<br>
  * 
