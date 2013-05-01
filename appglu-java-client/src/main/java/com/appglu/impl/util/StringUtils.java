@@ -154,7 +154,7 @@ public abstract class StringUtils {
 		return true;
 	}
 	
-	public Integer stringToInt(String string) {
+	public static Integer stringToInt(String string) {
 		if (isEmpty(string)) {
 			return null;
 		}
@@ -165,7 +165,7 @@ public abstract class StringUtils {
 		}
 	}
 	
-	public Long stringToLong(String string) {
+	public static Long stringToLong(String string) {
 		if (isEmpty(string)) {
 			return null;
 		}
@@ -176,7 +176,7 @@ public abstract class StringUtils {
 		}
 	}
 	
-	public Float stringToFloat(String string) {
+	public static Float stringToFloat(String string) {
 		if (isEmpty(string)) {
 			return null;
 		}
@@ -187,7 +187,7 @@ public abstract class StringUtils {
 		}
 	}
 	
-	public Double stringToDouble(String string) {
+	public static Double stringToDouble(String string) {
 		if (isEmpty(string)) {
 			return null;
 		}
