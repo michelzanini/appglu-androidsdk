@@ -141,5 +141,65 @@ public abstract class StringUtils {
 		}
 		return sb.toString();
 	}
+	
+	public boolean isNumber(String string) {
+		return false;
+	}
+	
+	public int stringToInt(String string, int defaultValue) {
+		if (isEmpty(string)) {
+			return defaultValue;
+		}
+		try {
+			return Integer.parseInt(string);
+		} catch (NumberFormatException e) {
+			return defaultValue;
+		}
+	}
+	
+	public long stringToLong(String string, long defaultValue) {
+		if (isEmpty(string)) {
+			return defaultValue;
+		}
+		try {
+			return Long.parseLong(string);
+		} catch (NumberFormatException e) {
+			return defaultValue;
+		}
+	}
+	
+	public float stringToFloat(String string, float defaultValue) {
+		if (isEmpty(string)) {
+			return defaultValue;
+		}
+		try {
+			return Float.parseFloat(string);
+		} catch (NumberFormatException e) {
+			return defaultValue;
+		}
+	}
+	
+	public double stringToDouble(String string, double defaultValue) {
+		if (isEmpty(string)) {
+			return defaultValue;
+		}
+		try {
+			return Double.parseDouble(string);
+		} catch (NumberFormatException e) {
+			return defaultValue;
+		}
+	}
+	
+	public static boolean isDigits(String string) {
+		if (isEmpty(string)) {
+			return false;
+		}
+		for (int i = 0; i < string.length(); i++) {
+			if (!Character.isDigit(string.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 }
