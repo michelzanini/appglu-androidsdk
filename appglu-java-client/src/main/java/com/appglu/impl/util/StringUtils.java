@@ -142,8 +142,16 @@ public abstract class StringUtils {
 		return sb.toString();
 	}
 	
-	public boolean isNumber(String string) {
-		return false;
+	public static boolean isDigits(String string) {
+		if (isEmpty(string)) {
+			return false;
+		}
+		for (int i = 0; i < string.length(); i++) {
+			if (!Character.isDigit(string.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public Integer stringToInt(String string) {
@@ -190,16 +198,4 @@ public abstract class StringUtils {
 		}
 	}
 	
-	public static boolean isDigits(String string) {
-		if (isEmpty(string)) {
-			return false;
-		}
-		for (int i = 0; i < string.length(); i++) {
-			if (!Character.isDigit(string.charAt(i))) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 }
