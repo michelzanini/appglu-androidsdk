@@ -62,6 +62,7 @@
 	<properties>
 		<spring.android.version>1.0.1.RELEASE</spring.android.version>
 		<eventbus.version>2.0.2</eventbus.version>
+		<android.gcm.jar.version>r3</android.gcm.jar.version>
 	</properties>
 	
     <dependencies>
@@ -93,7 +94,7 @@
         <dependency>
             <groupId>com.google.android.gcm</groupId>
 			<artifactId>gcm-client</artifactId>
-			<version>r3</version>
+			<version>${android.gcm.jar.version}</version>
 			<optional>true</optional>
         </dependency>
         
