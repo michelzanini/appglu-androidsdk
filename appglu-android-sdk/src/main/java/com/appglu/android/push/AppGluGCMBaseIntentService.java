@@ -56,6 +56,13 @@ public abstract class AppGluGCMBaseIntentService extends GCMBaseIntentService {
 	}
 	
 	/**
+	 * Required by GCM service.<br>
+	 * SenderId is the Google Cloud Message project ID. More information available in GCM documentation: @see <a href="http://developer.android.com/google/gcm/gs.html">http://developer.android.com/google/gcm/gs.html</a>.
+	 * @param context application's context.
+	 */
+	protected abstract String[] getSenderIds(Context context);
+	
+	/**
      * Called when a cloud message has been received.
      *
 	 * @param context application's context.
