@@ -74,7 +74,11 @@ public class ImageViewAsyncCallback extends AsyncCallback<Bitmap> {
 	@Override
 	public void onResult(Bitmap bitmap) {
 		if (imageDownloadListener != null) {
-			imageDownloadListener.onImageLoaded(bitmap);
+			if (bitmap == null) {
+				imageDownloadListener.onImageFailedLoading();
+			} else {
+				imageDownloadListener.onImageLoaded(bitmap);
+			}
 		}
 	}
 
@@ -94,10 +98,10 @@ public class ImageViewAsyncCallback extends AsyncCallback<Bitmap> {
 		private WeakReference<View> inProgressViewReference;
 		private WeakReference<View> placeholderViewReference;
 		
-		public DefaultImageDownloadListener(ImageView imageView, View inProgressView, View view) {
+		public DefaultImageDownloadListener(ImageView imageView, View inProgressView, View placeholderView) {
 			this.imageViewReference = new WeakReference<ImageView>(imageView);
 			this.inProgressViewReference = new WeakReference<View>(inProgressView);
-			this.placeholderViewReference = new WeakReference<View>(view);
+			this.placeholderViewReference = new WeakReference<View>(placeholderView);
 		}
 		
 		public DefaultImageDownloadListener(Object id, ImageView imageView, View inProgressView, View placeholderView) {
@@ -127,13 +131,9 @@ public class ImageViewAsyncCallback extends AsyncCallback<Bitmap> {
 
 		@Override
 		public void onImageLoaded(Bitmap bitmap) {
-			if (bitmap == null) {
-				this.onImageFailedLoading();
-			} else {
-				this.setImageBitmap(bitmap);
-				this.setInProgressViewVisibility(View.GONE);
-				this.setPlaceholderViewVisibility(View.GONE);
-			}
+			this.setImageBitmap(bitmap);
+			this.setInProgressViewVisibility(View.GONE);
+			this.setPlaceholderViewVisibility(View.GONE);
 		}
 
 		@Override
