@@ -58,7 +58,7 @@ public abstract class AppGluUtils {
 	 * @param inputStream an input stream to an image
 	 * @return the Bitmap
 	 */
-	public static Bitmap decodeSampledBitmapFromInputStream(InputStream inputStream) {
+	public static Bitmap decodeBitmapFromInputStream(InputStream inputStream) {
 	    return BitmapFactory.decodeStream(inputStream);
 	}
 	
@@ -82,7 +82,7 @@ public abstract class AppGluUtils {
 	 * @param file the image file reference
 	 * @return the Bitmap
 	 */
-	public static Bitmap decodeSampledBitmapFromFile(File file) {
+	public static Bitmap decodeBitmapFromFile(File file) {
 		return BitmapFactory.decodeFile(file.getPath());
 	}
 	
@@ -124,7 +124,7 @@ public abstract class AppGluUtils {
 	 * @param imageBytes image content in byte[]
 	 * @return the Bitmap
 	 */
-	public static Bitmap decodeSampledBitmapFromByteArray(byte[] imageBytes) {
+	public static Bitmap decodeBitmapFromByteArray(byte[] imageBytes) {
 		return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
 	}
 	

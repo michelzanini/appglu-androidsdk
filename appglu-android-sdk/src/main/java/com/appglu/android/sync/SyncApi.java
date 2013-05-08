@@ -348,7 +348,7 @@ public final class SyncApi {
 	 * or references to a <code>ImageView</code>, a <code>View</code> to display while loading the image and a <code>View</code> to use as a place holder in the case the image fails loading
 	 * 
 	 * @see com.appglu.android.task.ImageViewAsyncCallback
-	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromFile(File)
+	 * @see com.appglu.android.util.AppGluUtils#decodeBitmapFromFile(File)
 	 */
 	public void readBitmapToImageViewInBackground(final StorageFile storageFile, ImageViewAsyncCallback imageViewCallback) {
 		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);

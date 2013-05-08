@@ -113,7 +113,7 @@ public class StorageService {
 			return null;
 		}
 		
-		return AppGluUtils.decodeSampledBitmapFromInputStream(inputStream);
+		return AppGluUtils.decodeBitmapFromInputStream(inputStream);
 	}
 	
 	public Bitmap retrieveBitmapFromCacheManager(StorageFile file, int inSampleSize) {
@@ -218,7 +218,7 @@ public class StorageService {
 			return null;
 		}
 		
-		return AppGluUtils.decodeSampledBitmapFromInputStream(inputStream);
+		return AppGluUtils.decodeBitmapFromInputStream(inputStream);
 	}
 	
 	public Bitmap downloadAsBitmap(StorageFile file, int inSampleSize) {
