@@ -66,7 +66,7 @@ public final class StorageApi {
 	 * @param url the file URL - must be a image file
 	 * @return a <code>Bitmap</code> with the content of the file
 	 * 
-	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromInputStream(InputStream)
+	 * @see com.appglu.android.util.AppGluUtils#decodeBitmapFromInputStream(InputStream)
 	 */
 	public Bitmap retrieveBitmapFromCacheManager(String url) {
 		return this.storageService.retrieveBitmapFromCacheManager(new StorageFile(url));
@@ -295,7 +295,7 @@ public final class StorageApi {
 	 * or references to a <code>ImageView</code>, a <code>View</code> to display while loading the image and a <code>View</code> to use as a place holder in the case the image fails loading
 	 * 
 	 * @see com.appglu.android.task.ImageViewAsyncCallback
-	 * @see com.appglu.android.util.AppGluUtils#decodeSampledBitmapFromInputStream(InputStream)
+	 * @see com.appglu.android.util.AppGluUtils#decodeBitmapFromInputStream(InputStream)
 	 */
 	public void downloadToImageViewInBackground(final String url, ImageViewAsyncCallback imageViewCallback) {
 		AsyncTaskExecutor executor = new AsyncTaskExecutor(false);

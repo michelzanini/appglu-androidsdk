@@ -111,7 +111,7 @@ public class SyncService {
 			return null;
 		}
 		
-		return AppGluUtils.decodeSampledBitmapFromFile(file);
+		return AppGluUtils.decodeBitmapFromFile(file);
 	}
 	
 	public Bitmap readBitmapFromFileStorage(StorageFile storageFile, int inSampleSize) {
