@@ -70,7 +70,7 @@ public class FileSystemCacheManager implements CacheManager {
 		}
 	}
 	
-	protected File getCacheDir() {
+	public File getCacheDir() {
 		File cacheDirectory = this.context.getExternalCacheDir();
 		if (cacheDirectory == null) {
 			//delegates to internal cache directory if external not available
