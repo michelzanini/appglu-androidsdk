@@ -27,12 +27,14 @@ import com.appglu.AnalyticsSession;
 public interface AnalyticsSessionCallback {
 
 	/**
-	 * Called before a newly created session is stored locally.
+	 * Called before a newly created session is stored locally.<br>
+	 * <strong>Warning</strong>: this method does <strong>NOT</strong> run on the main thread
 	 */
 	void onStartSession(AnalyticsSession session);
 	
 	/**
-	 * Called before the sessions are sent to the {@link AnalyticsDispatcher}.
+	 * Called before the sessions are sent to the {@link AnalyticsDispatcher}.<br>
+	 * <strong>Warning</strong>: this method does <strong>NOT</strong> run on the main thread
 	 */
 	void beforeDispatchSessions(List<AnalyticsSession> sessions);
 	

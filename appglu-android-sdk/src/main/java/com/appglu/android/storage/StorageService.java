@@ -151,8 +151,8 @@ public class StorageService {
 				long lastModified = lastModifiedDate.getTime();
 				
 				if ( (lastModified + this.cacheTimeToLiveInMilliseconds) >= now ) {
-					if (logger.isDebugEnabled()) {
-						logger.debug("Retrieving '" + cacheKey + "' from cache");
+					if (logger.isVerboseEnabled()) {
+						logger.verbose("Retrieving '" + cacheKey + "' from cache");
 					}
 					return this.cacheManager.retrieve(cacheKey);
 				}
@@ -164,16 +164,16 @@ public class StorageService {
 		try {
 			boolean wasModified = this.storageOperations.streamStorageFileIfModifiedSince(file, new InputStreamCallback() {
 				public void doWithInputStream(InputStream inputStream) throws IOException {
-					if (logger.isDebugEnabled()) {
-						logger.debug("Downloading '" + cacheKey + "' from network");
+					if (logger.isVerboseEnabled()) {
+						logger.verbose("Downloading '" + cacheKey + "' from network");
 					}
 					cacheManager.store(cacheKey, inputStream);
 				}
 			});
 			
 			if (!wasModified) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("Updating '" + cacheKey + "' last modified date");
+				if (logger.isVerboseEnabled()) {
+					logger.verbose("Updating '" + cacheKey + "' last modified date");
 				}
 				this.cacheManager.updateLastModifiedDate(cacheKey);
 			}

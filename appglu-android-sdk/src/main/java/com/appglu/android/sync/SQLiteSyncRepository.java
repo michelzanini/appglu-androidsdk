@@ -336,8 +336,8 @@ public class SQLiteSyncRepository implements SyncRepository {
 	}
 	
 	protected void insertOperation(String tableName, ContentValues values) {
-		if (this.logger.isDebugEnabled()) {
-			logger.debug("insert into '" + tableName + "' values " + "(" + values + ")");
+		if (this.logger.isVerboseEnabled()) {
+			logger.verbose("insert into '" + tableName + "' values " + "(" + values + ")");
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
@@ -345,8 +345,8 @@ public class SQLiteSyncRepository implements SyncRepository {
 	}
 
 	protected void updateOperation(String tableName, ContentValues values, String primaryKeyName, String primaryKeyForSyncKey) {
-		if (this.logger.isDebugEnabled()) {
-			logger.debug("update '" + tableName + "' set values (" + values + ") where '" + primaryKeyName + "' = '" + primaryKeyForSyncKey + "'");
+		if (this.logger.isVerboseEnabled()) {
+			logger.verbose("update '" + tableName + "' set values (" + values + ") where '" + primaryKeyName + "' = '" + primaryKeyForSyncKey + "'");
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
@@ -356,8 +356,8 @@ public class SQLiteSyncRepository implements SyncRepository {
 	}
 
 	protected void deleteOperation(String tableName, String primaryKeyName, String primaryKeyForSyncKey) {
-		if (this.logger.isDebugEnabled()) {
-			logger.debug("delete from '" + tableName + "' where '" + primaryKeyName + "' = '" + primaryKeyForSyncKey + "'");
+		if (this.logger.isVerboseEnabled()) {
+			logger.verbose("delete from '" + tableName + "' where '" + primaryKeyName + "' = '" + primaryKeyForSyncKey + "'");
 		}
 		
 		SQLiteDatabase database = this.getWritableDatabase();
