@@ -95,8 +95,8 @@ public final class AnalyticsApi {
 	 * @param activity the Activity that wants to sent analytics events
 	 */
 	public void onActivityResume(final Activity activity) {
-		if (activity != null) {
-			logger.debug("Executing AnalyticsApi.onActivityResume() on %s", activity.getComponentName().getClassName());
+		if (activity != null && logger.isVerboseEnabled()) {
+			logger.verbose("Executing AnalyticsApi.onActivityResume() on %s", activity.getComponentName().getClassName());
 		}
 		
 		handler.removeCallbacks(this.closeSessionsRunnable);
@@ -114,8 +114,8 @@ public final class AnalyticsApi {
 	 * @param activity the Activity that wants to sent analytics events
 	 */
 	public void onActivityPause(final Activity activity) {
-		if (activity != null) {
-			logger.debug("Executing AnalyticsApi.onActivityPause() on %s", activity.getComponentName().getClassName());
+		if (activity != null && logger.isVerboseEnabled()) {
+			logger.verbose("Executing AnalyticsApi.onActivityPause() on %s", activity.getComponentName().getClassName());
 		}
 		
 		this.lastOnActivityStopDate = new Date();
