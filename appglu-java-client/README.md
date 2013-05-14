@@ -12,18 +12,6 @@ If you want to integrate AppGlu with an Android application please check out the
 
 # Setup
 
-## Using Maven
-
-```xml
-<dependency>
-    <groupId>com.appglu</groupId>
-    <artifactId>appglu-java-client</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
-
-## Manually
-
 1. Download the AppGlu Java Client distribution bundle (appglu-java-client-1.0.0-dist.zip) and extract it.
 2. Include all JAR files present on the lib folder to your classpath.
 
