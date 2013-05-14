@@ -3,7 +3,7 @@ AppGlu Android SDK
 
 AppGlu SDK for Android devices. Requires Android 2.2 (API version 8) or above.
 It simplifies the use of the AppGlu Java Client library on Android and adds asynchronous calls to APIs using AsyncTask.
-Moreover, it adds Android specific functionality to APIs such as Analytics, Sync and Storage.
+Moreover, it adds Android specific functionality such as Content Synchronization, Analytics and Push Notifications/GCM integration.
 
 # Dependencies
 
@@ -13,30 +13,18 @@ Moreover, it adds Android specific functionality to APIs such as Analytics, Sync
 
 # Setup
 
-## Using Maven
-
-```xml
-<dependency>
-    <groupId>com.appglu</groupId>
-    <artifactId>appglu-android-sdk</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
 
 ### Maven and Google Cloud Message (GCM) dependency
 
-If you are using push notifications and your project uses Maven, then you will need to add the GCM jar to your Maven repository, because GCM is not yet available on Maven central.
+1. Download the AppGlu Android SDK distribution bundle (appglu-android-sdk-1.0.0-dist.zip) and extract it.
+2. Include all JAR files present on the libs folder to your classpath.
+
+If you are using GCM for push notifications and your project uses Maven, then you will need to add the GCM jar to your Maven repository, because GCM is not yet available on Maven central.
 You can download the GCM library using Android's SDK manager and when you have the JAR file available you can deploy it to your local Maven repository with this command:
 
 ```sh
 mvn install:install-file -Dfile=/path/to/gcm-jar/gcm.jar -DgroupId=com.google.android.gcm -DartifactId=gcm-client -Dversion=r3 -Dpackaging=jar
 ```
-
-## Manually
-
-1. Download the AppGlu Android SDK distribution bundle (appglu-android-sdk-1.0.0-dist.zip) and extract it.
-2. Include all JAR files present on the libs folder to your classpath.
-
 
 # Getting Started
 
