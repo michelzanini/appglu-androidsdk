@@ -315,10 +315,10 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 		StorageFile fileOneById = this.syncRepository.getStorageFileByIdOrUrl(1001, null);
 		this.assertFileOne(fileOneById);
 		
-		StorageFile fileOneByUrl = this.syncRepository.getStorageFileByIdOrUrl(0, "https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png");
+		StorageFile fileOneByUrl = this.syncRepository.getStorageFileByIdOrUrl(0, "https://d27pqr4ityvq45.cloudfront.net/trekguide_staging/5cff0bf8-74ff-4a7a-9092-60841018b5ea-DS9-S01-E01-Grid-1.jpg");
 		this.assertFileOne(fileOneByUrl);
 		
-		StorageFile fileOneByIdOrUrl = this.syncRepository.getStorageFileByIdOrUrl(1001, "https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png");
+		StorageFile fileOneByIdOrUrl = this.syncRepository.getStorageFileByIdOrUrl(1001, "https://d27pqr4ityvq45.cloudfront.net/trekguide_staging/5cff0bf8-74ff-4a7a-9092-60841018b5ea-DS9-S01-E01-Grid-1.jpg");
 		this.assertFileOne(fileOneByIdOrUrl);
 	}
 	
@@ -330,7 +330,7 @@ public class SQLiteSyncRepositoryTest extends AbstractSyncSQLiteTest {
 		Assert.assertEquals("app-icon", fileOne.getTitle());
 		Assert.assertEquals(10125, fileOne.getSize());
 		Assert.assertEquals(1357309209000L, fileOne.getLastModified().getTime());
-		Assert.assertEquals("https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png", fileOne.getUrl());
+		Assert.assertEquals("https://d27pqr4ityvq45.cloudfront.net/trekguide_staging/5cff0bf8-74ff-4a7a-9092-60841018b5ea-DS9-S01-E01-Grid-1.jpg", fileOne.getUrl());
 		Assert.assertEquals("abdca54e4ca831ec8013ef9f597adf1c", fileOne.getETag());
 		Assert.assertEquals("2", fileOne.getVersion());
 		Assert.assertEquals(1, fileOne.getDirectoryId());

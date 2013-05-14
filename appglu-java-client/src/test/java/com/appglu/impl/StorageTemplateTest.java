@@ -44,7 +44,7 @@ import com.appglu.impl.util.StringUtils;
 
 public class StorageTemplateTest extends AbstractAppGluApiTest {
 	
-	private static final String URL = "https://s3.amazonaws.com/cbs-startrek1/1ee26276-b773-4eaa-9762-49c380e604c7-app-icon.png";
+	private static final String URL = "https://d27pqr4ityvq45.cloudfront.net/trekguide_staging/5cff0bf8-74ff-4a7a-9092-60841018b5ea-DS9-S01-E01-Grid-1.jpg";
 	
 	private static final byte[] CONTENT = "content".getBytes();
 	
