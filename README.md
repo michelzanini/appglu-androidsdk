@@ -4,7 +4,8 @@ AppGlu SDK for Android devices. Requires Android 2.2 (API version 8) or above. I
 
 ## Downloads
 
-* [1.0.0](http://appglu.github.io/appglu-androidsdk/download/1.0.0/appglu-android-sdk-1.0.0-dist.zip)
+* [1.0.0](http://appglu.github.io/appglu-androidsdk/download/1.0.0/appglu-android-sdk-1.0.0-dist.zip)    
+
 ## Javadocs
 
 * [1.0.0](http://appglu.github.io/appglu-androidsdk/javadoc/1.0.0/index.html)
