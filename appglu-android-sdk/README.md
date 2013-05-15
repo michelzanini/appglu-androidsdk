@@ -13,7 +13,7 @@ Moreover, it adds Android specific functionality such as Content Synchronization
 
 ### Setup
 
-1. Download the AppGlu Android SDK distribution bundle [from here](appglu.github.io/appglu-androidsdk/download/1.0.0/appglu-android-sdk-1.0.0-dist.zip) and extract it.
+1. Download the AppGlu Android SDK distribution bundle [from here](http://appglu.github.io/appglu-androidsdk/download/1.0.0/appglu-android-sdk-1.0.0-dist.zip) and extract it.
 2. Include all JAR files present on the libs folder to your classpath.
 
 ### Getting Started
