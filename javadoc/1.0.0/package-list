@@ -1,0 +1,17 @@
+com.appglu
+com.appglu.android
+com.appglu.android.analytics
+com.appglu.android.analytics.activity
+com.appglu.android.cache
+com.appglu.android.log
+com.appglu.android.push
+com.appglu.android.storage
+com.appglu.android.sync
+com.appglu.android.task
+com.appglu.android.util
+com.appglu.impl
+com.appglu.impl.json
+com.appglu.impl.json.jackson
+com.appglu.impl.util
+com.google.android.gcm
+de.greenrobot.event
