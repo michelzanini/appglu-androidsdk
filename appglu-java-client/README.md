@@ -26,4 +26,4 @@ Row row = appGluTemplate.crudOperations().read("table", "id");
 
 For more information about the available APIs and additional documentation:
   
-[Javadocs](http://appglu.github.com/appglu-androidsdk/javadoc/1.0.0/index.html)
+[Javadocs](http://appglu.github.com/appglu-androidsdk/javadoc/index.html)
