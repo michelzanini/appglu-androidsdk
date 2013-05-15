@@ -13,15 +13,8 @@ Moreover, it adds Android specific functionality such as Content Synchronization
 
 ### Setup
 
-1. Download the AppGlu Android SDK distribution bundle (appglu-android-sdk-1.0.0-dist.zip) and extract it.
+1. Download the AppGlu Android SDK distribution bundle [from here](appglu.github.io/appglu-androidsdk/download/1.0.0/appglu-android-sdk-1.0.0-dist.zip) and extract it.
 2. Include all JAR files present on the libs folder to your classpath.
-
-If you are using GCM for push notifications and your project uses Maven, then you will need to add the GCM jar to your Maven repository, because GCM is not yet available on Maven central.
-You can download the GCM library using Android's SDK manager and when you have the JAR file available you can deploy it to your local Maven repository with this command:
-
-```sh
-mvn install:install-file -Dfile=/path/to/gcm-jar/gcm.jar -DgroupId=com.google.android.gcm -DartifactId=gcm-client -Dversion=r3 -Dpackaging=jar
-```
 
 ### Getting Started
 
