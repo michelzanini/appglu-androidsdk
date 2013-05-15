@@ -12,7 +12,7 @@ If you want to integrate AppGlu with an Android application please check out the
 
 # Setup
 
-1. Download the AppGlu Java Client distribution bundle (appglu-java-client-1.0.0-dist.zip) and extract it.
+1. Download the AppGlu Java Client distribution bundle [from here](http://appglu.github.io/appglu-androidsdk/download/1.0.0/appglu-java-client-1.0.0-dist.zip) and extract it.
 2. Include all JAR files present on the lib folder to your classpath.
 
 # Getting Started
@@ -21,3 +21,9 @@ If you want to integrate AppGlu with an Android application please check out the
 AppGluTemplate appGluTemplate = new AppGluTemplate("appKey", "appSecret");
 Row row = appGluTemplate.crudOperations().read("table", "id");
 ```
+
+### Documentation
+
+For more information about the available APIs and additional documentation:
+  
+[Javadocs](http://appglu.github.com/appglu-androidsdk/javadoc/1.0.0/index.html)
